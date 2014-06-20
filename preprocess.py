@@ -94,6 +94,7 @@ def getStudents(headingsNeeded, currentSheet):
         values=[]
 
         for dataCol in headingsLocation:
+            
             values.append(currentSheet.cell(row,dataCol).value)
 
         studList[row].studID=(values[0])
@@ -159,7 +160,10 @@ def getCourseInfo(neededHeadings,currentSheet):
     Configure database stuff
 '''
 cdLocation=os.getcwd()
-dbLocation=cdLocation+"testv2.db" #"""@@@@@@@@@@@@@@@@@@@ TAKE OUT THE HARD CODE"""
+dbLocation=cdLocation+"\\testv2.db" #"""@@@@@@@@@@@@@@@@@@@ TAKE OUT THE HARD CODE"""
+rawDataLocation=cdLocation+"\\data"
+
+os.remove(dbLocation) #"""@@@@@@@@@@ REMOVES THE DB EACH TIME THIS RUNS, FOR TESTING PURPOSES"""
 
 conn=sqlite3.connect(dbLocation)
 c=conn.cursor()
@@ -172,7 +176,7 @@ c.execute("PRAGMA foreign_keys=ON;")    #enables foreign keys
     Find all xls files and then store the location and addresses of all of them
 '''
 excelExtension="xls"
-filesList=findFiles(cdLocation,excelExtension)
+filesList=findFiles(rawDataLocation,excelExtension)
 
 wbData=[]
 sheetAddress=[]
@@ -184,7 +188,7 @@ for i in range(len(filesList)):
 #Preprocess the excel columns from text to float
 preprocessHeadings=["Student ID","Proj Level","Term"]   #these are the headings of columns that are floats and need to be made into floats
 
-macroLocation="C:\Users\DBMS\Documents\Daniel\Dev Design\db\excel_preprocess\\test.xlsm" #"""@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ change to make it dynamic"""
+macroLocation=cdLocation+"\\excel\\intToFloat.xlsm" #"""@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ change to make it dynamic"""
 
 xl=win32com.client.Dispatch("Excel.Application")    #accesses the excel application
 xl.Visible=1
@@ -280,6 +284,8 @@ if checkTableExist("courses") is False:
     are the same. e.g. studentLists[2] will correspond to courseLists[2]
 '''
 
+studentTableHeadings=["Student ID","Program","Proj Level","Plan"]
+courseTableHeadings=["Subject","Catalog Number"] 
 studentLists=[] #studentLists must be reset each time
 courseLists=[]
 
@@ -290,7 +296,7 @@ for i in range(len(sheetAddress)):
 
     for stud in studentLists[i]: #OR IGNORE will only input the record if it is unique (does not show the error message)
         c.execute("INSERT OR IGNORE INTO students (student_id,program,proj_level,plan,plan2,plan3) VALUES(?,?,?,?,?,?);",(stud.studID,stud.program,stud.proj_level,stud.plan,stud.plan2,stud.plan3))
-
+        #stud.printValues()
     c.execute("INSERT INTO courses (subject, catalog_number) VALUES(?,?);",(courseLists[i].subject,courseLists[i].catalog))
 
     c.execute("SELECT course_id FROM courses WHERE course_id=(SELECT MAX(course_ID) FROM courses);") #finds the course_id of the most recently entered course list from the courses table
@@ -315,6 +321,7 @@ for i in range(len(sheetAddress)):
                 if row[len(row)-i] is None and stud.studID==row[1]: #must check if the student is enrolled in the current course
                     c.execute("Update students SET course"+str(maxCourses+1-i)+"=? WHERE student_id=?;",(str(courseNum),row[1]))
                     break
+
 conn.commit()
 conn.close()
 

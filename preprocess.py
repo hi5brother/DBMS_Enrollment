@@ -45,8 +45,11 @@ class Course:
     def __init__(self):#subject, catalog_number, credits, term
         pass
 
+    def concatenate(self):
+        return str(self.subject)+str(self.catalog)
+
     def printCourse(self):
-        print str(self.subject)+" "+str(self.catalog_number)+" ,"+str(self.credits)
+        print str(self.subject)+" "+str(self.catalog)+" ,"+str(self.credits)
 
 def findFiles(location, extension):
 
@@ -160,7 +163,7 @@ def getCourseInfo(neededHeadings,currentSheet):
     Configure database stuff
 '''
 cdLocation=os.getcwd()
-dbLocation=cdLocation+"\\testv2.db" #"""@@@@@@@@@@@@@@@@@@@ TAKE OUT THE HARD CODE"""
+dbLocation=cdLocation+"/testv2.db" #"""@@@@@@@@@@@@@@@@@@@ TAKE OUT THE HARD CODE"""
 rawDataLocation=cdLocation+"\\data"
 
 os.remove(dbLocation) #"""@@@@@@@@@@ REMOVES THE DB EACH TIME THIS RUNS, FOR TESTING PURPOSES"""
@@ -181,7 +184,7 @@ filesList=findFiles(rawDataLocation,excelExtension)
 wbData=[]
 sheetAddress=[]
 for i in range(len(filesList)):
-    wbData.append(xlrd.open_workbook(filesList[i]))
+    wbData.append(xlrd.open_workbook(filesList[i],on_demand=True))
     sheetAddress.append(wbData[i].sheet_by_index(0)) #will access and store the location of the FIRST sheet in each workbook
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -255,6 +258,7 @@ if checkTableExist("courses") is False:
         headingsLocation.append(dbFormat.findCol(sheetAddress[0],courseTableHeadings[i]))
 
     courseSQLHeadings=dbFormat.generateHeading(sheetAddress[0],courseTableHeadings,dataTypes)
+    print courseSQLHeadings
 
     c.execute("CREATE TABLE courses(course_id INTEGER PRIMARY KEY,"+courseSQLHeadings+")")
 
@@ -288,39 +292,53 @@ studentTableHeadings=["Student ID","Program","Proj Level","Plan"]
 courseTableHeadings=["Subject","Catalog Number"] 
 studentLists=[] #studentLists must be reset each time
 courseLists=[]
+courseNames=[]
+
 
 for i in range(len(sheetAddress)):
-
-    studentLists.append(getStudents(studentTableHeadings,sheetAddress[i]))
     courseLists.append(getCourseInfo(courseTableHeadings,sheetAddress[i]))
+    
+    courseNames.append(courseLists[i].concatenate())
 
-    for stud in studentLists[i]: #OR IGNORE will only input the record if it is unique (does not show the error message)
-        c.execute("INSERT OR IGNORE INTO students (student_id,program,proj_level,plan,plan2,plan3) VALUES(?,?,?,?,?,?);",(stud.studID,stud.program,stud.proj_level,stud.plan,stud.plan2,stud.plan3))
-        #stud.printValues()
-    c.execute("INSERT INTO courses (subject, catalog_number) VALUES(?,?);",(courseLists[i].subject,courseLists[i].catalog))
 
-    c.execute("SELECT course_id FROM courses WHERE course_id=(SELECT MAX(course_ID) FROM courses);") #finds the course_id of the most recently entered course list from the courses table
+# c.execute("ALTER TABLE courses ADD course_code TEXT;")  #adding the 
+# for i in range(len(sheetAddress)):
+#     c.execute("INSERT INTO courses(subject,catalog_number,course_code) VALUES(?,?,?);",(courseLists[i].subject,courseLists[i].catalog,courseNames[i]))
 
-    #convert the tuple to an integer
-    temp=c.fetchone()
-    courseNum=0
-    count=0
-    for a in reversed(temp):
-        courseNum=courseNum+a*10**count
-        count=count+1
+    
 
-    ''' Goes through all the students in the current course list and accesses all rows from the SQL database.
-        It will add the courses that a student is enrolled in.
-    '''
-    c.execute("SELECT * FROM students")
-    val=c.fetchall()
+# for i in range(len(sheetAddress)):
 
-    for stud in studentLists[i]: #goes through all the students in current course list
-        for row in val: #goes through all rows of the table
-            for i in reversed(range(1,maxCourses+1)): #accesses the row's course values, course 1 thru maxCourses
-                if row[len(row)-i] is None and stud.studID==row[1]: #must check if the student is enrolled in the current course
-                    c.execute("Update students SET course"+str(maxCourses+1-i)+"=? WHERE student_id=?;",(str(courseNum),row[1]))
-                    break
+#     studentLists.append(getStudents(studentTableHeadings,sheetAddress[i]))
+#     courseLists.append(getCourseInfo(courseTableHeadings,sheetAddress[i]))
+
+#     for stud in studentLists[i]: #OR IGNORE will only input the record if it is unique (does not show the error message)
+#         c.execute("INSERT OR IGNORE INTO students (student_id,program,proj_level,plan,plan2,plan3) VALUES(?,?,?,?,?,?);",(stud.studID,stud.program,stud.proj_level,stud.plan,stud.plan2,stud.plan3))
+#         #stud.printValues()
+#     c.execute("INSERT INTO courses (subject, catalog_number) VALUES(?,?);",(courseLists[i].subject,courseLists[i].catalog))
+
+#     c.execute("SELECT course_id FROM courses WHERE course_id=(SELECT MAX(course_ID) FROM courses);") #finds the course_id of the most recently entered course list from the courses table
+
+#     #convert the tuple to an integer
+#     temp=c.fetchone()
+#     courseNum=0
+#     count=0
+#     for a in reversed(temp):
+#         courseNum=courseNum+a*10**count
+#         count=count+1
+
+#     ''' Goes through all the students in the current course list and accesses all rows from the SQL database.
+#         It will add the courses that a student is enrolled in.
+#     '''
+#     c.execute("SELECT * FROM students")
+#     val=c.fetchall()
+
+#     for stud in studentLists[i]: #goes through all the students in current course list
+#         for row in val: #goes through all rows of the table
+#             for i in reversed(range(1,maxCourses+1)): #accesses the row's course values, course 1 thru maxCourses
+#                 if row[len(row)-i] is None and stud.studID==row[1]: #must check if the student is enrolled in the current course
+#                     c.execute("Update students SET course"+str(maxCourses+1-i)+"=? WHERE student_id=?;",(str(courseNum),row[1]))
+#                     break
 
 conn.commit()
 conn.close()

@@ -9,7 +9,6 @@
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 
-
 def findImproperStudent(arrlist=[],*array): #finds the index for headings and whitespaces (where there should be student ID's)
 
     '''When the list of student objects is passed, this function finds the

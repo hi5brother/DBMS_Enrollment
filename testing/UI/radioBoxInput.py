@@ -1,7 +1,9 @@
 #-------------------------------------------------------------------------------
 # Name:        testing of a radio button box
 # Purpose:		can take a list of strings that will display for each option, and also returns a value related to the string
-#
+#					
+#				 self.button = Radiobutton(self.container, text = option, variable = self.var, value = val, command = self.submit)
+#											container		text shown		output variable						command 
 # Author:      DBMS
 #
 # Created:     26/06/2014
@@ -21,22 +23,22 @@ optionsList = [             #options for radio buttons can be passed into the fu
     ("PHAR 450",8),]
 
 class RadioBoxApp:
-    def __init__(self,parent,optionsList):
-        self.parent=parent
-        self.container=Frame(parent)
-        self.container.pack()
-        self.initialize(optionsList)
+	def __init__(self,parent,optionsList):
+		self.parent=parent
+		self.container=Frame(parent)
+		self.container.pack()
+		self.initialize(optionsList)
 
-    def initialize(self,optionsList):
-        self.txtBox=Label(self.container, text = "Please select your option")
-        self.txtBox.config(width = 30, height = 5)
-        self.txtBox.pack(side = TOP)
+	def initialize(self,optionsList):
+		self.txtBox=Label(self.container, text = "Please select your option")
+		self.txtBox.config(width = 30, height = 5)
+		self.txtBox.pack(side = TOP)
 
         self.var = IntVar()
 
         for option, val in optionsList:
-            self.button = Radiobutton(self.container, text = option, variable = self.var, value = val, command = self.submit)
-            self.button.pack(anchor = W)
+		self.button = Radiobutton(self.container, text = option, variable = self.var, value = val, command = self.submit)
+		self.button.pack(anchor = W)
 
         self.exitButton = Button (self.container)
         self.exitButton['text'] = "Exit"
@@ -50,13 +52,12 @@ class RadioBoxApp:
     def quit(self):
         self.parent.destroy()
 
-
 def runApp(optionsList):
-    root = Tk()
-    root.title("DBMS Enrollment")
+	root = Tk()
+	root.title("DBMS Enrollment")
 
-    app = RadioBoxApp(root, optionsList)
-    root.mainloop()
+	app = RadioBoxApp(root, optionsList)
+	root.mainloop()
 
     try:
 	print app.data
@@ -66,7 +67,5 @@ def runApp(optionsList):
 	print "No data"
 	return None
 		
-
-
 if __name__ == '__main__':
     runApp(optionsList)

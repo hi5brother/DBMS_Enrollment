@@ -57,9 +57,8 @@ class DropListApp:
 		self.data=[]		#initialize the dataset
 		
 	def submit(self):
-		self.data.append(self.var.get())
-		self.data.append(self.varCode.get())
-		#self.data = self.varCode.get()
+		self.data.append(self.var.get())		#data[0] will be the course
+		self.data.append(self.varCode.get())	#data[1] will be the course code
 		self.parent.destroy()
 		
 def runApp(optionsList, optionsList2):

@@ -97,7 +97,7 @@ def getStudents(headingsNeeded, currentSheet):
         values = []
 
         for dataCol in headingsLocation:
-            
+
             values.append(currentSheet.cell(row,dataCol).value)
 
         studList[row].studID = (values[0])
@@ -163,7 +163,7 @@ def getCourseInfo(neededHeadings,currentSheet):
     Configure database stuff
 '''
 cdLocation = os.getcwd()
-dbLocation = cdLocation + "/testv2.db" #"""@@@@@@@@@@@@@@@@@@@ TAKE OUT THE HARD CODE"""
+dbLocation = cdLocation + "\\testv2.db" #"""@@@@@@@@@@@@@@@@@@@ TAKE OUT THE HARD CODE"""
 rawDataLocation = cdLocation + "\\data"
 
 os.remove(dbLocation) #"""@@@@@@@@@@ REMOVES THE DB EACH TIME THIS RUNS, FOR TESTING PURPOSES"""
@@ -184,7 +184,7 @@ filesList = findFiles(rawDataLocation,excelExtension)
 wbData = []
 sheetAddress = []
 for i in range(len(filesList)):
-    wbData.append(xlrd.open_workbook(filesList[i],on_demand = True))
+    wbData.append(xlrd.open_workbook(filesList[i]))
     sheetAddress.append(wbData[i].sheet_by_index(0)) #will access and store the location of the FIRST sheet in each workbook
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -290,7 +290,7 @@ if checkTableExist("courses") is False:
 '''
 
 studentTableHeadings = ["Student ID","Program","Proj Level","Plan"]
-courseTableHeadings = ["Subject","Catalog Number"] 
+courseTableHeadings = ["Subject","Catalog Number"]
 studentLists = [] #studentLists must be reset each time
 courseLists = []
 courseNames = []
@@ -298,48 +298,43 @@ courseNames = []
 
 for i in range(len(sheetAddress)):
     courseLists.append(getCourseInfo(courseTableHeadings,sheetAddress[i]))
-    
     courseNames.append(courseLists[i].concatenate())
 
 
-# c.execute("ALTER TABLE courses ADD course_code TEXT;")  #adding the 
-# for i in range(len(sheetAddress)):
-#     c.execute("INSERT INTO courses(subject,catalog_number,course_code) VALUES(?,?,?);",(courseLists[i].subject,courseLists[i].catalog,courseNames[i]))
+c.execute("ALTER TABLE courses ADD course_code TEXT;")  #adding the column with the concatenated course code
+for i in range(len(sheetAddress)):
+    c.execute("INSERT INTO courses(subject,catalog_number,course_code) VALUES(?,?,?);",(courseLists[i].subject,courseLists[i].catalog,courseNames[i]))
 
-    
+    for i in range(len(sheetAddress)):
 
-# for i in range(len(sheetAddress)):
+        studentLists.append(getStudents(studentTableHeadings,sheetAddress[i]))
+        courseLists.append(getCourseInfo(courseTableHeadings,sheetAddress[i]))
 
-#     studentLists.append(getStudents(studentTableHeadings,sheetAddress[i]))
-#     courseLists.append(getCourseInfo(courseTableHeadings,sheetAddress[i]))
+    for stud in studentLists[i]: #OR IGNORE will only input the record if it is unique (does not show the error message)
+        c.execute("INSERT OR IGNORE INTO students (student_id,program,proj_level,plan,plan2,plan3) VALUES(?,?,?,?,?,?);",(stud.studID,stud.program,stud.proj_level,stud.plan,stud.plan2,stud.plan3))
+        #stud.printValues()
 
-#     for stud in studentLists[i]: #OR IGNORE will only input the record if it is unique (does not show the error message)
-#         c.execute("INSERT OR IGNORE INTO students (student_id,program,proj_level,plan,plan2,plan3) VALUES(?,?,?,?,?,?);",(stud.studID,stud.program,stud.proj_level,stud.plan,stud.plan2,stud.plan3))
-#         #stud.printValues()
-#     c.execute("INSERT INTO courses (subject, catalog_number) VALUES(?,?);",(courseLists[i].subject,courseLists[i].catalog))
+    c.execute("SELECT course_id FROM courses WHERE course_id=(SELECT MAX(course_ID) FROM courses);") #finds the course_id of the most recently entered course list from the courses table
 
-#     c.execute("SELECT course_id FROM courses WHERE course_id=(SELECT MAX(course_ID) FROM courses);") #finds the course_id of the most recently entered course list from the courses table
+    #convert the tuple to an integer
+    temp=c.fetchone()
+    courseNum=0
+    count=0
+    for a in reversed(temp):
+        courseNum=courseNum+a*10**count
+        count=count+1
 
-#     #convert the tuple to an integer
-#     temp=c.fetchone()
-#     courseNum=0
-#     count=0
-#     for a in reversed(temp):
-#         courseNum=courseNum+a*10**count
-#         count=count+1
-
-#     ''' Goes through all the students in the current course list and accesses all rows from the SQL database.
-#         It will add the courses that a student is enrolled in.
-#     '''
-#     c.execute("SELECT * FROM students")
-#     val=c.fetchall()
-
-#     for stud in studentLists[i]: #goes through all the students in current course list
-#         for row in val: #goes through all rows of the table
-#             for i in reversed(range(1,maxCourses+1)): #accesses the row's course values, course 1 thru maxCourses
-#                 if row[len(row)-i] is None and stud.studID==row[1]: #must check if the student is enrolled in the current course
-#                     c.execute("Update students SET course"+str(maxCourses+1-i)+"=? WHERE student_id=?;",(str(courseNum),row[1]))
-#                     break
+    ''' Goes through all the students in the current course list and accesses all rows from the SQL database.
+     It will add the courses that a student is enrolled in.
+    '''
+    c.execute("SELECT * FROM students")
+    val=c.fetchall()
+    for stud in studentLists[i]: #goes through all the students in current course list
+        for row in val: #goes through all rows of the table
+            for i in reversed(range(1,maxCourses+1)): #accesses the row's course values, course 1 thru maxCourses
+                if row[len(row)-i] is None and stud.studID==row[1]: #must check if the student is enrolled in the current course
+                    c.execute("Update students SET course"+str(maxCourses+1-i)+"=? WHERE student_id=?;",(str(courseNum),row[1]))
+                    break
 
 conn.commit()
 conn.close()

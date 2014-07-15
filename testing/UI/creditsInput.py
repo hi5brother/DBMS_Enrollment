@@ -29,22 +29,32 @@ class CreditsInputApp:
 
     def initialize(self,courses):  
 
+        self.infoBox = Label(self.container, text = "Please enter the credits of each course")
+        self.infoBox.config(width = 40, height = 2)
+        self.infoBox.grid(row = 0, column = 0)
+
+        self.infoBox2 = Label(self.container, text = "Credits (e.g. 3.0, 4.5)")
+        self.infoBox2.config(width = 40, height = 2)
+        self.infoBox2.grid(row = 0, column = 1)
+
         self.entry = []
+
         for i in range(len(courses)):           #iterates based on number of courses
-            self.txtBox = Label(self.container, text = courses[i]).grid(row = i)    #the name of each course
+            self.txtBox = Label(self.container, text = courses[i])
+            self.txtBox.grid(row = i+1)    #the name of each course
 
             self.entry.append(Entry(self.container))
-            self.entry[i].grid(row = i,column = 1)          #entry field for credits of each course
+            self.entry[i].grid(row = i+1,column = 1)          #entry field for credits of each course
 
 
         self.subButton = Button(self.container)             #the submit button will process data then quit
         self.subButton['text'] = "Submit"
-        self.subButton.grid(row = i + 1,column = 0)
+        self.subButton.grid(row = i + 3,column = 0)
         self.subButton['command'] = self.submit
 
         self.quitButton = Button(self.container)            #the quit button will just quit
         self.quitButton['text'] = "Quit"
-        self.quitButton.grid(row = i + 1,column = 1)
+        self.quitButton.grid(row = i + 3,column = 1)
         self.quitButton['command'] = self.quit
 
     def submit(self):
@@ -64,23 +74,27 @@ def runApp(courses):
     app = CreditsInputApp(root,courses)
     root.mainloop()
 
-    for data in app.data:
-        try:    
-            data = float(data)      #error if it is not a number (cannot be convert to float)
-        except ValueError:
-            return "Value Error: A credit value is not a number"
+    outputData = []
+    try:        #attribute error happens when NO values are output
+        for data in app.data:
+            try:    
+                outputData.append(float(data))      #error if it is not a number (cannot be convert to float)
 
-    for data in app.data:
+            except ValueError:
+                return "Value Error: A credit value is not a number"
+    except AttributeError:
+        return "Data Error: No data was input"
+
+    for data in outputData:
+
         if data == "":         #error message if a credit was not entered
             return "User Error: Not all courses had credits inputted"   
-
-    try:
-	   print app.data
-	   return app.data
-		
-    except AttributeError:
-	   print "No data"
-	   return None
-
+        
+        elif data > 9:
+            return "User Error: Credit was greater than 9"
+        elif data < 0:
+            return "User Error: Credit has negative value"
+            
+    return outputData
 if __name__ == '__main__':
     runApp(courses)

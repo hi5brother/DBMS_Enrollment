@@ -14,9 +14,9 @@ import os
 import sqlite3
 import sys
 
-sys.path.append(os.getcwd() + '/testing/UI')    #adding the UI modules to the path
+sys.path.append(os.getcwd() + '/UI')    #adding the UI modules to the path
 
-import radioBoxInput
+
 
 def connectDB():		#connects to the database and returns the connection object, still requires the cursor
 	cdLocation = os.getcwd()
@@ -39,8 +39,18 @@ def grabStudentCourses(connDB,stude_id):
 	data = connDB.fetchone()	#grabs the data in a list, which each thing being an element
 	return data
 
-def grabCourseCredits(connDB,course_code):
-	connDB.execute("SELECT credits FROM courses WHERE course_code = ?;",(course_code,))
+def grabCourseCredits(connDB,course_id):
+	connDB.execute("SELECT credits FROM courses WHERE course_id = ?;",(course_id,))
+	data = connDB.fetchone()
+	return data
+
+def grabCourseTerm(connDB,course_id):
+	connDB.execute("SELECT term FROM courses WHERE term = ?;",(term,))
+	data = connDB.fetchone()
+	return data
+
+def grabUnitFees(connDB,program_name):		#take the student's program name (str) and returns the appropriate unit fee
+	connDB.execute("SELECT unit_fees FROM program_info WHERE program_name = ?", program_name)
 	data = connDB.fetchone()
 	return data
 
@@ -48,18 +58,10 @@ def main():
 	conn = connectDB()
 	c = conn.cursor()
 
-
-	data = grabStudentCourses(c,1)
+	#data = grabStudentCourses(c,1)
+	data = grabCourseCredits(c,"PHAR 100")
 	print data
-	radioBoxInput.runAppStr(data)
+	#radioBoxInput.runAppStr(data)
 
 if __name__ == '__main__':
 	main()
-
-
-
-
-
-
-
-

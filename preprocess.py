@@ -27,8 +27,14 @@ import studentProcessing        #module that deletes whitespace, double/triple m
 import dbFormat                 #formats the tables for the database
 
 
-sys.path.append(os.getcwd() + '/testing/UI')    #adding the UI modules to the path
-import creditsInput
+sys.path.append(os.getcwd() + '/UI')    #adding the UI modules to the path
+import creditsInput     #UI box for inputting credits
+import feeUnitsInput       #UI box for inputting unit fees
+import programWeightsInput
+
+import errorMessageBox  #UI that displays the error
+
+import calcTuition
 
 class Student:
     def __init__(self):#,studID,program,proj_level,plan1,plan2,total_credits):
@@ -50,7 +56,7 @@ class Course:
     def __init__(self):#subject, catalog_number, credits, term
         pass
 
-    def concatenate(self):
+    def concatenateCourseCode(self):
         return str(self.subject) + str(self.catalog)
 
     def printCourse(self):
@@ -118,14 +124,14 @@ def getStudents(headingsNeeded, currentSheet):
     popRows = []
 
     popRows.extend(studentProcessing.findImproperStudent(studList))   #finds the headings and whitespaces and flags the index
-    print popRows
+    #print popRows
     for i in studentProcessing.findTriple(studList):
        '''finds the triples (accounts for con ed, who MAY have B.ED + double major for their plans, 3 rows)'''
        studList[i + 2].plan3 = studList[i].plan
     popRows.extend(studentProcessing.findTriple(studList))            #flags the index for triples
 
     #print str(currentSheet) + str(len(studList)) #@@@@@@@@@@@@@@@@@@
-    print popRows
+    #print popRows
     for i in reversed(popRows):                     #when iterating in reverse, the wrong things do not get popped off the list
         studList.pop(i)                             #pop off headings/whitespaces and triples
 
@@ -160,12 +166,20 @@ def getCourseInfo(neededHeadings,currentSheet):
 
     for dataCol in headingsLocation:
         values.append(currentSheet.cell(2,dataCol).value)
-    courseInfo.subject = (values[0])
+
+    courseInfo.subject = values[0]
     courseInfo.catalog = values[1]
+    courseInfo.term = values[2]
 
     return courseInfo
 
-
+def checkError(funcOutput):     #returns false is there is an error, returns true if no error exists
+    '''Checks the output of the function to see if an error message was returned
+    '''
+    if 'Error' in funcOutput:       #sees if the output returns an error
+        return False
+    else:
+        return True
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Open Database
@@ -221,7 +235,7 @@ for i in range(len(filesList)):
 wbPre = xl.Workbooks.Open(macroLocation)              #open the workbook containing the macro
 
 for k in range(len(preprocessHeadingsLocation)):    #change every column effected heading in each excel workbook
-    print preprocessHeadingsLocation[k]
+    #print preprocessHeadingsLocation[k]
     xl.Application.Run("makeTexttoFloat",preprocessHeadingsLocation[k])
 
 for i in range(len(filesList)):
@@ -242,13 +256,14 @@ del (xl)
 #determining headings from excel and making into table headings for sql [hardcoded but will make into dropdown input for UI]
 
 studentTableHeadings = ["Student ID","Program","Proj Level","Plan"]
+studentDataTypes = ["INTEGER NOT NULL UNIQUE","TEXT NOT NULL","INTEGER NOT NULL","TEXT NOT NULL"]    #where student_id is a unique field
 maxCourses = 10    #number of courses that can be enrolled in (should be 5 for A&S for one term, 10 for a year)<<<LOOK INTO IT
 
 #c.execute("DROP TABLE students")
 if checkTableExist("students") is False:
-    dataTypes = ["INTEGER NOT NULL UNIQUE","TEXT NOT NULL","INTEGER NOT NULL","TEXT NOT NULL"]    #where student_id is a unique field
+    
 
-    studentSQLHeadings = dbFormat.generateHeading(sheetAddress[0],studentTableHeadings,dataTypes)
+    studentSQLHeadings = dbFormat.generateHeading(sheetAddress[0],studentTableHeadings,studentDataTypes)
 
     studentSQLHeadings = studentSQLHeadings + ", plan2 TEXT, plan3 TEXT"  #amend the headings to add the second plan column (for double majors)
 
@@ -258,17 +273,17 @@ if checkTableExist("students") is False:
         c.execute("ALTER TABLE students ADD COLUMN course" + str(i + 1) + " INTEGER REFERENCES courses(course_id);")
 
 #course table
-courseTableHeadings = ["Subject","Catalog Number"]    #catalog number must be null because of suffix letters e.g. PHYG 214A
-
+courseTableHeadings = ["Subject","Catalog Number","TERM"]    #catalog number must be null because of suffix letters e.g. PHYG 214A
+courseDataTypes = ["TEXT NOT NULL","TEXT NOT NULL","INTEGER NOT NULL"]
 #c.execute("DROP TABLE courses;")
 if checkTableExist("courses") is False:
-    dataTypes = ["TEXT NOT NULL","TEXT NOT NULL"]
-
+    
     headingsLocation = []
     for i in range (len(courseTableHeadings)):
-        headingsLocation.append(dbFormat.findCol(sheetAddress[0],courseTableHeadings[i]))
+        headingsLocation.append(dbFormat.findCol(sheetAddress[0],courseTableHeadings[i]))   #headingsLocation are found in order of courseTableHeadings, not actual order on sheet
 
-    courseSQLHeadings = dbFormat.generateHeading(sheetAddress[0],courseTableHeadings,dataTypes)
+    courseSQLHeadings = dbFormat.generateHeading(sheetAddress[0],courseTableHeadings,courseDataTypes)
+    #print courseTableHeadings
     #print courseSQLHeadings
 
     c.execute("CREATE TABLE courses(course_id INTEGER PRIMARY KEY," + courseSQLHeadings + ")")
@@ -300,25 +315,26 @@ if checkTableExist("courses") is False:
     are the same. e.g. studentLists[2] will correspond to courseLists[2]
 '''
 
-studentTableHeadings = ["Student ID","Program","Proj Level","Plan"]
-courseTableHeadings = ["Subject","Catalog Number"]
+
+studentTableHeadings = ["Student ID","Program","Proj Level","Plan"]     #restate because some function above messes with it
+courseTableHeadings = ["Subject","Catalog Number","Term"]
+
 studentLists = []
 courseLists = []
 courseNames = []
 
-
 for i in range(len(sheetAddress)):
     courseLists.append(getCourseInfo(courseTableHeadings,sheetAddress[i]))
-    courseNames.append(courseLists[i].concatenate())
+    courseNames.append(courseLists[i].concatenateCourseCode())
 
-c.execute("ALTER TABLE courses ADD course_code TEXT;")  #adding the column with the concatenated course code
+c.execute("ALTER TABLE courses ADD course_code TEXT;")  #adding the column with the concatenateCourseCoded course code
 for i in range(len(sheetAddress)):
-    c.execute("INSERT INTO courses(subject,catalog_number,course_code) VALUES(?,?,?);",(courseLists[i].subject,courseLists[i].catalog,courseNames[i]))
+    c.execute("INSERT INTO courses(subject, catalog_number, course_code, term) VALUES(?,?,?,?);",(courseLists[i].subject, courseLists[i].catalog, courseNames[i], courseLists[i].term))
 
     studentLists.append(getStudents(studentTableHeadings,sheetAddress[i]))
 
     for stud in studentLists[i]: #OR IGNORE will only input the record if it is unique (does not show the error message)
-        c.execute("INSERT OR IGNORE INTO students (student_id,program,proj_level,plan,plan2,plan3) VALUES(?,?,?,?,?,?);",(stud.studID,stud.program,stud.proj_level,stud.plan,stud.plan2,stud.plan3))
+        c.execute("INSERT OR IGNORE INTO students (student_id, program, proj_level, plan, plan2, plan3) VALUES(?,?,?,?,?,?);",(stud.studID,stud.program,stud.proj_level,stud.plan,stud.plan2,stud.plan3))
 
     c.execute("SELECT course_id FROM courses WHERE course_id=(SELECT MAX(course_ID) FROM courses);") #finds the course_id of the most recently entered course list from the courses table
 
@@ -348,17 +364,62 @@ for i in range(len(sheetAddress)):
 '''
 
 c.execute("ALTER TABLE courses ADD credits FLOAT;")
-c.execute("SELECT course_code FROM courses;")   #grabs names of all the courses
+c.execute("SELECT course_code, term FROM courses;") #grabs names of all the courses
 allCourses = c.fetchall()
 
-creditsList = creditsInput.runApp(allCourses) #initializes the entry widget to input credits data
+courseDisplayName = []
+
+for i in range(len(allCourses)):
+    #first element [i][0] is the course code, the second [i][1] is the term that the course is in
+    courseDisplayName.append(allCourses[i][0] + " - Term: " + str(allCourses[i][1]))    
+
+
+creditsList = creditsInput.runApp(courseDisplayName)    #initializes the entry widget to input credits data
+while not checkError(creditsList):                  #do while loop that repeats until there is no more error
+    errorMessageBox.runApp(creditsList)
+    creditsList = creditsInput.runApp(courseDisplayName)
 
 for credit in creditsList:
-    c.execute("UPDATE courses SET credits = ?;",(credit,))   #adds to each course record the number of credits
+    c.execute("UPDATE courses SET credits = ?;",(credit,))      #adds to each course record the number of credits
 
 
-# for stud in studentLists[0]:
-#     stud.printValues()
+'''Insert auxiliary tables that contain information for processing
+- Unit Fees
+- BIU
+- Program Weights
+
+'''
+#UNIT FEES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+c.execute("CREATE TABLE program_info (program_id INTEGER PRIMARY KEY, program_name TEXT UNIQUE, unit_fees FLOAT);")
+c.execute("SELECT DISTINCT program FROM students;")
+programList = c.fetchall()
+
+unitFeesList = feeUnitsInput.runApp(programList)
+while not checkError(unitFeesList):         #do while loop that repeats until there is no more error
+    errorMessagBox.runApp(unitFeesList)
+    unitFeesList = feeUnitsInput.runApp(programList)
+
+if len(programList) == len(unitFeesList):
+    for i in range(len(programList)):
+
+        val = ''.join(programList[i])       #convert the tuple to a str for the name of a program
+
+        c.execute("INSERT INTO program_info (program_name, unit_fees) VALUES (?,?);",(val, unitFeesList[i]))
+
+#Program Weights~~~~~~~~~~~~~~~~~~~~~~~~~~
+c.execute("ALTER TABLE program_info ADD program_weight FLOAT;")
+
+progWeightsList = programWeightsInput.runApp(programList)
+while not checkError(progWeightsList):
+    errorMessageBox.runApp(progWeightsList)
+    progWeightsList = programWeightsInput.runApp(programList)
+
+if len(programList) == len(progWeightsList):
+    for i in range(len(programList)):
+
+        c.execute("UPDATE program_info SET program_weight = ?;",(progWeightsList[i],))
+
+
 
 
 conn.commit()

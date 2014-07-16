@@ -33,10 +33,8 @@ def generateHeading(sheetAddress,colHeadings,headingTypes):
         CREATE TABLE
         This function uses the headings directly from an Excel workbook
     '''
-    #headingsLoc=[]
 
     for i in range(len(colHeadings)):
-        #headingsLoc.append(findCol(sheetAddress,colHeadings[i]))
 
         colHeadings[i]=colHeadings[i].replace(' ','_')  #make a heading such as "Student ID" into "student_id"
         colHeadings[i]=colHeadings[i].lower()

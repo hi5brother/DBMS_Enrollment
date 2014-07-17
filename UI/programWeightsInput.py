@@ -93,7 +93,7 @@ def runApp(programs):
 		elif data > 100:	
 			return "User Error: The program weight is unreasonably big (over 100)"
 		elif data < 0.0:
-			return "User Error: program weight has negative value"
+			return "User Error: Program weight has negative value"
 
 	return outputData
 

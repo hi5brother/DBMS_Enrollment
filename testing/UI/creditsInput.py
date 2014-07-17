@@ -29,7 +29,7 @@ class CreditsInputApp:
 
     def initialize(self,courses):  
 
-        self.infoBox = Label(self.container, text = "Please enter the credits of each course")
+        self.infoBox = Label(self.container, text = "Please enter the credits of each course.")
         self.infoBox.config(width = 40, height = 2)
         self.infoBox.grid(row = 0, column = 0)
 
@@ -40,11 +40,11 @@ class CreditsInputApp:
         self.entry = []
 
         for i in range(len(courses)):           #iterates based on number of courses
-            self.txtBox = Label(self.container, text = courses[i])
-            self.txtBox.grid(row = i+1)    #the name of each course
+            self.txtBox = Label(self.container, text = courses[i], justify = LEFT)
+            self.txtBox.grid(row = i + 1)    #the name of each course
 
             self.entry.append(Entry(self.container))
-            self.entry[i].grid(row = i+1,column = 1)          #entry field for credits of each course
+            self.entry[i].grid(row = i + 1, column = 1)          #entry field for credits of each course
 
 
         self.subButton = Button(self.container)             #the submit button will process data then quit
@@ -74,6 +74,9 @@ def runApp(courses):
     app = CreditsInputApp(root,courses)
     root.mainloop()
 
+    """Error checking and validating the input values
+    """
+
     outputData = []
     try:        #attribute error happens when NO values are output
         for data in app.data:
@@ -89,12 +92,12 @@ def runApp(courses):
 
         if data == "":         #error message if a credit was not entered
             return "User Error: Not all courses had credits inputted"   
-        
         elif data > 9:
             return "User Error: Credit was greater than 9"
         elif data < 0:
             return "User Error: Credit has negative value"
             
     return outputData
+    
 if __name__ == '__main__':
-    runApp(courses)
+    print runApp(courses)

@@ -31,6 +31,8 @@ sys.path.append(os.getcwd() + '/UI')    #adding the UI modules to the path
 import creditsInput     #UI box for inputting credits
 import feeUnitsInput       #UI box for inputting unit fees
 import programWeightsInput
+import formulaFeesInput
+import BIUInput
 
 import errorMessageBox  #UI that displays the error
 
@@ -178,7 +180,7 @@ def checkError(funcOutput):     #returns false is there is an error, returns tru
     '''
     if 'Error' in funcOutput:       #sees if the output returns an error
         return False
-    else:
+    else:                       #output does not return an error
         return True
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -385,7 +387,7 @@ for credit in creditsList:
 
 '''Insert auxiliary tables that contain information for processing
 - Unit Fees
-- BIU
+- BIU/Formula Fee
 - Program Weights
 
 '''
@@ -395,31 +397,55 @@ c.execute("SELECT DISTINCT program FROM students;")
 programList = c.fetchall()
 
 unitFeesList = feeUnitsInput.runApp(programList)
-while not checkError(unitFeesList):         #do while loop that repeats until there is no more error
+while not checkError(unitFeesList) and not len(programList) == len(unitFeesList):         #do while loop that repeats until there is no more error
     errorMessagBox.runApp(unitFeesList)
     unitFeesList = feeUnitsInput.runApp(programList)
 
-if len(programList) == len(unitFeesList):
+if len(programList) == len(unitFeesList):       #double check that appropriate number of values were input    
     for i in range(len(programList)):
 
         val = ''.join(programList[i])       #convert the tuple to a str for the name of a program
 
         c.execute("INSERT INTO program_info (program_name, unit_fees) VALUES (?,?);",(val, unitFeesList[i]))
 
-#Program Weights~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#BIU~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+c.execute("CREATE TABLE constants (id INTEGER PRIMARY KEY, name TEXT, value INTEGER);")
+
+BIUList = BIUInput.runApp()
+while not checkError(BIUList) and not len(BIUList) == 1:
+    errorMessageBox.runApp(BIUList)
+    BIUList = BIUInput.runApp()
+
+if len(BIUList) == 1:
+    c.execute("INSERT INTO constants (name, value) VALUES (?,?);",("BIU Value", BIUList[0]))
+
+#Formula Fees~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+c.execute("ALTER TABLE program_info ADD formula_fee FLOAT;")
+
+formulaFeeList = formulaFeesInput.runApp(programList)
+while not checkError(formulaFeeList) and not len(programList) == len(formulaFeeList):
+    errorMessageBox.runApp(progWeightsList)
+    formulaFeeList = formulaFeesInput.runApp(programList)
+
+if len(programList) == len(formulaFeeList):
+    for formulaFee in formulaFeeList:
+
+        c.execute("UPDATE program_info SET formula_fee = ?;",(formulaFee,))
+
+
+ #Program Weights~~~~~~~~~~~~~~~~~~~~~~~~~~
 c.execute("ALTER TABLE program_info ADD program_weight FLOAT;")
 
 progWeightsList = programWeightsInput.runApp(programList)
-while not checkError(progWeightsList):
+while not checkError(progWeightsList) and not len(programList) == len(progWeightsList):
     errorMessageBox.runApp(progWeightsList)
     progWeightsList = programWeightsInput.runApp(programList)
 
 if len(programList) == len(progWeightsList):
-    for i in range(len(programList)):
+    for progWeight in progWeightsList:
 
-        c.execute("UPDATE program_info SET program_weight = ?;",(progWeightsList[i],))
-
-
+        c.execute("UPDATE program_info SET program_weight = ?;",(progWeight,))
 
 
 conn.commit()

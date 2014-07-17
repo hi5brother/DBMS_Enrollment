@@ -98,7 +98,8 @@ c=conn.cursor()
 c.execute("PRAGMA foreign_keys=ON;")    #enables foreign keys
 
 #open workbook for reading (xlrd)
-wbData=xlrd.open_workbook(cdLocation+'\QU_RG_CLASS_LIST_476707713 (2).xls')
+
+wbData=xlrd.open_workbook(cdLocation+'\QU_RG_CLASS_LIST_GRADE_476707713 (2).xls')
 
 sheetAddress=wbData.sheet_by_index(0)
 
@@ -110,7 +111,7 @@ dataTypes=["INTEGER NOT NULL UNIQUE","TEXT NOT NULL","INTEGER NOT NULL","TEXT NO
 
 headingsLocation=[]
 for i in range (len(studentTableHeadings)):
-    print (findCol(sheetAddress,studentTableHeadings[i]))
+    #print (findCol(sheetAddress,studentTableHeadings[i]))
     headingsLocation.append(findCol(sheetAddress,studentTableHeadings[i]))
 
 studentSQLHeadings=generateHeading(sheetAddress,studentTableHeadings,dataTypes)
@@ -162,7 +163,7 @@ popRows.extend(findDuplicate(studList))
 for i in reversed(popRows): #pop the triples
     studList.pop(i)
 
-c.execute("DROP TABLE students;")
+#c.execute("DROP TABLE students;")
 c.execute("CREATE TABLE students(stud_id INTEGER PRIMARY KEY,"+studentSQLHeadings+")")
 
 for i in range(len(studList)):
@@ -189,7 +190,7 @@ for dataCol in headingsLocation:
 courseInfo.subject=(values[0])
 courseInfo.catalog=values[1]
 
-c.execute("DROP TABLE courses")
+#c.execute("DROP TABLE courses")
 c.execute("CREATE TABLE courses(course_id INTEGER PRIMARY KEY,"+courseSQLHeadings+")")
 
 c.execute("INSERT INTO courses (subject, catalog_number) VALUES(?,?);",(courseInfo.subject,courseInfo.catalog))
@@ -304,8 +305,8 @@ for i in range(5):
     a.append(temp1)
     b.append(temp2)
     #print (c.fetchone())
-print a[2]
-print b[2]
+##print a[2]
+##print b[2]
 
 
 

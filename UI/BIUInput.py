@@ -63,7 +63,7 @@ def runApp():
 
     outputData = []
 
-    try:        #attribute error happens when NO values are output
+    try:                                 #attribute error happens when NO values are output
         if "$" in app.data:     
             data = data.translate(None,"$")         #removes the $ sign if it is present
             

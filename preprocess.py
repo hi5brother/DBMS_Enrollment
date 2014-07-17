@@ -1,11 +1,12 @@
 #-------------------------------------------------------------------------------
-# Name:        preprocess_v3
+# Name:        preprocess_v4
 # Purpose:      create a database by extracting data from a spreadsheet
 #               extract the data and process it into the SQLite database
 #               This extracts the data from multiple spreadsheets
-#               Uses a scaled preprocess_v1 and should be changed later on
-#               further scales the application to take all the spreadsheets
-#               preprocesses the excel workbooks to make things into floats
+#
+#               preprocesses the excel workbooks to make things into floats (relies on win32com.client which isn't working)
+#               
+#               UI tkinter widgets will ask for inputs from the user for variables (BIU, program weights, etc.)
 #
 #
 # Author:      DBMS
@@ -21,21 +22,21 @@ import xlrd #reading xls files
 import xlwt #writing xls files
 import string
 import types
-import win32com.client  #for executing excel macros
+import win32com.client  #for executing excel macros @@@@@@@@@@@@not installed for some reason
 
+import extractData      #various functions used, stores location of DATABASE
 import studentProcessing        #module that deletes whitespace, double/triple majors when processing each spreadsheet
 import dbFormat                 #formats the tables for the database
-
 
 sys.path.append(os.getcwd() + '/UI')    #adding the UI modules to the path
 import creditsInput     #UI box for inputting credits
 import feeUnitsInput       #UI box for inputting unit fees
-import programWeightsInput
-import formulaFeesInput
-import BIUInput
-
+import programWeightsInput      #asks for program weights, returns list
+import formulaFeesInput     #asks for formula fees, returns list
+import BIUInput             #asks for BIU and returns a list with 1 element
 import errorMessageBox  #UI that displays the error
 
+import dateTimeOutput
 import calcTuition
 
 class Student:
@@ -82,7 +83,7 @@ def checkTableExist(tableName):
     Returns True if it exists and False if it doesn't exist
     '''
     c.execute('''SELECT CASE
-                WHEN tbl_name = ? THEN 1
+                WHEN tbl_name = ? THEN 1     
                 ELSE 0
                 END
                 FROM sqlite_master
@@ -90,13 +91,22 @@ def checkTableExist(tableName):
 
     temp = c.fetchone()
 
-    if temp == (1,):
+    if temp == (1,):      
         return True
     else:
         return False
 
-
 def getStudents(headingsNeeded, currentSheet):
+    '''Returns a list of student objects, with each object containing 
+        student id, program, year, plan (including double and triple majors)
+        
+        Also will removes duplicates (who result from double majors) when 
+        parsing from the excel spreadsheet. 
+
+        A single student will show up twice if he or she is a double major, 
+        but the function will pop off the duplicate and append the double major 
+        plan to the appropriate student object
+    '''
 
     headingsLocation = []
 
@@ -108,11 +118,9 @@ def getStudents(headingsNeeded, currentSheet):
     print str(currentSheet) + " " + str(currentSheet.nrows) #@@@@@@@@@@@@@@@@@@@@@@
 
     for row in range(currentSheet.nrows):
-        '''parse the data of each row into a Student object, which is in the array'''
+        '''parse the data of each excel row into a Student object, which is in the array'''
         values = []
-
         for dataCol in headingsLocation:
-
             values.append(currentSheet.cell(row,dataCol).value)
 
         studList[row].studID = (values[0])
@@ -121,19 +129,15 @@ def getStudents(headingsNeeded, currentSheet):
         studList[row].plan = values[3]
         studList[row].plan2 = ""
         studList[row].plan3 = ""
-        #print type(studList[row].studID)
 
     popRows = []
 
     popRows.extend(studentProcessing.findImproperStudent(studList))   #finds the headings and whitespaces and flags the index
-    #print popRows
     for i in studentProcessing.findTriple(studList):
        '''finds the triples (accounts for con ed, who MAY have B.ED + double major for their plans, 3 rows)'''
        studList[i + 2].plan3 = studList[i].plan
     popRows.extend(studentProcessing.findTriple(studList))            #flags the index for triples
 
-    #print str(currentSheet) + str(len(studList)) #@@@@@@@@@@@@@@@@@@
-    #print popRows
     for i in reversed(popRows):                     #when iterating in reverse, the wrong things do not get popped off the list
         studList.pop(i)                             #pop off headings/whitespaces and triples
 
@@ -155,6 +159,8 @@ def getStudents(headingsNeeded, currentSheet):
 def getCourseInfo(neededHeadings,currentSheet):
     '''Returns a course object, which contains the necessary info for a course record
         in the database, for the course table
+
+        Will return the subject code (e.g. ANAT), catalog number (e.g. 215) and term (e.g. 2135)
     '''
 
     headingsLocation = []
@@ -165,7 +171,6 @@ def getCourseInfo(neededHeadings,currentSheet):
     courseInfo = Course()     #initialize the course object
 
     values = []
-
     for dataCol in headingsLocation:
         values.append(currentSheet.cell(2,dataCol).value)
 
@@ -178,6 +183,7 @@ def getCourseInfo(neededHeadings,currentSheet):
 def checkError(funcOutput):     #returns false is there is an error, returns true if no error exists
     '''Checks the output of the function to see if an error message was returned
     '''
+
     if 'Error' in funcOutput:       #sees if the output returns an error
         return False
     else:                       #output does not return an error
@@ -188,6 +194,7 @@ def checkError(funcOutput):     #returns false is there is an error, returns tru
 ''' Initialize all the connections to SQLite
     Configure database stuff
 '''
+
 cdLocation = os.getcwd()
 dbLocation = cdLocation + "\\testv2.db" #"""@@@@@@@@@@@@@@@@@@@ TAKE OUT THE HARD CODE"""
 rawDataLocation = cdLocation + "\\full_data"
@@ -264,7 +271,6 @@ maxCourses = 10    #number of courses that can be enrolled in (should be 5 for A
 #c.execute("DROP TABLE students")
 if checkTableExist("students") is False:
     
-
     studentSQLHeadings = dbFormat.generateHeading(sheetAddress[0],studentTableHeadings,studentDataTypes)
 
     studentSQLHeadings = studentSQLHeadings + ", plan2 TEXT, plan3 TEXT"  #amend the headings to add the second plan column (for double majors)
@@ -290,6 +296,12 @@ if checkTableExist("courses") is False:
 
     c.execute("CREATE TABLE courses(course_id INTEGER PRIMARY KEY," + courseSQLHeadings + ")")
 
+if checkTableExist("timeRecord") is False:
+
+    c.execute("CREATE TABLE timeRecord (time_id INTEGER PRIMARY KEY, timeStam TEXT);")
+
+    c.execute("INSERT INTO timeRecord (timeStam) VALUES (?);",(dateTimeOutput.pythonTime(),))
+
 ###enrollments table
 ##
 ##enrollmentsHeadings=["stud_id","course_id"]
@@ -306,6 +318,7 @@ if checkTableExist("courses") is False:
 ##    c.execute("CREATE TABLE enrollments(enrollments_id INTEGER PRIMARY KEY,"+enrollmentsSQLHeadings+")")
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 #Pulling student data
 
 ''' Each student list from a workbook is appended to the master student list (studentLists).
@@ -361,6 +374,7 @@ for i in range(len(sheetAddress)):
                     c.execute("UPDATE students SET course"+str(maxCourses+1-i)+"=? WHERE student_id=?;",(str(courseNum),row[1]))
                     break
 
+c.execute("UPDATE timeRecord SET timeStam = ? WHERE time_id = 1;", (dateTimeOutput.pythonTime(),))     #updates the time stamp for the table after the spreadsheets were pulled
 
 '''Input the credits using the entry widget (creditsInput module) and then updates the database
 '''
@@ -398,7 +412,7 @@ programList = c.fetchall()
 
 unitFeesList = feeUnitsInput.runApp(programList)
 while not checkError(unitFeesList) and not len(programList) == len(unitFeesList):         #do while loop that repeats until there is no more error
-    errorMessagBox.runApp(unitFeesList)
+    errorMessageBox.runApp(unitFeesList)
     unitFeesList = feeUnitsInput.runApp(programList)
 
 if len(programList) == len(unitFeesList):       #double check that appropriate number of values were input    
@@ -433,8 +447,7 @@ if len(programList) == len(formulaFeeList):
 
         c.execute("UPDATE program_info SET formula_fee = ?;",(formulaFee,))
 
-
- #Program Weights~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Program Weights~~~~~~~~~~~~~~~~~~~~~~~~~~
 c.execute("ALTER TABLE program_info ADD program_weight FLOAT;")
 
 progWeightsList = programWeightsInput.runApp(programList)
@@ -446,7 +459,6 @@ if len(programList) == len(progWeightsList):
     for progWeight in progWeightsList:
 
         c.execute("UPDATE program_info SET program_weight = ?;",(progWeight,))
-
 
 conn.commit()
 conn.close()

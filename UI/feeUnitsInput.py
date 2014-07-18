@@ -91,7 +91,7 @@ def runApp(programs):
 	for data in outputData:
 		if data == "":		#error message if a unit fee was not entered
 			return "User Error: Not all programs had unit fees inputted"
-		elif data > 100.0:	
+		elif data > 1000.0:	
 			return "User Error: The unit fee is huge"
 		elif data < 0.0:
 			return "User Error: Unit fee has negative value"

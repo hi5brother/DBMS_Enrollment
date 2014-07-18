@@ -17,7 +17,6 @@ def findImproperStudent(arrlist=[],*array): #finds the index for headings and wh
     '''
     pop = []
     for i in range(len(arrlist) - 1):
-        #print type(arrlist[i].studID)
         if type(arrlist[i].studID) is not float:
             pop.append(i)
     return pop

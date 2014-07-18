@@ -15,35 +15,36 @@ def findImproperStudent(arrlist=[],*array): #finds the index for headings and wh
         headings that are improper (such as headings and whitespaces)
         These improper rows are indicated by student ID field that is not a float
     '''
-    pop=[]
-    for i in range(len(arrlist)-1):
+    pop = []
+    for i in range(len(arrlist) - 1):
+        #print type(arrlist[i].studID)
         if type(arrlist[i].studID) is not float:
             pop.append(i)
     return pop
 
-def findDuplicate(arrlist=[],*array):
+def findDuplicate(arrlist = [],*array):
 
     '''When the list of student objects is passed, this function finds the
         duplicate rows. This accounts for people who are double majors, and have
         two rows of the same information. but with different plans
     '''
-    pop=[]
-    for i in range(len(arrlist)-1):
+    pop = []
+    for i in range(len(arrlist) - 1):
 
-        if arrlist[i].studID==arrlist[i+1].studID:
+        if arrlist[i].studID == arrlist[i + 1].studID:
             pop.append(i)
-            i=i+1
+            i = i + 1
 
     return pop
 
-def findTriple(arrlist=[],*array):
+def findTriple(arrlist = [],*array):
     '''This function finds the triple rows for triple majors. It passes the first index of the three rows
         This first row is then popped off in another procedure
     '''
-    pop=[]
+    pop = []
 
-    for i in range(len(arrlist)-2):
-        if arrlist[i].studID==arrlist[i+1].studID and arrlist[i].studID==arrlist[i+2].studID:
+    for i in range(len(arrlist) - 2):
+        if arrlist[i].studID == arrlist[i + 1].studID and arrlist[i].studID == arrlist[i + 2].studID:
             pop.append(i)
 
     return pop

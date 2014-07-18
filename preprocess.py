@@ -17,6 +17,8 @@
 #-------------------------------------------------------------------------------
 import os
 import sys
+
+import time
 import sqlite3  #SQLite API
 import xlrd #reading xls files
 import xlwt #writing xls files
@@ -28,13 +30,13 @@ import extractData      #various functions used, stores location of DATABASE
 import studentProcessing        #module that deletes whitespace, double/triple majors when processing each spreadsheet
 import dbFormat                 #formats the tables for the database
 
-sys.path.append(os.getcwd() + '/UI')    #adding the UI modules to the path
-import creditsInput     #UI box for inputting credits
-import feeUnitsInput       #UI box for inputting unit fees
-import programWeightsInput      #asks for program weights, returns list
-import formulaFeesInput     #asks for formula fees, returns list
-import BIUInput             #asks for BIU and returns a list with 1 element
-import errorMessageBox  #UI that displays the error
+#sys.path.append(os.getcwd() + '/UI')    #adding the UI modules to the path
+import UI.creditsInput    #UI box for inputting credits
+import UI.feeUnitsInput       #UI box for inputting unit fees
+import UI.programWeightsInput      #asks for program weights, returns list
+import UI.formulaFeesInput     #asks for formula fees, returns list
+import UI.BIUInput             #asks for BIU and returns a list with 1 element
+import UI.errorMessageBox  #UI that displays the error
 
 import dateTimeOutput
 import calcTuition
@@ -137,7 +139,7 @@ def getStudents(headingsNeeded, currentSheet):
        '''finds the triples (accounts for con ed, who MAY have B.ED + double major for their plans, 3 rows)'''
        studList[i + 2].plan3 = studList[i].plan
     popRows.extend(studentProcessing.findTriple(studList))            #flags the index for triples
-
+    print popRows
     for i in reversed(popRows):                     #when iterating in reverse, the wrong things do not get popped off the list
         studList.pop(i)                             #pop off headings/whitespaces and triples
 
@@ -179,6 +181,22 @@ def getCourseInfo(neededHeadings,currentSheet):
     courseInfo.term = values[2]
 
     return courseInfo
+
+def checkWorkBookValues(currentSheet):
+    '''FOR ERROR CHECKING REMOVE @@@@@@@@@@@@@@@@@@@@@@@
+    '''
+    studList = [Student() for i in range(currentSheet.nrows)]         #create the array of students
+
+    print str(currentSheet) + " " + str(currentSheet.nrows) #@@@@@@@@@@@@@@@@@@@@@@
+
+    for row in range(currentSheet.nrows):
+        '''parse the data of each excel row into a Student object, which is in the array'''
+        values = []
+
+        values.append(currentSheet.cell(row,6).value)
+
+        print type(values[0])
+
 
 def checkError(funcOutput):     #returns false is there is an error, returns true if no error exists
     '''Checks the output of the function to see if an error message was returned
@@ -224,32 +242,31 @@ for i in range(len(filesList)):
 #Preprocess the excel columns from text to float
 preprocessHeadings = ["Student ID","Proj Level","Term"]   #these are the headings of columns that are floats and need to be made into floats
 
-macroLocation = cdLocation + "\\excel\\intToFloat.xlsm" #"""@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ change to make it dynamic"""
+macroLocation = cdLocation + "\\excelMacro\\intToFloat.xlsm" #"""@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ change to make it dynamic"""
 
 xl = win32com.client.Dispatch("Excel.Application")    #accesses the excel application
 xl.Visible = 1
 
+wbPre = xl.Workbooks.Open(macroLocation)              #open the workbook containing the macro
+
 wbList = []
 
 for i in range(len(filesList)):
+    
+    print filesList[i]
+
     wbList.append(0)
-    wbList[i] = xl.Workbooks.Open(filesList[i]) #open all the workbooks that need to be changed
+    #wbList[i] = xl.Workbooks.Open(filesList[i]) #open all the workbooks that need to be changed
 
     preprocessHeadingsLocation = dbFormat.findHeadingsList(preprocessHeadings,sheetAddress[i])
     #this only uses one set of table headings so if the table heading columns are different, there will be   problem
 
     for j in range(len(preprocessHeadingsLocation)):
+
         preprocessHeadingsLocation[j] = preprocessHeadingsLocation[j] + 1   #the table headings must be incremented by 1 so the macro below can process the correct heading
+        print preprocessHeadingsLocation[j]
+        xl.Application.Run("makeTexttoFloat",preprocessHeadingsLocation[j],filesList[i])
 
-wbPre = xl.Workbooks.Open(macroLocation)              #open the workbook containing the macro
-
-for k in range(len(preprocessHeadingsLocation)):    #change every column effected heading in each excel workbook
-    #print preprocessHeadingsLocation[k]
-    xl.Application.Run("makeTexttoFloat",preprocessHeadingsLocation[k])
-
-for i in range(len(filesList)):
-    wbList[i].Save()
-    wbList[i].Close()   #close and save all the workbooks that were changed
 
 wbPre.Save()            #close and save the excel workbook with macros
 wbPre.Close(True)
@@ -257,6 +274,14 @@ wbPre.Close(True)
 xl.Application.Quit()   #killing the dispatch
 xl.Visible = 0            #need to make it not visible
 del (xl)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Reopens the files using XLRD again (after being updated using macro)
+wbData = []
+sheetAddress = []
+for i in range(len(filesList)):
+    wbData.append(xlrd.open_workbook(filesList[i]))
+    sheetAddress.append(wbData[i].sheet_by_index(0)) #will access and store the location of the FIRST sheet in each workbook
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Create Table Headings
@@ -291,16 +316,26 @@ if checkTableExist("courses") is False:
         headingsLocation.append(dbFormat.findCol(sheetAddress[0],courseTableHeadings[i]))   #headingsLocation are found in order of courseTableHeadings, not actual order on sheet
 
     courseSQLHeadings = dbFormat.generateHeading(sheetAddress[0],courseTableHeadings,courseDataTypes)
-    #print courseTableHeadings
-    #print courseSQLHeadings
 
     c.execute("CREATE TABLE courses(course_id INTEGER PRIMARY KEY," + courseSQLHeadings + ")")
 
+#time stamp table
 if checkTableExist("timeRecord") is False:
 
     c.execute("CREATE TABLE timeRecord (time_id INTEGER PRIMARY KEY, timeStam TEXT);")
 
     c.execute("INSERT INTO timeRecord (timeStam) VALUES (?);",(dateTimeOutput.pythonTime(),))
+
+#info stored about programs, used to calculate tuition and grants
+if checkTableExist("program_info") is False:
+
+    c.execute("CREATE TABLE program_info (program_id INTEGER PRIMARY KEY, program_name TEXT UNIQUE, unit_fees FLOAT, formula_fees FLOAT, program_weight FLOAT);")
+
+#storing values like BIU
+if checkTableExist("constants") is False:
+
+    c.execute("CREATE TABLE constants (id INTEGER PRIMARY KEY, name TEXT, value INTEGER);")
+
 
 ###enrollments table
 ##
@@ -390,10 +425,10 @@ for i in range(len(allCourses)):
     courseDisplayName.append(allCourses[i][0] + " - Term: " + str(allCourses[i][1]))    
 
 
-creditsList = creditsInput.runApp(courseDisplayName)    #initializes the entry widget to input credits data
+creditsList = UI.creditsInput.runApp(courseDisplayName)    #initializes the entry widget to input credits data
 while not checkError(creditsList):                  #do while loop that repeats until there is no more error
-    errorMessageBox.runApp(creditsList)
-    creditsList = creditsInput.runApp(courseDisplayName)
+    UI.errorMessageBox.runApp(creditsList)
+    creditsList = UI.creditsInput.runApp(courseDisplayName)
 
 for credit in creditsList:
     c.execute("UPDATE courses SET credits = ?;",(credit,))      #adds to each course record the number of credits
@@ -406,14 +441,14 @@ for credit in creditsList:
 
 '''
 #UNIT FEES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-c.execute("CREATE TABLE program_info (program_id INTEGER PRIMARY KEY, program_name TEXT UNIQUE, unit_fees FLOAT);")
+
 c.execute("SELECT DISTINCT program FROM students;")
 programList = c.fetchall()
 
-unitFeesList = feeUnitsInput.runApp(programList)
+unitFeesList = UI.feeUnitsInput.runApp(programList)
 while not checkError(unitFeesList) and not len(programList) == len(unitFeesList):         #do while loop that repeats until there is no more error
-    errorMessageBox.runApp(unitFeesList)
-    unitFeesList = feeUnitsInput.runApp(programList)
+    UI.errorMessageBox.runApp(unitFeesList)
+    unitFeesList = UI.feeUnitsInput.runApp(programList)
 
 if len(programList) == len(unitFeesList):       #double check that appropriate number of values were input    
     for i in range(len(programList)):
@@ -422,38 +457,34 @@ if len(programList) == len(unitFeesList):       #double check that appropriate n
 
         c.execute("INSERT INTO program_info (program_name, unit_fees) VALUES (?,?);",(val, unitFeesList[i]))
 
-
 #BIU~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-c.execute("CREATE TABLE constants (id INTEGER PRIMARY KEY, name TEXT, value INTEGER);")
 
-BIUList = BIUInput.runApp()
+BIUList = UI.BIUInput.runApp()
 while not checkError(BIUList) and not len(BIUList) == 1:
-    errorMessageBox.runApp(BIUList)
-    BIUList = BIUInput.runApp()
+    UI.errorMessageBox.runApp(BIUList)
+    BIUList = UI.BIUInput.runApp()
 
 if len(BIUList) == 1:
     c.execute("INSERT INTO constants (name, value) VALUES (?,?);",("BIU Value", BIUList[0]))
 
 #Formula Fees~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-c.execute("ALTER TABLE program_info ADD formula_fee FLOAT;")
 
-formulaFeeList = formulaFeesInput.runApp(programList)
+formulaFeeList = UI.formulaFeesInput.runApp(programList)
 while not checkError(formulaFeeList) and not len(programList) == len(formulaFeeList):
-    errorMessageBox.runApp(progWeightsList)
-    formulaFeeList = formulaFeesInput.runApp(programList)
+    UI.errorMessageBox.runApp(formulaFeeList)
+    formulaFeeList = UI.formulaFeesInput.runApp(programList)
 
 if len(programList) == len(formulaFeeList):
     for formulaFee in formulaFeeList:
 
-        c.execute("UPDATE program_info SET formula_fee = ?;",(formulaFee,))
+        c.execute("UPDATE program_info SET formula_fees = ?;",(formulaFee,))
 
 #Program Weights~~~~~~~~~~~~~~~~~~~~~~~~~~
-c.execute("ALTER TABLE program_info ADD program_weight FLOAT;")
 
-progWeightsList = programWeightsInput.runApp(programList)
+progWeightsList = UI.programWeightsInput.runApp(programList)
 while not checkError(progWeightsList) and not len(programList) == len(progWeightsList):
-    errorMessageBox.runApp(progWeightsList)
-    progWeightsList = programWeightsInput.runApp(programList)
+    UI.errorMessageBox.runApp(progWeightsList)
+    progWeightsList = UI.programWeightsInput.runApp(programList)
 
 if len(programList) == len(progWeightsList):
     for progWeight in progWeightsList:

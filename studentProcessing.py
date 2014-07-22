@@ -21,14 +21,68 @@ def findImproperStudent(arrlist=[],*array): #finds the index for headings and wh
             pop.append(i)
     return pop
 
+def removeBEDProg(arrlist = [], *array):
+    '''A DBMS course cannot be attributed to a BED program, so if BED is shown as
+        a student's program, it is false.
+
+        This function prevents BED from showing as the program
+    '''
+
+    for i in range(len(arrlist) - 2):
+
+        if arrlist[i].studID == arrlist[i + 1].studID and arrlist[i].studID == arrlist[i + 2].studID:
+            '''Treats triple majors and removes the BED designation
+            '''
+            if arrlist[i].program == 'BED':
+                arrlist[i].program = arrlist[i + 1].program
+
+            elif arrlist[i + 1].program == 'BED':
+                arrlist[i + 1].program = arrlist[i].program
+
+            elif arrlist[i + 2].program == 'BED':
+                arrlist[i + 1].program = arrlist[i].program
+
+    for i in range(len(arrlist) - 1):
+
+        if arrlist[i].studID == arrlist[i + 1].studID:
+            if arrlist[i].program == 'BED':  
+                '''Considers the students who have BED, BSC for the double major
+                '''
+
+                arrlist[i].program = arrlist[i + 1].program
+
+            elif arrlist[i + 1].program == 'BED':
+                '''Considers the students who have BA, BED for the double major
+                '''
+                
+                arrlist[i + 1].program = arrlist[i].program
+
+    return arrlist
+
+
 def findDuplicate(arrlist = [],*array):
 
     '''When the list of student objects is passed, this function finds the
         duplicate rows. This accounts for people who are double majors, and have
         two rows of the same information. but with different plans
+
+        A DBMS course cannot be attributed to a BED program, so if BED is shown as
+        a student's program, it is false.
     '''
     pop = []
     for i in range(len(arrlist) - 1):
+
+        if arrlist[i].program == 'BED' and arrlist[i].studID == arrlist[i + 1].studID:  
+            '''Considers the students who have BED, BSC for the double major
+            '''
+
+            arrlist[i].program == arrlist[i + 1].program
+
+        elif arrlist[i + 1].program == 'BED' and arrlist[i].studID == arrlist[i + 1].studID:
+            '''Considers the students who have BA/BCOMM, BED for the double major
+            '''
+            
+            arrlist[i + 1].program == arrlist[i].program
 
         if arrlist[i].studID == arrlist[i + 1].studID:
             pop.append(i)
@@ -43,7 +97,9 @@ def findTriple(arrlist = [],*array):
     pop = []
 
     for i in range(len(arrlist) - 2):
+
         if arrlist[i].studID == arrlist[i + 1].studID and arrlist[i].studID == arrlist[i + 2].studID:
+
             pop.append(i)
 
     return pop

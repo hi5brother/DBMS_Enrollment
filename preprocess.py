@@ -32,9 +32,10 @@ import dbFormat                 #formats the tables for the database
 
 import UI.creditsInput    #UI box for inputting credits
 import UI.feeUnitsInput       #UI box for inputting unit fees
-import UI.programWeightsInput      #asks for program weights, returns list
+import UI.programWeightsInput      #asks for program weights, returns list  (also asks for 1st year Arts and Sci)
 import UI.formulaFeesInput     #asks for formula fees, returns list
 import UI.BIUInput             #asks for BIU and returns a list with 1 element
+import UI.normalUnitsInput
 import UI.errorMessageBox  #UI that displays the error
 
 import dateTimeOutput
@@ -131,6 +132,8 @@ def getStudents(headingsNeeded, currentSheet):
         studList[row].plan2 = ""
         studList[row].plan3 = ""
 
+    studList = studentProcessing.removeBEDProg(studList)    #prevents BED from being the plan
+
     popRows = []
 
     popRows.extend(studentProcessing.findImproperStudent(studList))   #finds the headings and whitespaces and flags the index
@@ -139,11 +142,15 @@ def getStudents(headingsNeeded, currentSheet):
        studList[i + 2].plan3 = studList[i].plan
     popRows.extend(studentProcessing.findTriple(studList))            #flags the index for triples
 
+
+    print popRows
     for i in reversed(popRows):                     #when iterating in reverse, the wrong things do not get popped off the list
         studList.pop(i)                             #pop off headings/whitespaces and triples
 
     popRows = []                                      #resets the list so we can add duplicate indexes
 
+    for stud in studList:
+        print str(stud.studID) + "   " +stud.program
     for i in studentProcessing.findDuplicate(studList):               #finds the duplicates and adds the indices to the popRows list
         studList[i + 1].plan2 = studList[i].plan        #before the duplicate is popped, the second plan is added to the data row
     popRows.extend(studentProcessing.findDuplicate(studList))
@@ -154,6 +161,8 @@ def getStudents(headingsNeeded, currentSheet):
 
     for i in range(len(studList)):
         studList[i].convert()                       #finalize input data
+
+
 
     return studList                                    #returns a list of Student objects
 
@@ -340,7 +349,8 @@ def main():
                         program_name TEXT UNIQUE, 
                         unit_fees FLOAT, 
                         formula_fees FLOAT, 
-                        program_weight FLOAT
+                        program_weight FLOAT,
+                        normal_units INTEGER
                     );''')
 
     #storing values like BIU
@@ -469,6 +479,7 @@ def main():
 
     c.execute("SELECT DISTINCT program FROM students;")
     programList = c.fetchall()
+    print programList
 
     unitFeesList = UI.feeUnitsInput.runApp(programList)
     while not checkError(unitFeesList) and not len(programList) == len(unitFeesList):         #do while loop that repeats until there is no more error
@@ -504,7 +515,21 @@ def main():
 
             c.execute("UPDATE program_info SET formula_fees = ?;",(formulaFee,))
 
+    #Number of normal units~~~~~~~~~~~~~~~~~~~~~
+
+    normalUnitsList = UI.normalUnitsInput.runApp(programList)
+    while not checkError(normalUnitsList) and not len(programList) == len(normalUnitsList):
+        UI.errorMessageBox.runApp(normalUnitsList)
+        normalUnitsList = UI.normalUnitsInput.runApp(progromList)
+
+    if len(programList) == len(normalUnitsList):
+        for numOfUnits in normalUnitsList:
+
+            c.execute("UPDATE program_info SET normal_units = ?;", (numOfUnits,))
+
     #Program Weights~~~~~~~~~~~~~~~~~~~~~~~~~~
+    programList.append("1st Year Arts")     #must consider program weights are different for 1st year
+    programList.append("1st Year Science")
 
     progWeightsList = UI.programWeightsInput.runApp(programList)
     while not checkError(progWeightsList) and not len(programList) == len(progWeightsList):
@@ -512,9 +537,15 @@ def main():
         progWeightsList = UI.programWeightsInput.runApp(programList)
 
     if len(programList) == len(progWeightsList):
-        for progWeight in progWeightsList:
+        for progWeight in progWeightsList[:2]:
 
             c.execute("UPDATE program_info SET program_weight = ?;",(progWeight,))
+
+        for i in range(len(progWeightsList)-2,len(progWeightsList)):
+
+            c.execute("INSERT INTO program_info(program_name, program_weight) VALUES (?,?);",(programList[i], progWeightsList[i],))
+
+            
 
     conn.commit()
     conn.close()

@@ -115,7 +115,7 @@ def courseGrant(connDB,course_id):
 			totalBIU = (BIU * programWeight) - formulaFee
 
 		courseCredits = data.grabCourseCredits(connDB, course_id)	
-		courseCredits = courseCredits[0]	#unpack the tuple 
+
 
 		proportion = courseCredits / normalUnits
 		grantGenerated = proportion * totalBIU
@@ -140,15 +140,23 @@ def runApp():
 	for i in range(numOfStudents):
 		grantGeneratedTotal = grantGeneratedTotal + studentGrant(c, i + 1)
 
-	print grantGeneratedTotal
+	#print grantGeneratedTotal
+	return grantGeneratedTotal
 
-def runAppCourse():
+def runAppCourse(course):
 	conn = data.connectDB()
 	c = conn.cursor()
-	print courseGrant(c, 1)
-
+	#print courseGrant(c, course)
+	return courseGrant(c, course)
 
 if __name__ == '__main__':
-	runAppCourse()
+	total2 = runApp()
+	total1 = 0
+	total1 = total1 + runAppCourse(1)
+	total1 = total1 + runAppCourse(2)
+	total1 = total1 + runAppCourse(3)
+	
+	print total2
 
+	print total1
 

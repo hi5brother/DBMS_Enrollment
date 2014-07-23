@@ -17,7 +17,6 @@ import sqlite3
 import sys
 import os
 
-import UI.creditsInput 	#the UI elements package
 
 def studentTuition(connDB, stude_id):			#pass in the student and calculate tuition of the student
 
@@ -26,7 +25,7 @@ def studentTuition(connDB, stude_id):			#pass in the student and calculate tuiti
 	coursesRaw = extractData.grabStudentCourses(connDB, stude_id)
 
 	unitFee = extractData.grabUnitFees(connDB,program)
-	unitFee = unitFee[0]	#make from tuple into float
+
 
 	for i in reversed(range(len(coursesRaw))):
 		if coursesRaw[i] == None:			#eliminates the none courses
@@ -38,7 +37,7 @@ def studentTuition(connDB, stude_id):			#pass in the student and calculate tuiti
 	
 	creditSum = 0
 	for credit in creditsList:		#sum up all the credits that the student was enrolled in
-		creditSum = creditSum + (credit[0])	#used to unpack the tuple
+		creditSum = creditSum + (credit)	#used to unpack the tuple
 
 	revenueGenerated = creditSum * unitFee		#formula to calculate revenue from each student
 
@@ -64,6 +63,7 @@ def courseTuition(connDB, course_id):
 	courseTuitionTotal = 0
 
 	for student in studentsList:
+
 		stude_id = student[0]
 
 		program = extractData.grabStudentProgram(connDB, stude_id)
@@ -71,7 +71,7 @@ def courseTuition(connDB, course_id):
 		unitFee = extractData.grabUnitFees(connDB, program)
 
 		courseCredit = extractData.grabCourseCredits(connDB,course_id)
-		courseCredit = courseCredit[0]
+
 
 		tuitionGenerated = courseCredit * unitFee
 
@@ -90,18 +90,26 @@ def runApp():
 
 	revenueGeneratedTotal = 0
 	for i in range(numOfStudents):		#loops through all the students and calculates money from each student
-		print studentTuition(c, i + 1)
+		#print studentTuition(c, i + 1)
 		revenueGeneratedTotal = revenueGeneratedTotal + studentTuition(c, i + 1)
+	return revenueGeneratedTotal
+	# print numOfStudents
+	# print revenueGeneratedTotal
 
-	print numOfStudents
-	print revenueGeneratedTotal
-
-def runAppCourse():
+def runAppCourse(course):
 	conn = extractData.connectDB()
 	c = conn.cursor()
-	print courseTuition(c , 1)
-	print courseTuition(c , 2)
+	return courseTuition(c , course)
+
 
 
 if __name__ == '__main__':
-	runAppCourse()
+	total2 = runApp()
+	total1 = 0
+	total1 = total1 + runAppCourse(1)
+	total1 = total1 + runAppCourse(2)
+	total1 = total1 + runAppCourse(3)
+	
+	print total2
+
+	print total1

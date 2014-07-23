@@ -29,8 +29,8 @@ class CreditsInputApp:
 
     def initialize(self,courses):  
 
-        self.infoBox = Label(self.container, text = "Please enter the credits of each course.")
-        self.infoBox.config(width = 40, height = 2)
+        self.infoBox = Label(self.container, text = "Please enter the credits of each course. \n For a two term course, please divide  \nthe credits by two (e.g. PHGY 214A has 3 credits).")
+        self.infoBox.config(width = 40, height = 3)
         self.infoBox.grid(row = 0, column = 0)
 
         self.infoBox2 = Label(self.container, text = "Credits (e.g. 3.0, 4.5)")

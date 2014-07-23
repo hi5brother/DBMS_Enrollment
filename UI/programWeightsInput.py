@@ -1,6 +1,7 @@
 #-------------------------------------------------------------------------------
 # Name:        
 #				asks for input for program weights when calculating grant money
+#				also considers the 1st year programs, where program weights are different
 #				
 #			
 # Purpose:
@@ -43,6 +44,20 @@ class ProgWeightInputApp:
 			self.entry.append(Entry(self.container))
 			self.entry[i].grid(row = i + 1, column = 1)
 
+		# i = i + 1
+		# self.txtBox = Label(self.container, text = "1st Year Arts", justify = LEFT)		#in database, the plan will be "ASC1-M-BAH"
+		# self.txtBox.grid(row = i + 1)
+
+		# self.entry.append(Entry(self.container))
+		# self.entry[i].grid(row = i + 1, column = 1)	
+
+		# i = i + 1
+		# self.txtBox = Label(self.container, text = "1st Year Science", justify = LEFT)	#in database, the plan will be "ASC1-M-BSH"
+		# self.txtBox.grid(row = i + 1)
+
+		# self.entry.append(Entry(self.container))
+		# self.entry[i].grid(row = i + 1, column = 1)	
+
 		self.subButton = Button(self.container)             #the submit button will process data then quit
 		self.subButton['text'] = "Submit"
 		self.subButton.grid(row = i + 3,column = 0)
@@ -77,7 +92,7 @@ def runApp(programs):
 
 	try:		#attribute error happens when NO values are output
 		for data in app.data:
-			if data.isdigit():
+			if data.isdigit() or data.replace('.',"",1).isdigit():
 				outputData.append(float(data))		#converts the weight value from str to float
 			elif data.lower() == "n/a":
 				outputData.append(0)		#makes sure it is always n/a
@@ -90,7 +105,7 @@ def runApp(programs):
 	for data in outputData:
 		if data == "":		#error message if a programWeight was not entered
 			return "User Error: Not all programs had unit fees inputted"
-		elif data > 100:	
+		elif data > 10:	
 			return "User Error: The program weight is unreasonably big (over 100)"
 		elif data < 0.0:
 			return "User Error: Program weight has negative value"

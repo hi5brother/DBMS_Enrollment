@@ -81,7 +81,7 @@ def runApp(programs):
             if "$" in data:     
                 data = data.translate(None,"$")         #removes the $ sign if it is present
 
-            if data.isdigit():
+            if data.isdigit() or data.replace('.',"",1).isdigit():
                 outputData.append(float(data))      #converts the weight value from str to float
             elif data.lower() == "n/a":
                 outputData.append(0)        #makes sure it is always n/a

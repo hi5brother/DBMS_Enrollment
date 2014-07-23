@@ -54,6 +54,7 @@ class FeeUnitsInputApp:
 		self.quitButton.grid(row = i + 3,column = 1)
 		self.quitButton['command'] = self.quit
 
+
 	def submit(self):
 		self.data = []                      #initialize the piece of data
 
@@ -78,7 +79,10 @@ def runApp(programs):
 
 	try:		#attribute error happens when NO values are output
 		for data in app.data:
-			if data.isdigit():
+			if "$" in data:     
+				data = data.translate(None,"$")         #removes the $ sign if it is present
+ 
+			if data.isdigit() or data.replace('.',"",1).isdigit():
 				outputData.append(float(data))		#converts the $ value from str to float
 			elif data.lower() == "n/a":
 				outputData.append(0)		#makes sure it is always n/a
@@ -100,6 +104,7 @@ def runApp(programs):
 
 if __name__ == '__main__':
 	output = runApp(programs)
+	print output
 	# print output
 	# print output.count('Error')
-	print 'Error' in output
+	#print 'Error' in output

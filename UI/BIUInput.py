@@ -67,7 +67,7 @@ def runApp():
         if "$" in app.data:     
             data = data.translate(None,"$")         #removes the $ sign if it is present
             
-        if app.data.isdigit():
+        if app.data.isdigit() or data.replace('.',"",1).isdigit():
             outputData.append((float(app.data)) )     #converts the BIU value from str to float
         else:
             return "User Error: Invalid inputs were used"       #if it isnt a number or "n/a"

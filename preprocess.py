@@ -545,8 +545,7 @@ def main():
 
             c.execute("INSERT INTO program_info(program_name, program_weight) VALUES (?,?);",(programList[i], progWeightsList[i],))
 
-            
-
+        
     conn.commit()
     conn.close()
 

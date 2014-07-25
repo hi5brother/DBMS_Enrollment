@@ -7,6 +7,7 @@
 #				- breakdown of courses based on program
 #				- breakdown of courses based on plan (DBMS LISC, BCHM...)
 #				- breakdown of courses based on year (1,2,3,4)
+#				- a sheet with all the unit fees/progam infos, etc.
 #			
 # Purpose:
 #
@@ -138,6 +139,8 @@ def programEnrollments(c,book):
 	programsList = c.fetchall()
 
 	courseNameStr = 'Course Name'
+	enrollmentNameStr = 'Enrollments'
+
 	fYrArtsStr = '1st Year Arts'		#these help differentiate between 1st year artsci HONOURS and upper year artsci HONOURS
 	fYrSciStr = '1st Year Science'
 	upYrArtsStr = 'Upper Year Science'
@@ -168,6 +171,9 @@ def programEnrollments(c,book):
 
 		courseName = data.grabCourseName(c, course)		
 		programBreakdown.write(count, columns[courseNameStr], courseName)
+
+		enrollments = data.grabEnrollmentNumber(c,course)
+		programBreakdown.write(count, columns[totEnrollmentsStr], enrollments)
 
 		for program in programsList:			#Outputs enrollments for all programs (except 1st year Arts Sci)
 			
@@ -277,22 +283,28 @@ def yearBreakdown(c, book):
 def programInfo(c, book):
 	progInfo = book.add_sheet("ProgramInfo")
 
+	twoDecimalStyle = xlwt.XFStyle()		#styling for using two decimals
+	twoDecimalStyle.num_format_str = '0.00'
+
 	columnWidth(progInfo,14)
 	c.execute("SELECT DISTINCT program_id FROM program_info;")
 	programList = c.fetchall()
 
 	programNameStr = 'Program Name'
+	enrollmentNameStr = 'Enrollment'
 	unitFeeNameStr = 'Unit Fees'
 	formulaFeeNameStr = 'Formula Fees'
 	progWeightNameStr = 'Program Weight'
 	normUnitsNameStr = 'Normal Units'
-
+	BIUNameStr = 'BIU Value'
 
 	columns = {programNameStr : 0,
-				unitFeeNameStr : 1,
-				formulaFeeNameStr : 2,
-				progWeightNameStr : 3,
-				normUnitsNameStr : 4,
+				enrollmentNameStr : 1,
+				unitFeeNameStr : 2,
+				formulaFeeNameStr : 3,
+				progWeightNameStr : 4,
+				normUnitsNameStr : 5,
+				BIUNameStr : 6,
 				}
 
 	for columnName in columns:
@@ -307,19 +319,24 @@ def programInfo(c, book):
 		progInfo.write(count,columns[programNameStr], programName)
 
 		programName = [programName]	#make into tuple 
+
+		enrollment = data.grabProgEnrollment(c,programName)
+		progInfo.write(count, columns[enrollmentNameStr],enrollment)
+
 		unitFee = data.grabUnitFees(c,programName)
-		progInfo.write(count, columns[unitFeeNameStr], unitFee)
+		progInfo.write(count, columns[unitFeeNameStr], unitFee, twoDecimalStyle)
 
 		formulaFee = data.grabFormulaFee(c,programName)
-		progInfo.write(count,columns[formulaFeeNameStr], formulaFee)
+		progInfo.write(count,columns[formulaFeeNameStr], formulaFee, twoDecimalStyle)
 
 		progWeight = data.grabProgramWeight(c, programName)
-		progInfo.write(count, columns[progWeightNameStr], progWeight)
+		progInfo.write(count, columns[progWeightNameStr], progWeight, twoDecimalStyle)
 
 		normUnits = data.grabNormalUnits(c,programName)
 		progInfo.write(count, columns[normUnitsNameStr], normUnits)
 
 		count = count + 1
+
 
 	progInfo.set_panes_frozen(True)
 	progInfo.set_horz_split_pos(1)

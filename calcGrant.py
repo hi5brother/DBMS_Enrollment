@@ -150,12 +150,14 @@ def runAppCourse(course):
 	return courseGrant(c, course)
 
 if __name__ == '__main__':
-	total2 = runApp()
+
 	total1 = 0
 	total1 = total1 + runAppCourse(1)
 	total1 = total1 + runAppCourse(2)
 	total1 = total1 + runAppCourse(3)
-	
+
+	total2 = runApp()
+
 	print total2
 
 	print total1

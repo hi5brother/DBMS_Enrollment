@@ -133,6 +133,14 @@ def grabNormalUnits(connDB, program_name):
 	data = data[0]
 	return data
 
+def grabProgEnrollment(connDB, program_name):
+	connDB.execute("SELECT COUNT (*) FROM students WHERE program = ?", program_name)
+	data = connDB.fetchone()
+	data = data[0]
+	if data == 0:		#this works for 1st year Arts and Science (it returns blank)
+		data = None
+	return data
+
 #GRAB COUNTS DYNAMICALLY
 
 def grabStudentEnrollment(connDB, program_name,course_id):		#grabs total enrollment of the course

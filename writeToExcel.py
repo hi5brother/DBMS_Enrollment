@@ -6,6 +6,7 @@
 #				- tuition/grant totals for all courses
 #				- breakdown of courses based on program
 #				- breakdown of courses based on plan (DBMS LISC, BCHM...)
+#				- breakdown of courses based on year (1,2,3,4)
 #			
 # Purpose:
 #
@@ -126,7 +127,7 @@ def tuitionGrantTotals(c,book):
 
 	#CALCULATING ENROLLMENTS BASED ON PROGRAM~~~~~~~~~~~~~~~~~~~~~~~
 def programEnrollments(c,book):
-	programBreakdown = book.add_sheet("programBreakdown")
+	programBreakdown = book.add_sheet("ProgramBreakdown")
 
 	columnWidth(programBreakdown, 6)
 
@@ -194,7 +195,7 @@ def programEnrollments(c,book):
 
 	#CALCULATING PERCENTAGE ENROLLMENTS BASED ON PLAN
 def planEnrollments(c,book):
-	planBreakdown = book.add_sheet("planBreakdown")		#new sheet 
+	planBreakdown = book.add_sheet("PlanBreakdown")		#new sheet 
 
 	columnWidth(planBreakdown, 10)
 
@@ -234,7 +235,7 @@ def planEnrollments(c,book):
 	planBreakdown.set_horz_split_pos(1)		#Freeze panes for the first row
 
 def yearBreakdown(c, book):
-	yearBreakdown = book.add_sheet("yearBreakdown")
+	yearBreakdown = book.add_sheet("YearBreakdown")
 
 	columnWidth(yearBreakdown, 7)
 
@@ -273,6 +274,57 @@ def yearBreakdown(c, book):
 	yearBreakdown.set_panes_frozen(True)
 	yearBreakdown.set_horz_split_pos(1)
 
+def programInfo(c, book):
+	progInfo = book.add_sheet("ProgramInfo")
+
+	columnWidth(progInfo,14)
+	c.execute("SELECT DISTINCT program_id FROM program_info;")
+	programList = c.fetchall()
+
+	programNameStr = 'Program Name'
+	unitFeeNameStr = 'Unit Fees'
+	formulaFeeNameStr = 'Formula Fees'
+	progWeightNameStr = 'Program Weight'
+	normUnitsNameStr = 'Normal Units'
+
+
+	columns = {programNameStr : 0,
+				unitFeeNameStr : 1,
+				formulaFeeNameStr : 2,
+				progWeightNameStr : 3,
+				normUnitsNameStr : 4,
+				}
+
+	for columnName in columns:
+		progInfo.write(0,columns[columnName],columnName)
+
+	count = 1
+	for program in programList:
+	
+		program = program[0]
+
+		programName = data.grabProgName(c,program)
+		progInfo.write(count,columns[programNameStr], programName)
+
+		programName = [programName]	#make into tuple 
+		unitFee = data.grabUnitFees(c,programName)
+		progInfo.write(count, columns[unitFeeNameStr], unitFee)
+
+		formulaFee = data.grabFormulaFee(c,programName)
+		progInfo.write(count,columns[formulaFeeNameStr], formulaFee)
+
+		progWeight = data.grabProgramWeight(c, programName)
+		progInfo.write(count, columns[progWeightNameStr], progWeight)
+
+		normUnits = data.grabNormalUnits(c,programName)
+		progInfo.write(count, columns[normUnitsNameStr], normUnits)
+
+		count = count + 1
+
+	progInfo.set_panes_frozen(True)
+	progInfo.set_horz_split_pos(1)
+
+
 def totals(readBook):
 
 	totalsRows = {'Totals' : len(courseList) + 2}
@@ -291,7 +343,7 @@ def runApp():
 	excelLocation = cdLocation + "\\" + sheetName
 
 	try:
-		os.remove(excelLocation)
+		os.remove(excelLocation)		#TESTING PURPOSES, REMOVES THE OLD SPREADSHEET EVERY TIME@@@@@@@@@@@@
 	except WindowsError:
 		pass
 
@@ -304,6 +356,8 @@ def runApp():
 	planEnrollments(c,book)
 
 	yearBreakdown(c,book)
+
+	programInfo(c, book)
 
 	try:
 		book.save(sheetName)

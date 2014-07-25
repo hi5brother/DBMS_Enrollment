@@ -55,6 +55,12 @@ def grabStudentCourses(connDB,stude_id):
 	data = connDB.fetchone()	#grabs the data in a list, with each thing being an element
 	return data
 
+#PROGRAM SPECIFIC
+def grabProgName(connDB,prog_id):
+	connDB.execute("SELECT program_name FROM program_info WHERE program_id = ?;",(prog_id,))
+	data = connDB.fetchone()
+	data = data[0]
+	return data
 #COURSE SPECIFIC
 
 def grabCourseName(connDB,course_id):
@@ -204,7 +210,13 @@ def grabStudentYearEnroll(connDB, year, course_id):		#grabs count based on YEAR
 	data = data[0]
 	return data
 
-
+def grabProgInfo(connDB,field,course_id):
+	connDB.execute('''SELECT ? 
+						FROM program_info
+						WHERE course_id = ?;''',field, course_id)
+	data = connDB.fetchone()
+	data = data[0]
+	return data
 
 
 

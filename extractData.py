@@ -129,7 +129,7 @@ def grabNormalUnits(connDB, program_name):
 
 #GRAB COUNTS DYNAMICALLY
 
-def grabStudentEnrollment(connDB, program_name,course_id):
+def grabStudentEnrollment(connDB, program_name,course_id):		#grabs total enrollment of the course
 	connDB.execute('''SELECT COUNT(*)		
 						FROM students 
 						WHERE program = ? and
@@ -147,7 +147,7 @@ def grabStudentEnrollment(connDB, program_name,course_id):
 	data = data[0]
 	return data
 
-def grabStudentYearCourse(connDB, program_name, year, course_id):
+def grabStudentProgYearEnroll(connDB, program_name, year, course_id):		#grabs based on program AND year
 	connDB.execute('''SELECT COUNT (*)
 						FROM students
 						WHERE program = ? and
@@ -166,7 +166,7 @@ def grabStudentYearCourse(connDB, program_name, year, course_id):
 	data = data[0]
 	return data
 
-def grabStudentPlanCourse(connDB, plan, course_id):
+def grabStudentPlanEnroll(connDB, plan, course_id):
 	connDB.execute('''SELECT COUNT(*)
 						FROM students
 						WHERE (plan = ? or
@@ -185,6 +185,27 @@ def grabStudentPlanCourse(connDB, plan, course_id):
 	data = connDB.fetchone()
 	data = data[0]
 	return data
+
+def grabStudentYearEnroll(connDB, year, course_id):		#grabs count based on YEAR
+	connDB.execute('''SELECT COUNT(*)
+						FROM students
+						WHERE proj_level = ? and
+							(course1 = ? or 
+							course2 = ? or
+							course3 = ? or
+							course4 = ? or
+							course5 = ? or
+							course6 = ? or
+							course7 = ? or
+							course8 = ? or
+							course9 = ? or
+							course10 = ?);''',(str(year),course_id,course_id,course_id,course_id,course_id,course_id,course_id,course_id,course_id,course_id))
+	data = connDB.fetchone()
+	data = data[0]
+	return data
+
+
+
 
 
 #SHOW TYPES OF OUTPUT

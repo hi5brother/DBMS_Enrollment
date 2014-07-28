@@ -210,6 +210,27 @@ def grabStudentPlanEnroll(connDB, plan, course_id):
 	data = data[0]
 	return data
 
+def grabStudentPlanYearEnroll(connDB,plan,year,course_id):
+	connDB.execute('''SELECT COUNT(*)
+						FROM students
+						WHERE (plan = ? or
+							plan2 = ? or
+							plan3 = ?) and
+							proj_level = ? and
+							(course1 = ? or 
+							course2 = ? or
+							course3 = ? or
+							course4 = ? or
+							course5 = ? or
+							course6 = ? or
+							course7 = ? or
+							course8 = ? or
+							course9 = ? or
+							course10 = ?);''',(plan,plan,plan,year,course_id,course_id,course_id,course_id,course_id,course_id,course_id,course_id,course_id,course_id))
+	data = connDB.fetchone()
+	data = data[0]
+	return data
+
 def grabStudentYearEnroll(connDB, year, course_id):		#grabs count based on YEAR
 	connDB.execute('''SELECT COUNT(*)
 						FROM students

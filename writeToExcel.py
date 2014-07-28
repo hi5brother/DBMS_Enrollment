@@ -7,6 +7,7 @@
 #				- breakdown of courses based on program
 #				- breakdown of courses based on plan (DBMS LISC, BCHM...)
 #				- breakdown of courses based on year (1,2,3,4)
+#				- breakdown of courses based on plan and year (e.g. BCHM Y1, BCHM Y2, BCHM Y3, BCHM Y4)
 #				- a sheet with all the unit fees/progam infos, etc.
 #
 #			saves the new excel workbook into user specified location
@@ -32,7 +33,9 @@ import extractData as data
 import calcGrant as grant
 import calcTuition as tuition
 
-from Tkinter import Tk
+from collections import defaultdict
+
+from Tkinter import Tk 			#used to find directory to save in 
 from tkFileDialog import asksaveasfilename
 
 def columnWidth(sheet, width):	
@@ -135,6 +138,7 @@ def tuitionGrantTotals(c,book):
 
 		count = count + 1 	#used to icnrement row number
 
+	courseTotals.write(count,columns[courseNameStr], "Totals")
 	courseTotals.write(count,columns[enrollmentNameStr], enrollTot)		#HARDCODE FOR THE TOTALS OF CERTAIN METRICS
 	courseTotals.write(count, columns[grantValNameStr], grantTot, twoDecimalStyle)
 	courseTotals.write(count,columns[tuitValNameStr], tuitionTot, twoDecimalStyle)
@@ -147,7 +151,7 @@ def tuitionGrantTotals(c,book):
 	#CALCULATING ENROLLMENTS BASED ON PROGRAM~~~~~~~~~~~~~~~~~~~~~~~
 def programEnrollments(c,book):
 	programBreakdown = book.add_sheet("ProgramBreakdown")
-
+	informationStartRow = 1
 	columnWidth(programBreakdown, 6)
 
 	c.execute("SELECT DISTINCT course_id FROM courses;")
@@ -159,30 +163,29 @@ def programEnrollments(c,book):
 	courseNameStr = 'Course Name'
 	enrollmentNameStr = 'Enrollments'
 
-	fYrArtsStr = '1st Year Arts'		#these help differentiate between 1st year artsci HONOURS and upper year artsci HONOURS
-	fYrSciStr = '1st Year Science'
-	upYrArtsStr = 'Upper Year Science'
-	upYrSciStr = 'Upper Year Arts'
-	totEnrollmentsStr = 'Total Enrollments'
+	fYrArtsStr = 'Arts (1st)'		#these help differentiate between 1st year artsci HONOURS and upper year artsci HONOURS
+	fYrSciStr = 'Science (1st)'
+	upYrArtsStr = 'Arts Hon (2-4)'
+	upYrSciStr = 'Science Hon (2-4)'
 
 	columns = {courseNameStr : 0,
-				fYrArtsStr : len(programsList) + 1,
-				fYrSciStr : len(programsList) + 2,
-				upYrArtsStr : len(programsList) + 3,
-				upYrSciStr : len(programsList) + 4,
-
-				totEnrollmentsStr : len(programsList) + 5,
-
+				enrollmentNameStr : 1,
+				fYrArtsStr : 2,
+				fYrSciStr : 3,
+				upYrArtsStr : 4,
+				upYrSciStr : 5,
 				}		#Creating all the headings (Course Name, BA, BAH, BSCH...) and hard code 1st year arts and sci
 	
 	for columnName in columns:		#write hardcoded column headings (Name, total enrollment, etc)
 		programBreakdown.write(0, columns[columnName], columnName)
+
+	hardColumns = len(columns)
 	
 	for program in programsList:			#Writing all the column headings to the excel sheet
-		columns[program] = programsList.index(program) + 1
+		columns[program] = programsList.index(program) + hardColumns
 		programBreakdown.write(0, columns[program], program)
 
-	count = 1
+	count = informationStartRow
 	for course in courseList:			#Outputs the course codes in column 0 (ANAT 215, 216)
 		
 		course = course[0]		#unpack the tuple
@@ -191,7 +194,7 @@ def programEnrollments(c,book):
 		programBreakdown.write(count, columns[courseNameStr], courseName)
 
 		enrollments = data.grabEnrollmentNumber(c,course)
-		programBreakdown.write(count, columns[totEnrollmentsStr], enrollments)
+		programBreakdown.write(count, columns[enrollmentNameStr], enrollments)
 
 		for program in programsList:			#Outputs enrollments for all programs (except 1st year Arts Sci)
 			
@@ -223,21 +226,27 @@ def planEnrollments(c,book):
 
 	columnWidth(planBreakdown, 10)
 
-	c.execute("SELECT DISTINCT course_id FROM courses;")
-	courseList = c.fetchall()
-
 	courseNameStr = 'Course Name'
+	enrollmentsNameStr = 'Enrollments'
 
-	c.execute("SELECT DISTINCT plan FROM students;")		
-	planList = c.fetchall()
-
-	columns = {courseNameStr : 0,}		#hardcoded column
+	columns = {courseNameStr : 0,
+				enrollmentsNameStr : 1}		#hardcoded columns
 
 	for columnName in columns:				#write hardcoded columns 
 		planBreakdown.write(0, columns[columnName], columnName)
 
+	hardColumns = len(columns)
+
+	c.execute("SELECT DISTINCT course_id FROM courses;")
+	courseList = c.fetchall()
+
+	c.execute("SELECT DISTINCT plan FROM students;")		
+	planList = c.fetchall()
+
+
+
 	for plan in planList:		#writing all column headings for each plan
-		columns[plan] = planList.index(plan) + 1
+		columns[plan] = planList.index(plan) + hardColumns
 		planBreakdown.write(0, columns[plan], plan)
 
 	count = 1
@@ -247,6 +256,9 @@ def planEnrollments(c,book):
 
 		courseName = data.grabCourseName(c, course)		#write down the courses in the first row
 		planBreakdown.write(count,columns[courseNameStr],courseName)
+
+		totEnrollments = data.grabEnrollmentNumber(c,course)
+		planBreakdown.write(count,columns[enrollmentsNameStr], totEnrollments)
 
 		for plan in planList:		#interate through all the plans
 
@@ -262,7 +274,7 @@ def planEnrollments(c,book):
 
 def planSignificantEnrollments(c,book):
 
-	cutoff = 10		#cutoff range for plan enrollments
+	cutoff = 10		#cutoff range for number of plan enrollments
 
 	planBreakdown = book.add_sheet("PlanBreakdown")
 	columnWidth(planBreakdown,10)
@@ -337,7 +349,6 @@ def yearBreakdown(c, book):
 	courseList = c.fetchall()
 
 	courseNameStr = 'Course Name'
-
 	columns = {courseNameStr : 0,}
 
 	for columnName in columns:
@@ -358,10 +369,10 @@ def yearBreakdown(c, book):
 		courseName = data.grabCourseName(c, course)		#write down the courses in the first row
 		yearBreakdown.write(count, columns[courseNameStr], courseName)
 
-		for year in yearList:
+		for year in yearList:		#iterate through years 1,2,3,4
 
-			yearCount = data.grabStudentYearEnroll(c, year[0], course)
-			yearBreakdown.write(count, columns[year], yearCount)
+			yearCount = data.grabStudentYearEnroll(c, year[0], course)	
+			yearBreakdown.write(count, columns[year], yearCount)		#write to the sheet enrollment(course,year)
 
 		count = count + 1
 
@@ -369,6 +380,61 @@ def yearBreakdown(c, book):
 	yearBreakdown.set_horz_split_pos(1)
 
 	return True
+
+def planBreakdown(c,book,plan):
+	'''Grabs only plans specified in the function call. If plan is 'BCHM',
+		it will find BCHM-G_BSC, BCHM-M-BSH, BCHM-P-BSH
+	'''
+	planBreakdown = book.add_sheet(str(plan) + " Breakdown")
+	planRow = 0
+	yearRow = 1
+	informationStartRow = 2
+
+	courseNameStr = 'Course Name'
+	planBreakdown.write(planRow,0, courseNameStr)
+
+	columnWidth(planBreakdown,10)
+
+	c.execute("SELECT DISTINCT course_id FROM courses;")		
+	courseList = c.fetchall()
+
+	c.execute("SELECT DISTINCT proj_level FROM students;")
+	yearList = c.fetchall()
+
+	c.execute("SELECT DISTINCT plan FROM students WHERE plan LIKE \'" + str(plan) + "%\';")
+	planList = c.fetchall()		#will find all the plans that begin with BCHM
+
+	columnsExp = defaultdict(dict)
+
+	count = yearRow
+	for plan in planList:
+		for year in yearList:
+			columnsExp[plan][year] = count
+			count = count + 1
+			planBreakdown.write(planRow,columnsExp[plan][year], str(plan[0]))
+			planBreakdown.write(yearRow,columnsExp[plan][year], "Year: " + str(year[0]))
+
+
+	count = informationStartRow
+	for course in courseList:		#iterate throught courses
+		course = course[0]
+
+		courseName = data.grabCourseName(c, course)
+		planBreakdown.write(count, 0, courseName)
+
+		for plan in planList:			#iterate through the plans
+			for year in yearList:		#iterate through all the years
+
+				enroll = data.grabStudentPlanYearEnroll(c,plan[0],year[0],course)
+				planBreakdown.write(count, columnsExp[plan][year], enroll)
+
+		count = count + 1
+
+	planBreakdown.set_panes_frozen(True)
+	planBreakdown.set_horz_split_pos(2)
+
+	return True
+
 
 def programInfo(c, book):
 	progInfo = book.add_sheet("ProgramInfo")
@@ -470,6 +536,10 @@ def runApp():
 	planEnrollments(c,book)
 
 	yearBreakdown(c,book)
+
+	planBreakdown(c,book,"BCHM")
+	
+	planBreakdown(c,book,"LISC")
 
 	programInfo(c, book)
 

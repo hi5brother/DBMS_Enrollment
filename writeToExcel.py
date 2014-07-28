@@ -8,6 +8,8 @@
 #				- breakdown of courses based on plan (DBMS LISC, BCHM...)
 #				- breakdown of courses based on year (1,2,3,4)
 #				- a sheet with all the unit fees/progam infos, etc.
+#
+#			saves the new excel workbook into user specified location
 #			
 # Purpose:
 #
@@ -29,6 +31,9 @@ import xlwt
 import extractData as data
 import calcGrant as grant
 import calcTuition as tuition
+
+from Tkinter import Tk
+from tkFileDialog import asksaveasfilename
 
 def columnWidth(sheet, width):	
 	'''Pass in the number of characters each column width will be and set it for the sheet
@@ -55,16 +60,28 @@ def tuitionGrantTotals(c,book):
 
 	columnWidth(courseTotals,14)
 
-	columns = {'Course Name' : 0, 
-				'Term' : 1, 
-				'Credits' : 2, 
-				'Enrollment' : 3, 
-				'Grant Value' : 4, 
-				'Tuition Value' : 5,
-				'Total Revenue' : 6,
-				'Grant per Student' : 7,
-				'Tuition per Student' : 8,
-				'Revenue per Student' : 9
+	courseNameStr = 'Course Name'
+	termNameStr = 'Term'
+	creditsNameStr = 'Credits'
+	enrollmentNameStr = 'Enrollments'
+	grantValNameStr = 'Grant Value ($)'
+	tuitValNameStr = 'Tuition Value ($)'
+	totRevNameStr = 'Total Revenue ($)'
+	grantStudNameStr = 'Grant per Student'
+	tuitStudNameStr = 'Tuition per Student'
+	revStudNameStr = 'Revenue per Student'
+
+
+	columns = {courseNameStr : 0, 
+				termNameStr : 1, 
+				creditsNameStr : 2, 
+				enrollmentNameStr : 3, 
+				grantValNameStr : 4, 
+				tuitValNameStr : 5,
+				totRevNameStr : 6,
+				grantStudNameStr : 7,
+				tuitStudNameStr : 8,
+				revStudNameStr : 9
 				}
 
 	for heading, colNum in columns.iteritems():
@@ -83,48 +100,49 @@ def tuitionGrantTotals(c,book):
 		course = course[0]		#unpack the tuple
 
 		courseName = data.grabCourseName(c, course)
-		courseTotals.write(count, columns['Course Name'], courseName)
+		courseTotals.write(count, columns[courseNameStr], courseName)
 
 		term = data.grabCourseTerm(c, course)
-		courseTotals.write(count, columns['Term'], term)
+		courseTotals.write(count, columns[termNameStr], term)
 
 		credits = data.grabCourseCredits(c,course)
-		courseTotals.write(count, columns['Credits'] , credits, twoDecimalStyle)
+		courseTotals.write(count, columns[creditsNameStr] , credits, twoDecimalStyle)
 
 		enrollment = data.grabEnrollmentNumber(c, course)
 		enrollTot = enrollTot + enrollment
-		courseTotals.write(count, columns['Enrollment'] , enrollment)
+		courseTotals.write(count, columns[enrollmentNameStr] , enrollment)
 
 		grantVal = grant.runAppCourse(course)
 		grantTot = grantTot + grantVal
-		courseTotals.write(count, columns['Grant Value'], grantVal, twoDecimalStyle)
+		courseTotals.write(count, columns[grantValNameStr], grantVal, twoDecimalStyle)
 
 		tuitionVal = tuition.runAppCourse(course)
 		tuitionTot = tuitionTot + tuitionVal
-		courseTotals.write(count, columns['Tuition Value'], tuitionVal, twoDecimalStyle)
+		courseTotals.write(count, columns[tuitValNameStr], tuitionVal, twoDecimalStyle)
 
 		total = grantVal + tuitionVal
 		totalTot = totalTot + total
-		courseTotals.write(count, columns['Total Revenue'], total, twoDecimalStyle)
+		courseTotals.write(count, columns[totRevNameStr], total, twoDecimalStyle)
 
 		grantPerStud = grantVal / enrollment
-		courseTotals.write(count, columns['Grant per Student'], grantPerStud, twoDecimalStyle)
+		courseTotals.write(count, columns[grantStudNameStr], grantPerStud, twoDecimalStyle)
 
 		tuitionPerStud = tuitionVal / enrollment
-		courseTotals.write(count, columns['Tuition per Student'], tuitionPerStud, twoDecimalStyle)
+		courseTotals.write(count, columns[tuitStudNameStr], tuitionPerStud, twoDecimalStyle)
 
 		revenuePerStud = total / enrollment
-		courseTotals.write(count, columns['Revenue per Student'], revenuePerStud, twoDecimalStyle)
+		courseTotals.write(count, columns[revStudNameStr], revenuePerStud, twoDecimalStyle)
 
 		count = count + 1 	#used to icnrement row number
 
-	courseTotals.write(count,columns['Enrollment'], enrollTot)		#HARDCODE FOR THE TOTALS OF CERTAIN METRICS
-	courseTotals.write(count, columns['Grant Value'], grantTot)
-	courseTotals.write(count,columns['Tuition Value'], tuitionTot)
-	courseTotals.write(count,columns['Total Revenue'], totalTot)
+	courseTotals.write(count,columns[enrollmentNameStr], enrollTot)		#HARDCODE FOR THE TOTALS OF CERTAIN METRICS
+	courseTotals.write(count, columns[grantValNameStr], grantTot, twoDecimalStyle)
+	courseTotals.write(count,columns[tuitValNameStr], tuitionTot, twoDecimalStyle)
+	courseTotals.write(count,columns[totRevNameStr], totalTot, twoDecimalStyle)
 
 	courseTotals.set_panes_frozen(True)
 	courseTotals.set_horz_split_pos(1)		#Freeze panes for the first row
+	return True
 
 	#CALCULATING ENROLLMENTS BASED ON PROGRAM~~~~~~~~~~~~~~~~~~~~~~~
 def programEnrollments(c,book):
@@ -197,11 +215,11 @@ def programEnrollments(c,book):
 
 	programBreakdown.set_panes_frozen(True)
 	programBreakdown.set_horz_split_pos(1)		#Freeze panes for the first row
-
+	return True
 
 	#CALCULATING PERCENTAGE ENROLLMENTS BASED ON PLAN
 def planEnrollments(c,book):
-	planBreakdown = book.add_sheet("PlanBreakdown")		#new sheet 
+	planBreakdown = book.add_sheet("PlanBreakdownExpanded")		#new sheet 
 
 	columnWidth(planBreakdown, 10)
 
@@ -239,6 +257,76 @@ def planEnrollments(c,book):
 
 	planBreakdown.set_panes_frozen(True)
 	planBreakdown.set_horz_split_pos(1)		#Freeze panes for the first row
+
+	return True
+
+def planSignificantEnrollments(c,book):
+
+	cutoff = 10		#cutoff range for plan enrollments
+
+	planBreakdown = book.add_sheet("PlanBreakdown")
+	columnWidth(planBreakdown,10)
+
+	c.execute("SELECT DISTINCT course_id FROM courses;")
+	courseList = c.fetchall()
+
+	courseNameStr = 'Course Name'
+
+	c.execute("SELECT DISTINCT plan FROM students;")
+	planList = c.fetchall()
+
+	columns = {courseNameStr : 0,}
+
+	sigPlanList = []		#filter out plans with very little enrollments in DBMS courses (eg ENG or COMM plans)
+	
+	for plan in planList:
+		'''Iterates through each plan. With a particular plan, iterate through all the courses.
+			If the number of people in that plan cannot exceed 10 people for any of the courses, 
+			they will not be included in this sheet.
+			This for loop FILTERS
+		'''
+		studCount = []		
+		addToList = False		
+
+		for course in courseList:		
+
+			course = course[0]
+			studCount.append(data.grabStudentPlanEnroll(c, plan[0], course))
+
+		for count in studCount:
+			if count > cutoff:	
+				addToList = True
+				break
+
+		if addToList:		#only add to the new list if there are enough enrollments
+			sigPlanList.append(plan)
+
+	for columnName in columns:
+		planBreakdown.write(0, columns[columnName], columnName)
+
+	for plan in sigPlanList:		#only write the relevant plans into each column
+		columns[plan] = sigPlanList.index(plan) + 1
+		planBreakdown.write(0, columns[plan], plan)
+
+	count = 1
+	for course in courseList:
+		'''This for loop WRITES
+		'''
+		course = course[0]
+
+		courseName = data.grabCourseName(c, course)
+		planBreakdown.write(count,columns[courseNameStr],courseName)
+
+		for plan in sigPlanList:
+			studCount = data.grabStudentPlanEnroll(c, plan[0], course)	#gotta unpack that plan
+			planBreakdown.write(count, columns[plan], studCount)
+
+		count = count + 1
+
+	planBreakdown.set_panes_frozen(True)
+	planBreakdown.set_horz_split_pos(1)		#Freeze panes for the first row
+	
+	return True
 
 def yearBreakdown(c, book):
 	yearBreakdown = book.add_sheet("YearBreakdown")
@@ -279,6 +367,8 @@ def yearBreakdown(c, book):
 
 	yearBreakdown.set_panes_frozen(True)
 	yearBreakdown.set_horz_split_pos(1)
+
+	return True
 
 def programInfo(c, book):
 	progInfo = book.add_sheet("ProgramInfo")
@@ -337,9 +427,14 @@ def programInfo(c, book):
 
 		count = count + 1
 
+	BIUVal = data.grabBIU(c)
+	progInfo.write(1,columns[BIUNameStr],BIUVal)
+
 
 	progInfo.set_panes_frozen(True)
 	progInfo.set_horz_split_pos(1)
+
+	return True
 
 
 def totals(readBook):
@@ -370,21 +465,31 @@ def runApp():
 
 	programEnrollments(c,book)
 
+	planSignificantEnrollments(c,book)
+
 	planEnrollments(c,book)
 
 	yearBreakdown(c,book)
 
 	programInfo(c, book)
 
+	#saving the file into a direcotry
+	timeStam = data.grabTimeStamp(c)		#only the date of the timestamp will be printed
+
+	Tk().withdraw()
+
+	filename = asksaveasfilename(defaultextension = '.xls', initialfile = 'DBMS Enrollment Data ' + timeStam[:10])
+
+	while filename == '':		#a location must be saved
+		print "User Error: File was not saved."
+		filename = asksaveasfilename(defaultextension = '.xls', initialfile = 'DBMS Enrollment Data ' + timeStam[:10])
+
 	try:
-		book.save(sheetName)
-	except IndexError:
+		book.save(filename)
+	except IndexError:		#exists if no sheets are printed (empty file)
 		pass
 	except IOError:
 		print "Error: Please close all Excel workbooks."
-
-	readBook = xlrd.open_workbook(excelLocation)
-
 
 if __name__ == '__main__':
 	runApp()

@@ -30,6 +30,16 @@ def closeDB(conn):		#closes the connection object and saves the database
 	conn.commit()
 	conn.close
 
+#Grab metadata
+
+def grabTimeStamp(connDB):
+	connDB.execute("SELECT timeStam FROM timeRecord;")
+	data = connDB.fetchone()
+	data = data[0]
+
+	return data
+
+
 #STDUENT SPECIFIC
 
 def grabStudentProgram(connDB,stude_id):		#

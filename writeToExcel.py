@@ -35,6 +35,8 @@ import calcTuition as tuition
 
 from collections import defaultdict
 
+import UI.planOptionsCheckBox
+
 from Tkinter import Tk 			#used to find directory to save in 
 from tkFileDialog import asksaveasfilename
 
@@ -240,10 +242,30 @@ def planEnrollments(c,book):
 	c.execute("SELECT DISTINCT course_id FROM courses;")
 	courseList = c.fetchall()
 
-	c.execute("SELECT DISTINCT plan FROM students;")		
-	planList = c.fetchall()
+
+	planList = data.grabFullPlanList(c)
 
 
+	# c.execute("SELECT DISTINCT plan FROM students;")		
+	# planList = c.fetchall()
+	# c.execute("SELECT DISTINCT plan2 FROM students;")
+	# plan2List = c.fetchall()
+	# c.execute("SELECT DISTINCT plan3 FROM students;")
+	# plan3List = c.fetchall()
+
+	# for plan in plan2List:		#MERGING plan2 values with plan 
+	# 	try: 
+	# 		temp = planList.index(plan)		#check if it is in the original plan list already
+	# 	except ValueError:
+	# 		if plan[0] != '':			#make sure the plan isn't NULL or "" (which means there is no second plan)
+	# 	 		planList.append(plan) 		#if error arises, the plan is not in the original plan
+
+	# for plan in plan3List:		#MERGING plan3 values with plan + plan2
+	# 	try: 
+	# 		temp = planList.index(plan)	
+	# 	except ValueError:
+	# 		if plan[0] != '':
+	# 			planList.append(plan)
 
 	for plan in planList:		#writing all column headings for each plan
 		columns[plan] = planList.index(plan) + hardColumns
@@ -277,15 +299,14 @@ def planSignificantEnrollments(c,book):
 	cutoff = 10		#cutoff range for number of plan enrollments
 
 	planBreakdown = book.add_sheet("PlanBreakdown")
-	columnWidth(planBreakdown,10)
+	columnWidth(planBreakdown, 10)
 
 	c.execute("SELECT DISTINCT course_id FROM courses;")
 	courseList = c.fetchall()
 
 	courseNameStr = 'Course Name'
 
-	c.execute("SELECT DISTINCT plan FROM students;")
-	planList = c.fetchall()
+	planList = data.grabFullPlanList(c)
 
 	columns = {courseNameStr : 0,}
 
@@ -403,6 +424,21 @@ def planBreakdown(c,book,plan):
 
 	c.execute("SELECT DISTINCT plan FROM students WHERE plan LIKE \'" + str(plan) + "%\';")
 	planList = c.fetchall()		#will find all the plans that begin with BCHM
+	c.execute("SELECT DISTINCT plan2 FROM students WHERE plan LIKE \'" + str(plan) + "%\';")
+	plan2List = c.fetchall()		#will find all the plans in plan2 that begin with BCHM
+	c.execute("SELECT DISTINCT plan3 FROM students WHERE plan LIKE \'" + str(plan) + "%\';")
+	plan3List = c.fetchall()		#will find all the plans in plan3 that begin with BCHM
+
+	# for plan in plan2List:
+	# 	print plan[0]
+	# 	try: 
+	# 		temp = planList.index(plan[0])
+	# 		print "hi"
+	# 	except ValueError:
+	# 		#print "Do Nothing"
+	# 		pass
+	# 	# Else:
+	# 	# 	print "Hi"
 
 	columnsExp = defaultdict(dict)
 
@@ -527,21 +563,32 @@ def runApp():
 
 	book = xlwt.Workbook()
 
-	tuitionGrantTotals(c,book)
+	# tuitionGrantTotals(c,book)
 
-	programEnrollments(c,book)
+	# programEnrollments(c,book)
 
 	planSignificantEnrollments(c,book)
 
-	planEnrollments(c,book)
+	# yearBreakdown(c,book)
 
-	yearBreakdown(c,book)
+	rawPlanList = data.grabFullPlanList(c)
+
+	checkPlanList = []
+	for plan in rawPlanList:
+		try: 
+			temp = checkPlanList.index(plan)
+
+		except ValueError:
+			if plan[0] != 
+
+	print checkPlanList
 
 	planBreakdown(c,book,"BCHM")
 	
 	planBreakdown(c,book,"LISC")
 
 	programInfo(c, book)
+
 
 	#saving the file into a direcotry
 	timeStam = data.grabTimeStamp(c)		#only the date of the timestamp will be printed

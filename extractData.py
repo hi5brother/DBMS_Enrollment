@@ -108,6 +108,39 @@ def grabEnrollmentNumber(connDB,course_id):
 	data = data[0]
 	return data
 
+def grabFullPlanList(connDB):
+	'''Grabs the full list of plans, including majors, minors, generals, 
+		from the columns plan, plan2, and plan3.
+	'''
+	connDB.execute("SELECT DISTINCT plan FROM students;")		
+	planList = connDB.fetchall()
+	
+	connDB.execute("SELECT DISTINCT plan2 FROM students;")
+	plan2List = connDB.fetchall()
+	
+	connDB.execute("SELECT DISTINCT plan3 FROM students;")
+	plan3List = connDB.fetchall()
+
+	for plan in plan2List:		#MERGING plan2 values with plan 
+
+		try: 
+			temp = planList.index(plan)		#check if it is in the original plan list already
+		
+		except ValueError:
+			if plan[0] != '':			#make sure the plan isn't NULL or "" (which means there is no second plan)
+		 		planList.append(plan) 		#if error arises, the plan is not in the original plan
+
+	for plan in plan3List:		#MERGING plan3 values with plan + plan2
+
+		try: 
+			temp = planList.index(plan)	
+
+		except ValueError:
+			if plan[0] != '':
+				planList.append(plan)
+
+	return planList
+
 #FOR CALCULATING GRANTS
 
 def grabUnitFees(connDB,program_name):		#take the student's program name (str) and returns the appropriate unit fee

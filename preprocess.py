@@ -215,6 +215,29 @@ def checkError(funcOutput):     #returns false is there is an error, returns tru
     else:                       #output does not return an error
         return True
 
+def inputCredits(c):
+    
+    c.execute("ALTER TABLE courses ADD credits FLOAT;")
+    
+    c.execute("SELECT course_code, term FROM courses;") #grabs names of all the courses
+    allCourses = c.fetchall()
+
+    courseDisplayName = []
+
+    for i in range(len(allCourses)):
+        #first element [i][0] is the course code, the second [i][1] is the term that the course is in
+        courseDisplayName.append(allCourses[i][0] + " - Term: " + str(allCourses[i][1]))  
+    
+    creditsList = UI.creditsInput.runApp(courseDisplayName)    #initializes the entry widget to input credits data
+    while not checkError(creditsList):                  #do while loop that repeats until there is no more error
+        UI.errorMessageBox.runApp(creditsList)
+        creditsList = UI.creditsInput.runApp(courseDisplayName)
+
+    for credit in creditsList:
+        c.execute('''UPDATE courses SET credits = ?;''',(credit,))      #adds to each course record the number of credits
+
+    return True
+
 def inputUnitFees(c):
     c.execute("SELECT DISTINCT program FROM students;")
     programList = c.fetchall()
@@ -230,7 +253,6 @@ def inputUnitFees(c):
             val = ''.join(programList[i])
 
             c.execute("INSERT INTO program_info(program_name, unit_fees) VALUES (?,?);",(val, unitFeesList[i]))
-
     return True
 
 def inputBIU(c):
@@ -292,6 +314,10 @@ def inputProgWeights(c):
         for progWeight in progWeightsList[:2]:
 
             c.execute("UPDATE program_info SET program_weight = ?;",(progWeight,))
+        for i in range(len(progWeightsList)-2,len(progWeightsList)):
+
+            c.execute("INSERT INTO program_info(program_name, program_weight) VALUES (?,?);",(programList[i], progWeightsList[i],))
+
 
     return True
 
@@ -526,28 +552,9 @@ def main():
                 SET timeStam = ? 
                 WHERE time_id = 1;''', (dateTimeOutput.pythonTime(),))     #updates the time stamp for the table after the spreadsheets were pulled
 
-    '''Input the credits using the entry widget (creditsInput module) and then updates the database
+
+    '''Input the credits using the entry widget (creditsInput module) 
     '''
-
-    c.execute("ALTER TABLE courses ADD credits FLOAT;")
-    c.execute('''SELECT course_code, term FROM courses;''') #grabs names of all the courses
-    allCourses = c.fetchall()
-
-    courseDisplayName = []
-
-    for i in range(len(allCourses)):
-        #first element [i][0] is the course code, the second [i][1] is the term that the course is in
-        courseDisplayName.append(allCourses[i][0] + " - Term: " + str(allCourses[i][1]))    
-
-
-    creditsList = UI.creditsInput.runApp(courseDisplayName)    #initializes the entry widget to input credits data
-    while not checkError(creditsList):                  #do while loop that repeats until there is no more error
-        UI.errorMessageBox.runApp(creditsList)
-        creditsList = UI.creditsInput.runApp(courseDisplayName)
-
-    for credit in creditsList:
-        c.execute('''UPDATE courses SET credits = ?;''',(credit,))      #adds to each course record the number of credits
-
 
     '''Insert auxiliary tables that contain information for processing
     - Unit Fees
@@ -555,6 +562,7 @@ def main():
     - Program Weights
 
     '''
+    inputCredits(c)
 
     inputUnitFees(c)
 
@@ -565,77 +573,6 @@ def main():
     inputNormalUnits(c)
 
     inputProgWeights(c)
-
-
-    # #UNIT FEES~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    # c.execute("SELECT DISTINCT program FROM students;")
-    # programList = c.fetchall()
-    # #print programList
-
-    # unitFeesList = UI.feeUnitsInput.runApp(programList)
-    # while not checkError(unitFeesList) and not len(programList) == len(unitFeesList):         #do while loop that repeats until there is no more error
-    #     UI.errorMessageBox.runApp(unitFeesList)
-    #     unitFeesList = UI.feeUnitsInput.runApp(programList)
-
-    # if len(programList) == len(unitFeesList):       #double check that appropriate number of values were input    
-    #     for i in range(len(programList)):
-
-    #         val = ''.join(programList[i])       #convert the tuple to a str for the name of a program
-
-    #         c.execute("INSERT INTO program_info (program_name, unit_fees) VALUES (?,?);",(val, unitFeesList[i]))
-
-    # #BIU~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    # BIUList = UI.BIUInput.runApp()
-    # while not checkError(BIUList) and not len(BIUList) == 1:
-    #     UI.errorMessageBox.runApp(BIUList)
-    #     BIUList = UI.BIUInput.runApp()
-
-    # if len(BIUList) == 1:
-    #     c.execute("INSERT INTO constants (name, value) VALUES (?,?);",("BIU Value", BIUList[0]))
-
-    # #Formula Fees~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    # formulaFeeList = UI.formulaFeesInput.runApp(programList)
-    # while not checkError(formulaFeeList) and not len(programList) == len(formulaFeeList):
-    #     UI.errorMessageBox.runApp(formulaFeeList)
-    #     formulaFeeList = UI.formulaFeesInput.runApp(programList)
-
-    # if len(programList) == len(formulaFeeList):
-    #     for formulaFee in formulaFeeList:
-
-    #         c.execute("UPDATE program_info SET formula_fees = ?;",(formulaFee,))
-
-    # #Number of normal units~~~~~~~~~~~~~~~~~~~~~
-
-    # normalUnitsList = UI.normalUnitsInput.runApp(programList)
-    # while not checkError(normalUnitsList) and not len(programList) == len(normalUnitsList):
-    #     UI.errorMessageBox.runApp(normalUnitsList)
-    #     normalUnitsList = UI.normalUnitsInput.runApp(programList)
-
-    # if len(programList) == len(normalUnitsList):
-    #     for numOfUnits in normalUnitsList:
-
-    #         c.execute("UPDATE program_info SET normal_units = ?;", (numOfUnits,))
-
-    # #Program Weights~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # programList.append("1st Year Arts")     #must consider program weights are different for 1st year
-    # programList.append("1st Year Science")
-
-    # progWeightsList = UI.programWeightsInput.runApp(programList)
-    # while not checkError(progWeightsList) and not len(programList) == len(progWeightsList):
-    #     UI.errorMessageBox.runApp(progWeightsList)
-    #     progWeightsList = UI.programWeightsInput.runApp(programList)
-
-    # if len(programList) == len(progWeightsList):
-    #     for progWeight in progWeightsList[:2]:
-
-    #         c.execute("UPDATE program_info SET program_weight = ?;",(progWeight,))
-
-    #     for i in range(len(progWeightsList)-2,len(progWeightsList)):
-
-    #         c.execute("INSERT INTO program_info(program_name, program_weight) VALUES (?,?);",(programList[i], progWeightsList[i],))
 
         
     conn.commit()

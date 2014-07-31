@@ -14,6 +14,9 @@ import tuitionGrantTotals
 import programTotals
 import planExpandedTotals
 import planSignificantTotals
+import yearTotals
+import planBreakdown
+import programInfo
 
 '''	This import heading will import modules from the parent directory
 	import os

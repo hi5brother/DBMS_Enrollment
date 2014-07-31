@@ -16,7 +16,6 @@ import sys
 
 sys.path.append(os.getcwd() + '/UI')    #adding the UI modules to the path
 
-
 #meta data RELATED FUNCTIONS
 
 def connectDB():		#connects to the database and returns the connection object, still requires the cursor
@@ -151,7 +150,7 @@ def grabUnitFees(connDB,program_name):		#take the student's program name (str) a
 
 
 def grabProgramWeight(connDB, program_name):	#pass in a string like ['program']
-
+	print program_name
 	connDB.execute("SELECT program_weight FROM program_info WHERE program_name = ?;", program_name)
 	data = connDB.fetchone()
 	data = data[0]

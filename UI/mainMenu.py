@@ -15,11 +15,25 @@ from Tkinter import *
 class menuScreen:
 	def __init__(self, parent):
 		self.parent = parent
+
 		self.container = Frame(parent)
 		self.container.pack()
 		self.initialize()
 
 	def initialize(self):
+		#Menu bar stuff
+		menubar = Menu(self.parent)
+		self.parent.config(menu = menubar)
+
+		filemenu = Menu(self.parent, tearoff=0)
+
+		menubar.add_cascade(label = "Options", menu = filemenu)
+
+		filemenu.add_command(label = "Help")
+		filemenu.add_separator()
+		filemenu.add_command(label = "Exit", command = self.quit)
+
+		#Windows content stuff
 		self.infoBox = Label (self.container, text = "Please select an option.")
 		self.infoBox.config (width = 20, height = 2)
 		self.infoBox.grid(row = 0, column = 0)
@@ -50,10 +64,8 @@ class menuScreen:
 		self.optionBox.grid (row = 2, column = 1)
 		self.optionBox['command'] = lambda: self.submit(options[3])
 
-
 	def submit(self, option):
 		self.data = option
-
 		self.parent.destroy()
 
 	def quit(self):
@@ -69,6 +81,7 @@ def runApp():
 	try:
 		return app.data
 	except AttributeError:		#if close button is clicked, program just closes
+		print "Bye!"
 		pass
 
 if __name__ == '__main__':

@@ -9,3 +9,24 @@
 # Copyright:   (c) DBMS 2014
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
+
+import BIUInput
+
+import creditsInput
+
+import errorMessageBox
+
+import feeUnitsInput
+
+import formulaFeesInput
+
+import mainMenu
+
+import normalUnitsInput
+
+import planOptionsCheckBox
+
+import programWeightsInput
+
+#How to freeze Tkinter Applications
+#https://docs.python.org/3/faq/gui.html

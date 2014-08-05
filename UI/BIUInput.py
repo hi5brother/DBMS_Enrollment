@@ -18,6 +18,7 @@ class BIUInputApp:
         self.container = Frame(parent)
         self.container.pack()
         self.initialize()
+        self.backStatus = False
 
     def initialize(self):
         self.infoBox = Label(self.container, text = "Please enter the BIU value.")
@@ -39,7 +40,7 @@ class BIUInputApp:
         self.subButton['command'] = self.submit
 
         self.quitButton = Button(self.container)            #the quit button will just quit
-        self.quitButton['text'] = "Quit"
+        self.quitButton['text'] = "Back"
         self.quitButton.grid(row = 3,column = 1)
         self.quitButton['command'] = self.quit
 
@@ -50,16 +51,20 @@ class BIUInputApp:
         self.parent.destroy()
 
     def quit(self):
+        #self.data = None
+        self.backStatus = True
         self.parent.destroy()
 
 def runApp():
     root = Tk()
-    root.title("DBMS Enrollment BIU Value")
+    root.title("BIU Value")
     app = BIUInputApp(root)
     root.mainloop()
 
     """Error checking and validating the input values
     """
+    if app.backStatus:
+        return "BACK"
 
     outputData = []
 

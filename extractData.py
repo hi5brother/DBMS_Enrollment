@@ -14,13 +14,11 @@ import os
 import sqlite3
 import sys
 
-sys.path.append(os.getcwd() + '/UI')    #adding the UI modules to the path
-
 #meta data RELATED FUNCTIONS
 
 def connectDB():		#connects to the database and returns the connection object, still requires the cursor
 	cdLocation = os.getcwd()
-	dbLocation = cdLocation + "/testv2.db"
+	dbLocation = cdLocation + "/enrolldata.db"
 
 	conn = sqlite3.connect(dbLocation)
 	return conn
@@ -37,7 +35,6 @@ def grabTimeStamp(connDB):
 	data = data[0]
 
 	return data
-
 
 #STDUENT SPECIFIC
 

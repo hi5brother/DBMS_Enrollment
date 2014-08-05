@@ -24,6 +24,7 @@ class FormulaFeesInputApp:
         self.container = Frame(parent)
         self.container.pack()
         self.initialize(programs)
+        self.backStatus = False
 
     def initialize(self, programs):
         self.infoBox = Label(self.container, text = "Please enter the program's formula fee. \n If the program does not generate grants, input \"n/a\".")
@@ -49,7 +50,7 @@ class FormulaFeesInputApp:
         self.subButton['command'] = self.submit
 
         self.quitButton = Button(self.container)            #the quit button will just quit
-        self.quitButton['text'] = "Quit"
+        self.quitButton['text'] = "Back"
         self.quitButton.grid(row = i + 3,column = 1)
         self.quitButton['command'] = self.quit
 
@@ -62,6 +63,7 @@ class FormulaFeesInputApp:
         self.parent.destroy()
 
     def quit(self):
+        self.backStatus = True
         self.parent.destroy()
 
 def runApp(programs):
@@ -72,6 +74,8 @@ def runApp(programs):
 
     """Error checking and validating the input values
     """
+    if app.backStatus:
+        return "BACK"
 
     outputData = []
 

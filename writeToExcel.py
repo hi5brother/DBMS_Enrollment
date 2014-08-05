@@ -39,13 +39,6 @@ import UI
 from Tkinter import Tk 			#used to find directory to save in 
 from tkFileDialog import asksaveasfilename
 
-def totals(readBook):
-
-	totalsRows = {'Totals' : len(courseList) + 2}
-
-	for column in [columns['Enrollment'], columns['Grant Value'], columns['Tuition Value'], columns['Total Revenue']]:
-		print column
-
 def runApp():
 
 	conn = data.connectDB()
@@ -73,9 +66,9 @@ def runApp():
 
 	ExcelOutput.yearTotals.write(c,book)
 
+	#Make list of plans with only the plan code e.g. "BCHM"
 	rawPlanList = data.grabFullPlanList(c)
 	checkPlanList = []
-
 	for plan in rawPlanList:
 		plan = plan[0]			#unpack the tuple
 		
@@ -89,12 +82,13 @@ def runApp():
 			checkPlanList.append(plan)			#if not, it is added to the list
 
 	selectedPlans = UI.planOptionsCheckBox.runScrollingApp(checkPlanList)
+
 	for plan in selectedPlans:
 		ExcelOutput.planBreakdown.write(c,book,plan)
 
 	ExcelOutput.programInfo.write(c,book)
 
-	#saving the file into a direcotry~~~~~~~~~~~~~~~~~
+	#saving the file into a directory~~~~~~~~~~~~~~~~~
 	timeStam = data.grabTimeStamp(c)		#only the date of the timestamp will be printed
 
 	Tk().withdraw()

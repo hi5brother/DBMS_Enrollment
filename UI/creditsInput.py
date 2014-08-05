@@ -26,6 +26,7 @@ class CreditsInputApp:
         self.container = Frame(parent)           #frame container
         self.container.pack()
         self.initialize(courses)        #pass a list of courses 
+        self.backStatus = False
 
     def initialize(self,courses):  
 
@@ -53,7 +54,7 @@ class CreditsInputApp:
         self.subButton['command'] = self.submit
 
         self.quitButton = Button(self.container)            #the quit button will just quit
-        self.quitButton['text'] = "Quit"
+        self.quitButton['text'] = "Back"
         self.quitButton.grid(row = i + 3,column = 1)
         self.quitButton['command'] = self.quit
 
@@ -66,17 +67,21 @@ class CreditsInputApp:
         self.parent.destroy()
 
     def quit(self):
+        self.backStatus = True
         self.parent.destroy()
 
 def runApp(courses):
     root = Tk()
-    root.title("DBMS Enrollment Course Credits")
+    root.title("Course Credits")
     app = CreditsInputApp(root,courses)
     root.mainloop()
 
     """Error checking and validating the input values
     """
 
+    if app.backStatus:
+        return "BACK"
+        
     outputData = []
     try:        #attribute error happens when NO values are output
         for data in app.data:

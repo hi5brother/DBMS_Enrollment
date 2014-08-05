@@ -25,6 +25,7 @@ class ProgWeightInputApp:
 		self.container = Frame(parent)
 		self.container.pack()
 		self.initialize(programs)
+		self.backStatus = False
 
 	def initialize(self, programs):
 		self.infoBox = Label(self.container, text = "Please enter the program weights. \n If the program does not generate grants, input \"n/a\".")
@@ -77,6 +78,7 @@ class ProgWeightInputApp:
 		self.parent.destroy()
 
 	def quit(self):
+		self.backStatus = True
 		self.parent.destroy()
 
 def runApp(programs):
@@ -87,6 +89,8 @@ def runApp(programs):
 
 	"""Error checking and validating the input values
 	"""
+	if app.backStatus:
+		return "BACK"
 
 	outputData = []
 

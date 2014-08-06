@@ -23,12 +23,13 @@
 import os
 import sys
 
-import sqlite3
+from collections import OrderedDict 
 
-import xlrd
-import xlwt
+from updateConstants import checkError
 
 import ExcelOutput
+
+import xlwt
 
 import extractData as data
 import calcGrant as grant
@@ -46,6 +47,26 @@ def runApp():
 
 	sheetName = "DBMS Enrollment Data.xls"		#name of the excel spreadsheet
 
+	tuitionGrantSheetName = "Course Tuition and Grant Revenue Totals"
+	programTotalsSheetName = "Course Breakdown Based on Program"
+	planTotalsSheetName = "Course Breakdown Based on All Plans"
+	sigPlanTotalsSheetName = "Course Breakdown Based on Plans (with >10 enrollments)"
+	yearTotalsSheetName = "Course Breakdown Based on Year"
+	planBreakdownSheetName = "Course Breakdown Based on Selected Plans"
+	programYearSheetName = "Program Breakdown Based on Year"
+	programInfoSheetName = "Program Info"
+
+	sheetsOrderedDict = OrderedDict([
+									(tuitionGrantSheetName, 0),
+									(programTotalsSheetName, 1),
+									(planTotalsSheetName, 2),
+									(sigPlanTotalsSheetName, 3),
+									(yearTotalsSheetName, 4),
+									(planBreakdownSheetName, 5),
+									(programYearSheetName, 6),
+									(programInfoSheetName, 7),
+									])
+
 	cdLocation = os.getcwd()
 	excelLocation = cdLocation + "\\" + sheetName
 
@@ -54,41 +75,82 @@ def runApp():
 	except WindowsError:
 		pass
 
+	'''	Asks user for information that needs to be shown
+	'''
+
+	selectedSheets = UI.sheetsOptionsCheckBox.runScrollingApp(sheetsOrderedDict)		#UI module asks for sheets
+	while not checkError(selectedSheets):
+		UI.errorMessageBox.runApp(selectedSheets)
+		selectedSheets = UI.sheetsOptionsCheckBox.runScrollingApp(sheetsOrderedDict)
+	
+	selectedSheetsKey = []			#used to store the keys of the selected sheets
+
+	for name in selectedSheets:
+
+		selectedSheetsKey.append(sheetsOrderedDict[name])
+
 	book = xlwt.Workbook()
 
-	ExcelOutput.tuitionGrantTotals.write(c,book)
+	if sheetsOrderedDict[tuitionGrantSheetName] in selectedSheetsKey:
 
-	ExcelOutput.programTotals.write(c,book)
+		ExcelOutput.tuitionGrantTotals.write(c,book)
 
-	ExcelOutput.planExpandedTotals.write(c,book)
+	if sheetsOrderedDict[programTotalsSheetName] in selectedSheetsKey:	
 
-	ExcelOutput.planSignificantTotals.write(c,book)
+		ExcelOutput.programTotals.write(c,book)
 
-	ExcelOutput.yearTotals.write(c,book)
+	if sheetsOrderedDict[planTotalsSheetName] in selectedSheetsKey:
 
-	#Make list of plans with only the plan code e.g. "BCHM"
-	rawPlanList = data.grabFullPlanList(c)
-	checkPlanList = []
-	for plan in rawPlanList:
-		plan = plan[0]			#unpack the tuple
-		
-		breakPoint = plan.index('-')	#find the first occurence of "-" that separates BCHM-M-BSH
-		plan = plan[0:breakPoint]		#splice the string to get just BCHM
-		
-		try: 
-			temp = checkPlanList.index(plan)		#check if the course code BCHM exists in the list
+		ExcelOutput.planExpandedTotals.write(c,book)
 
-		except ValueError:
-			checkPlanList.append(plan)			#if not, it is added to the list
+	if sheetsOrderedDict[sigPlanTotalsSheetName] in selectedSheetsKey:
 
-	selectedPlans = UI.planOptionsCheckBox.runScrollingApp(checkPlanList)
+		ExcelOutput.planSignificantTotals.write(c,book)
 
-	for plan in selectedPlans:
-		ExcelOutput.planBreakdown.write(c,book,plan)
+	if sheetsOrderedDict[yearTotalsSheetName] in selectedSheetsKey:
 
-	ExcelOutput.programInfo.write(c,book)
+		ExcelOutput.yearTotals.write(c,book)
 
-	#saving the file into a directory~~~~~~~~~~~~~~~~~
+	if sheetsOrderedDict[planBreakdownSheetName] in selectedSheetsKey:
+		#Make list of plans with only the plan code e.g. "BCHM"
+		rawPlanList = data.grabFullPlanList(c)
+
+		checkPlanList = []
+		for plan in rawPlanList:
+			plan = plan[0]			#unpack the tuple
+			
+			breakPoint = plan.index('-')	#find the first occurence of "-" that separates BCHM-M-BSH
+			plan = plan[0:breakPoint]		#splice the string to get just BCHM
+			
+			try: 
+				temp = checkPlanList.index(plan)		#check if the course code BCHM exists in the list
+
+			except ValueError:
+				checkPlanList.append(plan)			#if not, it is added to the list
+
+		selectedPlans = UI.planOptionsCheckBox.runScrollingApp(checkPlanList)
+		while not checkError(selectedPlans):			#ensure plans are chosen to be output
+			UI.errorMessageBox(selectedPlans)
+			selectedPlans = UI.planOptionsCheckBox.runScrollingApp(checkPlanList)
+
+		for plan in selectedPlans:
+
+			ExcelOutput.planBreakdown.write(c,book,plan)
+
+	if sheetsOrderedDict[programYearSheetName] in selectedSheetsKey:
+
+		ExcelOutput.programYearTotals.write(c,book)
+
+	if sheetsOrderedDict[programInfoSheetName] in selectedSheetsKey:
+
+		ExcelOutput.programInfo.write(c,book)
+
+	'''Save the file into a specific location. This uses the tkfiledialog module
+		to select the save location.
+		The default save name is "DBMS Enrollment Data " and the timestamp date.
+		A location must be chosen for save location.
+	'''
+
 	timeStam = data.grabTimeStamp(c)		#only the date of the timestamp will be printed
 
 	Tk().withdraw()
@@ -96,7 +158,7 @@ def runApp():
 	filename = asksaveasfilename(defaultextension = '.xls', initialfile = 'DBMS Enrollment Data ' + timeStam[:10])
 
 	while filename == '':		#a location must be saved
-		print "User Error: File was not saved."
+		#UI.errorMessageBox.runApp("File was not saved. Please enter valid name.")
 		filename = asksaveasfilename(defaultextension = '.xls', initialfile = 'DBMS Enrollment Data ' + timeStam[:10])
 
 	try:
@@ -104,7 +166,9 @@ def runApp():
 	except IndexError:		#exists if no sheets are printed (empty file)
 		pass
 	except IOError:
-		print "Error: Please close all Excel workbooks."
+		UI.errorMessageBox.runApp("Error: Please close all Excel workbooks.")
 
 if __name__ == '__main__':
 	runApp()
+
+

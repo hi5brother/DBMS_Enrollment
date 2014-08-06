@@ -67,6 +67,22 @@ class Course:
     def printCourse(self):
         print str(self.subject) + " " + str(self.catalog) + " ," + str(self.credits)
 
+def checkDirectory(location, extension):        #possibly move it to excel preprocess
+    '''Searches the directory for excel files only. 
+        If directory does not exist, it returns False
+        If there are no excel files, it returns False
+    '''
+    filesList = []
+    if os.path.exists(location):
+        filesList = findFiles(location, extension)
+
+        if len(filesList) > 0:
+            return True
+        else:
+            return False
+    else:
+        return False
+
 def findFiles(location, extension):
 
     ''' #Searches a location for all files that have a specific extension
@@ -143,14 +159,14 @@ def getStudents(headingsNeeded, currentSheet):
     popRows.extend(studentProcessing.findTriple(studList))            #flags the index for triples
 
 
-    print popRows
+    #print popRows
     for i in reversed(popRows):                     #when iterating in reverse, the wrong things do not get popped off the list
         studList.pop(i)                             #pop off headings/whitespaces and triples
 
     popRows = []                                      #resets the list so we can add duplicate indexes
 
-    for stud in studList:
-        print str(stud.studID) + "   " +stud.program
+    # for stud in studList:
+    #     print str(stud.studID) + "   " +stud.program
     for i in studentProcessing.findDuplicate(studList):               #finds the duplicates and adds the indices to the popRows list
         studList[i + 1].plan2 = studList[i].plan        #before the duplicate is popped, the second plan is added to the data row
     popRows.extend(studentProcessing.findDuplicate(studList))
@@ -195,7 +211,7 @@ def checkWorkBookValues(currentSheet):
     '''
     studList = [Student() for i in range(currentSheet.nrows)]         #create the array of students
 
-    print str(currentSheet) + " " + str(currentSheet.nrows) #@@@@@@@@@@@@@@@@@@@@@@
+   #print str(currentSheet) + " " + str(currentSheet.nrows) #@@@@@@@@@@@@@@@@@@@@@@
 
     for row in range(currentSheet.nrows):
         '''parse the data of each excel row into a Student object, which is in the array'''
@@ -203,125 +219,23 @@ def checkWorkBookValues(currentSheet):
 
         values.append(currentSheet.cell(row,6).value)
 
-        print type(values[0])
+        #print type(values[0])
 
 
-def checkError(funcOutput):     #returns false is there is an error, returns true if no error exists
-    '''Checks the output of the function to see if an error message was returned
-    '''
+# def showSheets(dataLocation):
+#     excelExtension = "xls"
+#     filesList = findFiles(dataLocation, excelExtension)
 
-    if 'Error' in funcOutput:       #sees if the output returns an error
-        return False
-    else:                       #output does not return an error
-        return True
+#     wbData = []
+#     sheetAddress = []
+#     for i in range(len(filesList)):
+#         wbData.append(xlrd.open_workbook(filesList[i]))
+#         sheetAddress.append(wbData[i].sheet_by_index(0))
 
-def inputCredits(c):
-    
-    c.execute("ALTER TABLE courses ADD credits FLOAT;")
-    
-    c.execute("SELECT course_code, term FROM courses;") #grabs names of all the courses
-    allCourses = c.fetchall()
-
-    courseDisplayName = []
-
-    for i in range(len(allCourses)):
-        #first element [i][0] is the course code, the second [i][1] is the term that the course is in
-        courseDisplayName.append(allCourses[i][0] + " - Term: " + str(allCourses[i][1]))  
-    
-    creditsList = UI.creditsInput.runApp(courseDisplayName)    #initializes the entry widget to input credits data
-    while not checkError(creditsList):                  #do while loop that repeats until there is no more error
-        UI.errorMessageBox.runApp(creditsList)
-        creditsList = UI.creditsInput.runApp(courseDisplayName)
-
-    for credit in creditsList:
-        c.execute('''UPDATE courses SET credits = ?;''',(credit,))      #adds to each course record the number of credits
-
-    return True
-
-def inputUnitFees(c):
-    c.execute("SELECT DISTINCT program FROM students;")
-    programList = c.fetchall()
-
-    unitFeesList = UI.feeUnitsInput.runApp(programList)
-    while not checkError(unitFeesList) and not len(programList) == len(unitFeesList):
-        UI.errorMessageBox.runApp(unitFeesList)
-        unitFeesList = UI.feeUnitsInput.runApp(programList)
-
-    if len(programList) == len(unitFeesList):
-        for i in range(len(programList)):
-
-            val = ''.join(programList[i])
-
-            c.execute("INSERT INTO program_info(program_name, unit_fees) VALUES (?,?);",(val, unitFeesList[i]))
-    return True
-
-def inputBIU(c):
-    BIUList = UI.BIUInput.runApp()
-    while not checkError(BIUList) and not len(BIUList) == 1:
-        UI.errorMessageBox.runApp(BIUList)
-        BIUList = UIBIUInput.runApp()
-
-    if len(BIUList) == 1:
-
-        c.execute("INSERT INTO constants (name,value) VALUES (?,?);",("BIU Value", BIUList[0]))
-
-    return True
-
-def inputFormulaFees(c):
-    c.execute("SELECT DISTINCT program FROM students;")
-    programList = c.fetchall()
-
-    formulaFeeList = UI.formulaFeesInput.runApp(programList)
-    while not checkError(formulaFeeList) and not len(programList) == len(formulaFeeList):
-        UI.errorMessageBox.runApp(formulaFeeList)
-        formulaFeeList = UI.formulaFeesInput.runApp(programList)
-
-    if len(programList) == len(formulaFeeList):
-        for formulaFee in formulaFeeList:
-
-            c.execute("UPDATE program_info SET formula_fees = ?;",(formulaFee,))
-
-    return True
-
-def inputNormalUnits(c):
-    c.execute("SELECT DISTINCT program FROM students;")
-    programList = c.fetchall()
-
-    normalUnitsList = UI.normalUnitsInput.runApp(programList)
-    while not checkError(normalUnitsList) and not len(programList) == len(normalUnitsList):
-        UI.errorMessageBox.runApp(normalUnitsList)
-        normalUnitsList = UI.normalUnitsINput.runApp(programList)
-
-    if len(programList) == len(normalUnitsList):
-        for numOfUnits in normalUnitsList:
-            c.execute("UPDATE program_info SET normal_units = ?;", (numOfUnits,))
-
-    return True
-
-def inputProgWeights(c):
-    c.execute("SELECT DISTINCT program FROM students;")
-    programList = c.fetchall()
-
-    programList.append("1st Year Arts")
-    programList.append("1st Year Science")
-
-    progWeightsList = UI.programWeightsInput.runApp(programList)
-    while not checkError(progWeightsList) and not len(programList) == len(progWeightsList):
-        UI.errorMessageBox.runApp(progWeightsList)
-        progWeightsList = UI.programWeightsInput.runApp(programList)
-
-    if len(programList) == len(progWeightsList):
-        for progWeight in progWeightsList[:2]:
-
-            c.execute("UPDATE program_info SET program_weight = ?;",(progWeight,))
-        for i in range(len(progWeightsList)-2,len(progWeightsList)):
-
-            c.execute("INSERT INTO program_info(program_name, program_weight) VALUES (?,?);",(programList[i], progWeightsList[i],))
+#     courseTableHeadings = 
 
 
-    return True
-
-def main():
+def main(rawDataLocation):
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #Open Database
     ''' Initialize all the connections to SQLite
@@ -329,12 +243,17 @@ def main():
     '''
 
     cdLocation = os.getcwd()
-    dbLocation = cdLocation + "\\testv2.db" #"""@@@@@@@@@@@@@@@@@@@ TAKE OUT THE HARD CODE"""
-    rawDataLocation = cdLocation + "\\full_data"
+    dbLocation = cdLocation + "\\enrolldata.db" #"""@@@@@@@@@@@@@@@@@@@ TAKE OUT THE HARD CODE"""
+    #rawDataLocation = cdLocation + "\\full_data"
 
-    os.remove(dbLocation) #"""@@@@@@@@@@ REMOVES THE DB EACH TIME THIS RUNS, FOR TESTING PURPOSES"""
+    try:
+        os.remove(dbLocation) #"""@@@@@@@@@@ REMOVES THE DB EACH TIME THIS RUNS, FOR TESTING PURPOSES"""
+    except WindowsError:        #WindowsError appreas when there is no database file
+        pass
+
 
     conn = sqlite3.connect(dbLocation)
+
     c = conn.cursor()
 
     c.execute("PRAGMA foreign_keys=ON;")    #enables foreign keys
@@ -511,6 +430,7 @@ def main():
         courseNames.append(courseLists[i].concatenateCourseCode())
 
     c.execute("ALTER TABLE courses ADD course_code TEXT;")  #adding the column with the concatenateCourseCoded course code
+    
     for i in range(len(sheetAddress)):
         c.execute('''INSERT INTO courses(subject, catalog_number, course_code, term) 
                     VALUES(?,?,?,?);''',(courseLists[i].subject, courseLists[i].catalog, courseNames[i], courseLists[i].term))
@@ -528,55 +448,47 @@ def main():
                     #finds the course_id of the most recently entered course list from the courses table
 
         #convert the tuple to an integer
-        temp=c.fetchone()
-        courseNum=0
-        count=0
+        temp = c.fetchone()
+        courseNum = 0
+        count = 0
         for a in reversed(temp):
-            courseNum=courseNum+a*10**count
-            count=count+1
+            courseNum = courseNum + a * 10 ** count
+            count = count + 1
 
         ''' Goes through all the students in the current course list and accesses all rows from the SQL database.
          It will add the courses that a student is enrolled in.
         '''
         c.execute("SELECT * FROM students")
-        val=c.fetchall()
+        val = c.fetchall()
 
         for stud in studentLists[i]: #goes through all the students in current course list
             for row in val: #goes through all rows of the table
-                for i in reversed(range(1,maxCourses+1)): #accesses the row's course values, course 1 thru maxCourses
-                    if row[len(row)-i] is None and stud.studID==row[1]: #must check if the student is enrolled in the current course
-                        c.execute("UPDATE students SET course"+str(maxCourses+1-i)+"=? WHERE student_id=?;",(str(courseNum),row[1]))
+                for i in reversed(range(1,maxCourses + 1)): #accesses the row's course values, course 1 thru maxCourses
+                    if row[len(row)-i] is None and stud.studID == row[1]: #must check if the student is enrolled in the current course
+                        c.execute("UPDATE students SET course"+str(maxCourses + 1 - i) +"=? WHERE student_id=?;",(str(courseNum),row[1]))
                         break
 
+    #Initialize the program_fino table by inserting just the program names
+    c.execute("SELECT DISTINCT program FROM students;")
+    programList = c.fetchall()
+
+    for i in range(len(programList)):           
+        val = "".join(programList[i])
+
+        c.execute("INSERT INTO program_info(program_name) VALUES (?);",(val,))
+
+    #Update the timestamp
     c.execute('''UPDATE timeRecord 
                 SET timeStam = ? 
                 WHERE time_id = 1;''', (dateTimeOutput.pythonTime(),))     #updates the time stamp for the table after the spreadsheets were pulled
+    
+    #Add the credits column (blank)
+    c.execute("ALTER TABLE courses ADD credits FLOAT;")     
 
 
-    '''Input the credits using the entry widget (creditsInput module) 
-    '''
-
-    '''Insert auxiliary tables that contain information for processing
-    - Unit Fees
-    - BIU/Formula Fee
-    - Program Weights
-
-    '''
-    inputCredits(c)
-
-    inputUnitFees(c)
-
-    inputBIU(c)
-
-    inputFormulaFees(c)
-
-    inputNormalUnits(c)
-
-    inputProgWeights(c)
-
-        
     conn.commit()
     conn.close()
 
 if __name__ == "__main__":
-    main()
+
+    main("C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data")

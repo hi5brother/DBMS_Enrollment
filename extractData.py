@@ -147,7 +147,6 @@ def grabUnitFees(connDB,program_name):		#take the student's program name (str) a
 
 
 def grabProgramWeight(connDB, program_name):	#pass in a string like ['program']
-	print program_name
 	connDB.execute("SELECT program_weight FROM program_info WHERE program_name = ?;", program_name)
 	data = connDB.fetchone()
 	data = data[0]
@@ -286,7 +285,16 @@ def grabProgInfo(connDB,field,course_id):
 	data = data[0]
 	return data
 
-
+#FOR SHEETS THAT DIFFERENTIATE BASED ON PROGRAM
+def grabProgramYearEnroll(connDB, program, year):
+	connDB.execute('''SELECT COUNT(*)
+						FROM students 
+						WHERE program = ? and
+							proj_level = ?;
+					''', (program, str(year)))
+	data = connDB.fetchone()
+	data = data[0]
+	return data
 
 #SHOW TYPES OF OUTPUT
 def main():

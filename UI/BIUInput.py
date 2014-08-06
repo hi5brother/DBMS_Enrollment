@@ -79,6 +79,8 @@ def runApp():
 
     except AttributeError:
         return "Data Error: No data was input"
+    except UnboundLocalError:
+        return "Data Error: No data was input"
 
     if outputData[0] == "":      #error message if BIU was not entered
         return "User Error: BIU value was not inputted"

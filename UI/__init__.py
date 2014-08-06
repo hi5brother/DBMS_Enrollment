@@ -9,6 +9,7 @@
 # Copyright:   (c) DBMS 2014
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
+import askDataDirectory
 
 import BIUInput
 
@@ -20,6 +21,8 @@ import feeUnitsInput
 
 import formulaFeesInput
 
+import gridBox
+
 import mainMenu
 
 import normalUnitsInput
@@ -27,6 +30,8 @@ import normalUnitsInput
 import planOptionsCheckBox
 
 import programWeightsInput
+
+import sheetsOptionsCheckBox
 
 #How to freeze Tkinter Applications
 #https://docs.python.org/3/faq/gui.html

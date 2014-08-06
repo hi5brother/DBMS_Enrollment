@@ -21,8 +21,8 @@ class OutputDataApp:
 		self.initialize(dataString)
 		
 	def initialize(self,data):
-		self.txtBox = Label(self.container,text=data)
-		self.txtBox.config(width = 30, height = 4)
+		self.txtBox = Label(self.container,text = data)
+		self.txtBox.config(width = len(data), height = 4)
 		self.txtBox.pack(side = TOP)
 		
 		self.okButton = Button(self.container)

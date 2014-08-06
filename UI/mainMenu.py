@@ -19,6 +19,7 @@ class menuScreen:
 		self.container = Frame(parent)
 		self.container.pack()
 		self.initialize()
+		self.quitStatus = True
 
 	def initialize(self):
 		#Menu bar stuff
@@ -66,9 +67,11 @@ class menuScreen:
 
 	def submit(self, option):
 		self.data = option
+		self.quitStatus = False
 		self.parent.destroy()
 
 	def quit(self):
+		self.quitStatus = True
 		self.parent.destroy()
 
 
@@ -78,11 +81,14 @@ def runApp():
 	app = menuScreen(root)
 	root.mainloop()
 
+	if app.quitStatus is True:		#if the quit option is selected
+		return "QUIT APPLICATION"
+
 	try:
 		return app.data
+	
 	except AttributeError:		#if close button is clicked, program just closes
-		print "Bye!"
-		pass
+		return "QUIT APPLICATION"
 
 if __name__ == '__main__':
 	runApp()

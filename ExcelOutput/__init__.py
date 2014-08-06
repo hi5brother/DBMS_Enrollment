@@ -9,14 +9,17 @@
 # Copyright:   (c) DBMS 2014
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
+'''	The module is used by writeToExcel.py when the "View Data" button is clicked
+'''
 
-import tuitionGrantTotals
-import programTotals
+import planBreakdown
 import planExpandedTotals
 import planSignificantTotals
-import yearTotals
-import planBreakdown
 import programInfo
+import programTotals
+import programYearTotals
+import tuitionGrantTotals
+import yearTotals
 
 '''	This import heading will import modules from the parent directory
 	import os

@@ -25,10 +25,12 @@ def write(c,book):
 	columnWidth(sheet, 10)
 
 	courseNameStr = 'Course Name'
+	termNameStr = 'Term'
 	enrollmentsNameStr = 'Enrollments'
 
 	columns = {courseNameStr : 0,
-				enrollmentsNameStr : 1}		#hardcoded columns
+				termNameStr : 1,
+				enrollmentsNameStr : 2}		#hardcoded columns
 
 	for columnName in columns:				#write hardcoded columns 
 		sheet.write(0, columns[columnName], columnName)
@@ -52,6 +54,9 @@ def write(c,book):
 
 		courseName = data.grabCourseName(c, course)		#write down the courses in the first row
 		sheet.write(count,columns[courseNameStr],courseName)
+
+		term = data.grabCourseTerm(c, course)
+		sheet.write(count, columns[termNameStr], term)
 
 		totEnrollments = data.grabEnrollmentNumber(c,course)
 		sheet.write(count,columns[enrollmentsNameStr], totEnrollments)

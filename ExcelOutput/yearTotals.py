@@ -24,11 +24,19 @@ def write(c,book):
 
 	columnWidth(sheet, 7)
 
+	freezePanes(sheet,1)
+
 	c.execute("SELECT DISTINCT course_id FROM courses;")
 	courseList = c.fetchall()
 
 	courseNameStr = 'Course Name'
-	columns = {courseNameStr : 0,}
+	termNameStr = 'Term'
+	enrollmentsNameStr = 'Enrollments'
+	columns = {courseNameStr : 0,
+				termNameStr : 1,
+				enrollmentsNameStr : 2}
+
+	hardCodedColumns = len(columns)
 
 	for columnName in columns:
 		sheet.write(0, columns[columnName], columnName)
@@ -37,7 +45,7 @@ def write(c,book):
 	yearList = c.fetchall()
 
 	for year in yearList:
-		columns[year] = yearList.index(year) + 1
+		columns[year] = yearList.index(year) + hardCodedColumns
 		sheet.write(0, columns[year],"Year " + str(year[0]))
 
 	count = 1
@@ -48,6 +56,12 @@ def write(c,book):
 		courseName = data.grabCourseName(c, course)		#write down the courses in the first row
 		sheet.write(count, columns[courseNameStr], courseName)
 
+		term = data.grabCourseTerm(c, course)
+		sheet.write(count, columns[termNameStr], term)
+
+		enrollments = data.grabEnrollmentNumber(c, course)
+		sheet.write(count, columns[enrollmentsNameStr], enrollments)
+
 		for year in yearList:		#iterate through years 1,2,3,4
 
 			yearCount = data.grabStudentYearEnroll(c, year[0], course)	
@@ -55,6 +69,5 @@ def write(c,book):
 
 		count = count + 1
 
-	freezePanes(sheet,1)
 
 	return True

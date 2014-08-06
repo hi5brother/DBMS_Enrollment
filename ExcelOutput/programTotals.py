@@ -31,6 +31,7 @@ def write(c,book):
 	programsList = c.fetchall()
 
 	courseNameStr = 'Course Name'
+	termNameStr = 'Term'
 	enrollmentNameStr = 'Enrollments'
 
 	fYrArtsStr = 'Arts (1st)'		#these help differentiate between 1st year artsci HONOURS and upper year artsci HONOURS
@@ -38,12 +39,14 @@ def write(c,book):
 	upYrArtsStr = 'Arts Hon (2-4)'
 	upYrSciStr = 'Science Hon (2-4)'
 
-	columns = {courseNameStr : 0,
-				enrollmentNameStr : 1,
-				fYrArtsStr : 2,
-				fYrSciStr : 3,
-				upYrArtsStr : 4,
-				upYrSciStr : 5,
+	columns = {
+				courseNameStr : 0,
+				termNameStr : 1,
+				enrollmentNameStr : 2,
+				fYrArtsStr : 3,
+				fYrSciStr : 4,
+				upYrArtsStr : 5,
+				upYrSciStr : 6,
 				}		#Creating all the headings (Course Name, BA, BAH, BSCH...) and hard code 1st year arts and sci
 	
 	for columnName in columns:		#write hardcoded column headings (Name, total enrollment, etc)
@@ -63,11 +66,14 @@ def write(c,book):
 		courseName = data.grabCourseName(c, course)		
 		sheet.write(count, columns[courseNameStr], courseName)
 
+		term = data.grabCourseTerm(c,course)
+		sheet.write(count, columns[termNameStr], term)
+
 		enrollments = data.grabEnrollmentNumber(c,course)
 		sheet.write(count, columns[enrollmentNameStr], enrollments)
 
 		for program in programsList:			#Outputs enrollments for all programs (except 1st year Arts Sci)
-			
+
 			studCount = data.grabStudentEnrollment(c, program[0], course)
 			sheet.write(count, columns[program], studCount)
 

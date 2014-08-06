@@ -28,10 +28,16 @@ def write(c, book):
 	courseList = c.fetchall()
 
 	courseNameStr = 'Course Name'
+	termNameStr = 'Term'
+	enrollmentsNameStr = 'Enrollments'
 
 	planList = data.grabFullPlanList(c)
 
-	columns = {courseNameStr : 0,}
+	columns = {courseNameStr : 0,
+				termNameStr : 1,
+				enrollmentsNameStr : 2}
+
+	hardCodedColumns = len(columns)
 
 	sigPlanList = []		#filter out plans with very little enrollments in DBMS courses (eg ENG or COMM plans)
 	
@@ -40,7 +46,7 @@ def write(c, book):
 			If the number of people in that plan cannot exceed 10 people for any of the courses, 
 			they will not be included in this sheet.
 			
-			This for loop FILTERS
+			The second for loop FILTERS
 		'''
 		studCount = []		
 		addToList = False		
@@ -62,7 +68,7 @@ def write(c, book):
 		planBreakdown.write(0, columns[columnName], columnName)
 
 	for plan in sigPlanList:		#only write the relevant plans into each column
-		columns[plan] = sigPlanList.index(plan) + 1
+		columns[plan] = sigPlanList.index(plan) + hardCodedColumns
 		planBreakdown.write(0, columns[plan], plan)
 
 	count = 1
@@ -74,9 +80,16 @@ def write(c, book):
 		courseName = data.grabCourseName(c, course)
 		planBreakdown.write(count,columns[courseNameStr],courseName)
 
+		term = data.grabCourseTerm(c, course)
+		planBreakdown.write(count, columns[termNameStr], term)
+
+		enrollments = data.grabEnrollmentNumber(c, course)
+		planBreakdown.write(count, columns[enrollmentsNameStr],enrollments)
+
 		for plan in sigPlanList:
 			studCount = data.grabStudentPlanEnroll(c, plan[0], course)	#gotta unpack that plan
 			planBreakdown.write(count, columns[plan], studCount)
+
 
 		count = count + 1
 

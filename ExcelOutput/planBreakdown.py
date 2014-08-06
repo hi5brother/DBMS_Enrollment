@@ -34,8 +34,9 @@ def write (c,book,plan):
 	informationStartRow = 2
 
 	courseNameStr = 'Course Name'
+	termStr = 'Term'
 	sheet.write(planRow,0, courseNameStr)
-
+	
 	columnWidth(sheet,10)
 
 	c.execute("SELECT DISTINCT course_id FROM courses;")		
@@ -97,3 +98,4 @@ def write (c,book,plan):
 	freezePanes(sheet,2)
 
 	return True
+	

@@ -144,6 +144,7 @@ def runApp():
 	if sheetsOrderedDict[programInfoSheetName] in selectedSheetsKey:
 
 		ExcelOutput.programInfo.write(c,book)
+	
 
 	'''Save the file into a specific location. This uses the tkfiledialog module
 		to select the save location.

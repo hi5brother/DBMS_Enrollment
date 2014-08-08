@@ -35,6 +35,4 @@ def write(c,book):
 
 	planList = data.grabFullPlanList(c)
 
-	for plan in planList:
-		
-
+	

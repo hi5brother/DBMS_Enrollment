@@ -45,7 +45,6 @@ class Instance:
 
 			self.menu = UI.mainMenu.runApp()
 
-			print self.menu  	#@@@@@@@@@@@@@@@@@@@@@@@@@@@ TAKE OUT LATER
 
 			if self.menu == "View Data":
 

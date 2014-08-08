@@ -43,7 +43,7 @@ def inputCredits(c, inputStage):
         #first element [i][0] is the course code, the second [i][1] is the term that the course is in
         courseDisplayName.append(allCourses[i][0] + " - Term: " + str(allCourses[i][1]))  
     
-    creditsList = UI.creditsInput.runApp(courseDisplayName)    #initializes the entry widget to input credits data
+    creditsList = UI.creditsInputScrolling.runApp(courseDisplayName)    #initializes the entry widget to input credits data
     while not checkError(creditsList):                  #do while loop that repeats until there is no more error
         UI.errorMessageBox.runApp(creditsList)
         creditsList = UI.creditsInput.runApp(courseDisplayName)
@@ -184,7 +184,6 @@ def runApp():
 	
 	while inputStage != numOfFrames:
 
-
 		if inputStage == 0:
 
 			inputStage = inputCredits(c,inputStage)
@@ -209,7 +208,7 @@ def runApp():
 
 			inputStage = inputProgWeights(c,inputStage)
 
-		elif inputStage == -1:	#when it is equal to 0 (go back on inputCredits)
+		elif inputStage == -1:	#when it is equal to -1 (go back on inputCredits)
 
 			inputStage = 0  #makes them input credits again
 

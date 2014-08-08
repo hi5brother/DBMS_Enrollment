@@ -15,6 +15,8 @@ import BIUInput
 
 import creditsInput
 
+import creditsInputScrolling
+
 import errorMessageBox
 
 import feeUnitsInput

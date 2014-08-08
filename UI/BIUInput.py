@@ -70,16 +70,19 @@ def runApp():
 
     try:                                 #attribute error happens when NO values are output
         if "$" in app.data:     
-            data = data.translate(None,"$")         #removes the $ sign if it is present
+            data = app.data.translate(None,"$")         #removes the $ sign if it is present
+        else:
+            data = app.data
             
-        if app.data.isdigit() or data.replace('.',"",1).isdigit():
-            outputData.append((float(app.data)) )     #converts the BIU value from str to float
+        if data.isdigit() or data.replace('.',"",1).isdigit():
+            outputData.append((float(data)) )     #converts the BIU value from str to float
         else:
             return "User Error: Invalid inputs were used"       #if it isnt a number or "n/a"
 
-    except AttributeError:
+    except AttributeError:          #when the window is just closed
         return "Data Error: No data was input"
     except UnboundLocalError:
+        print app.data
         return "Data Error: No data was input"
 
     if outputData[0] == "":      #error message if BIU was not entered

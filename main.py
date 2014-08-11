@@ -12,7 +12,6 @@
 import os
 import sys
 
-
 import preprocess
 import writeToExcel
 
@@ -36,11 +35,9 @@ class Instance:
 		
 		self.Start()
 
-	def MainLoop(self):
-
-		pass
-
-	def Start(self):
+	def Start(self):	
+		''' Main loop of program. The menu tk app returns strings based on the button pressed.
+		'''
 		while self.menu != "QUIT APPLICATION":
 
 			self.menu = UI.mainMenu.runApp()
@@ -66,7 +63,7 @@ class Instance:
 
 				self.UpdateConstants()
 
-			#self.UpdateData()
+		sys.exit()	
 
 	def SetDataLocation(self):
 		'''See if the directory with spreadsheets exists
@@ -99,20 +96,19 @@ class Instance:
 
 	def OutputExcel(self):
 		writeToExcel.runApp()
-		self.output = True
 
 	def UpdateData(self,dataLocation):
 		preprocess.main(dataLocation)
 
 	def UpdateConstants(self):
 		updateConstants.runApp()
-		self.constants = True
-
 
 def main():
-	program = Instance()
+	
+	program = Instance() 
 
-#pass in the datalocation + option chosen into the preprocess function
+	del program 	#kill the object
+
 		
 if __name__ == '__main__':
 	main()

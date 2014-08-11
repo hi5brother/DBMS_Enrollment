@@ -36,7 +36,7 @@ def grabTimeStamp(connDB):
 
 	return data
 
-#STDUENT SPECIFIC
+#STUDENT SPECIFIC
 
 def grabStudentProgram(connDB,stude_id):		#
 	connDB.execute("SELECT program FROM students WHERE stud_id = ?;",(stude_id,))

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Name:        preprocess_v4
+# Name:        preprocess
 # Purpose:      create a database by extracting data from a spreadsheet
 #               extract the data and process it into the SQLite database
 #               This extracts the data from multiple spreadsheets
@@ -19,9 +19,9 @@ import os
 import sys
 
 import time
-import sqlite3  #SQLite API
-import xlrd #reading xls files
-import xlwt #writing xls files
+import sqlite3          #SQLite API
+import xlrd             #reading xls files
+import xlwt             #writing xls files
 import string
 import types
 import win32com.client  #for executing excel macros @@@@@@@@@@@@not installed for some reason
@@ -30,13 +30,7 @@ import extractData      #various functions used, stores location of DATABASE
 import studentProcessing        #module that deletes whitespace, double/triple majors when processing each spreadsheet
 import dbFormat                 #formats the tables for the database
 
-import UI.creditsInput    #UI box for inputting credits
-import UI.feeUnitsInput       #UI box for inputting unit fees
-import UI.programWeightsInput      #asks for program weights, returns list  (also asks for 1st year Arts and Sci)
-import UI.formulaFeesInput     #asks for formula fees, returns list
-import UI.BIUInput             #asks for BIU and returns a list with 1 element
-import UI.normalUnitsInput
-import UI.errorMessageBox  #UI that displays the error
+import UI
 
 import dateTimeOutput
 import calcTuition
@@ -133,8 +127,6 @@ def getStudents(headingsNeeded, currentSheet):
 
     studList = [Student() for i in range(currentSheet.nrows)]         #create the array of students
 
-    print str(currentSheet) + " " + str(currentSheet.nrows) #@@@@@@@@@@@@@@@@@@@@@@
-
     for row in range(currentSheet.nrows):
         '''parse the data of each excel row into a Student object, which is in the array'''
         values = []
@@ -158,15 +150,11 @@ def getStudents(headingsNeeded, currentSheet):
        studList[i + 2].plan3 = studList[i].plan
     popRows.extend(studentProcessing.findTriple(studList))            #flags the index for triples
 
-
-    #print popRows
     for i in reversed(popRows):                     #when iterating in reverse, the wrong things do not get popped off the list
         studList.pop(i)                             #pop off headings/whitespaces and triples
 
     popRows = []                                      #resets the list so we can add duplicate indexes
 
-    # for stud in studList:
-    #     print str(stud.studID) + "   " +stud.program
     for i in studentProcessing.findDuplicate(studList):               #finds the duplicates and adds the indices to the popRows list
         studList[i + 1].plan2 = studList[i].plan        #before the duplicate is popped, the second plan is added to the data row
     popRows.extend(studentProcessing.findDuplicate(studList))
@@ -177,8 +165,6 @@ def getStudents(headingsNeeded, currentSheet):
 
     for i in range(len(studList)):
         studList[i].convert()                       #finalize input data
-
-
 
     return studList                                    #returns a list of Student objects
 
@@ -211,29 +197,11 @@ def checkWorkBookValues(currentSheet):
     '''
     studList = [Student() for i in range(currentSheet.nrows)]         #create the array of students
 
-   #print str(currentSheet) + " " + str(currentSheet.nrows) #@@@@@@@@@@@@@@@@@@@@@@
-
     for row in range(currentSheet.nrows):
         '''parse the data of each excel row into a Student object, which is in the array'''
         values = []
 
         values.append(currentSheet.cell(row,6).value)
-
-        #print type(values[0])
-
-
-# def showSheets(dataLocation):
-#     excelExtension = "xls"
-#     filesList = findFiles(dataLocation, excelExtension)
-
-#     wbData = []
-#     sheetAddress = []
-#     for i in range(len(filesList)):
-#         wbData.append(xlrd.open_workbook(filesList[i]))
-#         sheetAddress.append(wbData[i].sheet_by_index(0))
-
-#     courseTableHeadings = 
-
 
 def main(rawDataLocation):
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

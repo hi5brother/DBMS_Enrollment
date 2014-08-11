@@ -39,36 +39,33 @@ class menuScreen:
 		self.infoBox.config (width = 20, height = 2)
 		self.infoBox.grid(row = 0, column = 0)
 
-		options = ["View Data", "Analytics", "Update Data", "Update Constants"]
+		options = ["Update Data", "Update Constants","View Data"]
 
 		self.optionBox = Button(self.container)
 		self.optionBox['text'] = options[0]
-		self.optionBox.config(width = 20, height = 2)
+		self.optionBox.config(width = 60, height = 2)
 		self.optionBox.grid (row = 1, column = 0)
 		self.optionBox['command'] = lambda: self.submit(options[0])
 
 		self.optionBox = Button(self.container)
 		self.optionBox['text'] = options[1]
-		self.optionBox.config(width = 20, height = 2)
-		self.optionBox.grid (row = 1, column = 1)
+		self.optionBox.config(width = 60, height = 2)
+		self.optionBox.grid (row = 2, column = 0)
 		self.optionBox['command'] = lambda: self.submit(options[1])
 
 		self.optionBox = Button(self.container)
 		self.optionBox['text'] = options[2]
-		self.optionBox.config(width = 20, height = 2)
-		self.optionBox.grid (row = 2, column = 0)
+		self.optionBox.config(width = 60, height = 2)
+		self.optionBox.grid (row = 3, column = 0)
 		self.optionBox['command'] = lambda: self.submit(options[2])
-
-		self.optionBox = Button(self.container)
-		self.optionBox['text'] = options[3]
-		self.optionBox.config(width = 20, height = 2)
-		self.optionBox.grid (row = 2, column = 1)
-		self.optionBox['command'] = lambda: self.submit(options[3])
 
 	def submit(self, option):
 		self.data = option
 		self.quitStatus = False
 		self.parent.destroy()
+
+	def help(self,option):
+		pass 	#
 
 	def quit(self):
 		self.quitStatus = True

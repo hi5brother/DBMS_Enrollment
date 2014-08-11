@@ -32,7 +32,8 @@ def checkBack(funcOutput):
 
 
 def inputCredits(c, inputStage):
-    
+    '''Implements the creditsInputScrolling tk app and will update the database
+    '''
         
     c.execute("SELECT course_code, term FROM courses;") #grabs names of all the courses
     allCourses = c.fetchall()
@@ -46,7 +47,7 @@ def inputCredits(c, inputStage):
     creditsList = UI.creditsInputScrolling.runApp(courseDisplayName)    #initializes the entry widget to input credits data
     while not checkError(creditsList):                  #do while loop that repeats until there is no more error
         UI.errorMessageBox.runApp(creditsList)
-        creditsList = UI.creditsInput.runApp(courseDisplayName)
+        creditsList = UI.creditsInputScrolling.runApp(courseDisplayName)
     
     if checkBack(creditsList):
     	return inputStage - 1
@@ -57,6 +58,8 @@ def inputCredits(c, inputStage):
     return inputStage + 1
 
 def inputUnitFees(c, inputStage):
+	''' Uses the feeUnitsInput tk app and will update the database
+	'''
 	c.execute("SELECT DISTINCT program FROM students;")
 	programList = c.fetchall()
 
@@ -75,6 +78,9 @@ def inputUnitFees(c, inputStage):
 	return inputStage + 1
 
 def inputBIU(c, inputStage):
+	''' Uses the BIUInput tk app and will update the database
+	'''
+
 	BIUList = UI.BIUInput.runApp()
 	while not checkError(BIUList) and not len(BIUList) == 1:
 		UI.errorMessageBox.runApp(BIUList)
@@ -88,6 +94,9 @@ def inputBIU(c, inputStage):
 	return inputStage + 1
 
 def inputFormulaFees(c, inputStage):
+	''' Uses the formulaFeesInput tk app and will update the database
+	'''
+
 	c.execute("SELECT DISTINCT program FROM students;")
 	programList = c.fetchall()
 
@@ -113,7 +122,7 @@ def inputNormalUnits(c, inputStage):
 	normalUnitsList = UI.normalUnitsInput.runApp(programList)
 	while not checkError(normalUnitsList) and not len(programList) == len(normalUnitsList):
 		UI.errorMessageBox.runApp(normalUnitsList)
-		normalUnitsList = UI.normalUnitsINput.runApp(programList)
+		normalUnitsList = UI.normalUnitsInput.runApp(programList)
 
 	if checkBack(normalUnitsList):
 		return inputStage - 1 
@@ -162,18 +171,11 @@ def inputProgWeights(c, inputStage):
 	return inputStage + 1
 
 
-'''Input the credits using the entry widget (creditsInput module) 
-'''
-
-'''Insert auxiliary tables that contain information for processing
-- Unit Fees
-- BIU/Formula Fee
-- Program Weights
-
-'''
-
 def runApp():
-
+	''' Runs all the functions in a loop
+		If the submit button is pressed for each app, the next app will shows
+		If the back button is pressed, the previous app will show up (data will be reentered entirely)
+	'''
 	conn = data.connectDB()
 
 	c = conn.cursor()

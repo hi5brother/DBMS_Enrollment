@@ -22,7 +22,7 @@ class DirectoryInputApp:
 		self.initialize()
 
 	def initialize(self):
-		self.textBox = Label(self.container, text = "Please enter the file directory of the raw data.", justify = LEFT)
+		self.textBox = Label(self.container, text = "Please enter the file directory of the raw data.\n e.g.  'C:\users\DBMS\enrollmentDataDirectory\' ", justify = LEFT)
 		self.textBox.config (width = 50, height = 3)
 		self.textBox.pack(side = TOP)
 

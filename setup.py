@@ -38,12 +38,12 @@ build_exe_options = {"packages" : [	"UI",
 #pywin is the same as win32api
 
 base = None
-if sys.platform == "win32":
+if sys.platform == "win32":		#used to remove the console window
     base = "Win32GUI"
 
-setup(	name = "DBMS_Enrollment",
+setup(	name = "DBMS_Enrollment Calculator",
 		version = "0.4",
-		description = "DBMS Enrollment Analysis",
+		description = "DBMS Enrollment Calculator",
 		options = {"build_exe": build_exe_options},
 		executables = [Executable("main.py", icon = "documentation\icon_table.ico", base=base)])
 
@@ -52,5 +52,6 @@ setup(	name = "DBMS_Enrollment",
 To execute and build on CMD,use
 
 python setup.py bdist_msi 
+
 
 '''

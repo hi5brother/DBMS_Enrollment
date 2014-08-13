@@ -13,8 +13,6 @@ import askDataDirectory
 
 import BIUInput
 
-import creditsInput
-
 import creditsInputScrolling
 
 import errorMessageBox
@@ -25,9 +23,9 @@ import formulaFeesInput
 
 import gridBox
 
-import instructionsBox
-
 import mainMenu
+
+import messageOutputBox
 
 import normalUnitsInput
 

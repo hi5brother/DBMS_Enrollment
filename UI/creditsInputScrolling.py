@@ -37,7 +37,6 @@ class VerticalScrolledFrame(Frame):
         canvas.pack(side=LEFT, fill=BOTH, expand=TRUE)
         vscrollbar.config(command=canvas.yview)
 
-
         # reset the view
         canvas.xview_moveto(0)
         canvas.yview_moveto(0)

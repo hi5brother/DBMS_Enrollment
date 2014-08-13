@@ -40,6 +40,8 @@ import UI
 from Tkinter import Tk 			#used to find directory to save in 
 from tkFileDialog import asksaveasfilename
 
+import dateTimeOutput
+
 def runApp():
 
 	conn = data.connectDB()
@@ -152,7 +154,7 @@ def runApp():
 		A location must be chosen for save location.
 	'''
 
-	timeStam = data.grabTimeStamp(c)		#only the date of the timestamp will be printed
+	timeStam = dateTimeOutput.pythonTime()		#only the date of the timestamp will be printed
 
 	Tk().withdraw()
 

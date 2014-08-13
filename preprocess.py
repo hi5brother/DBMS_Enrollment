@@ -214,10 +214,10 @@ def main(rawDataLocation):      #pass in the raw data directory
     dbName = "\\enrolldata.db"
     dbLocation = cdLocation + dbName 
 
-    try:
-        os.remove(dbLocation) #"""@@@@@@@@@@ REMOVES THE DB EACH TIME THIS RUNS, FOR TESTING PURPOSES"""
-    except WindowsError:        #WindowsError appreas when there is no database file
-        pass
+    # try:
+    #     os.remove(dbLocation) #"""@@@@@@@@@@ REMOVES THE DB EACH TIME THIS RUNS, FOR TESTING PURPOSES"""
+    # except WindowsError:        #WindowsError appreas when there is no database file
+    #     pass
 
     conn = sqlite3.connect(dbLocation)
 
@@ -256,7 +256,6 @@ def main(rawDataLocation):      #pass in the raw data directory
 
     for i in range(len(filesList)):
 
-
         wbList.append(0)
         #wbList[i] = xl.Workbooks.Open(filesList[i]) #open all the workbooks that need to be changed
 
@@ -268,7 +267,6 @@ def main(rawDataLocation):      #pass in the raw data directory
             preprocessHeadingsLocation[j] = preprocessHeadingsLocation[j] + 1   #the table headings must be incremented by 1 so the macro below can process the correct heading
 
             xl.Application.Run("makeTexttoFloat",preprocessHeadingsLocation[j],filesList[i])
-
 
     wbPre.Save()            #close and save the excel workbook with macros
     wbPre.Close(True)
@@ -384,8 +382,13 @@ def main(rawDataLocation):      #pass in the raw data directory
         c.execute("ALTER TABLE courses ADD course_code TEXT;")  #adding the column with the concatenateCourseCoded course code
     
     for i in range(len(sheetAddress)):
-        c.execute('''INSERT INTO courses(subject, catalog_number, course_code, term) 
-                    VALUES(?,?,?,?);''',(courseLists[i].subject, courseLists[i].catalog, courseNames[i], courseLists[i].term))
+
+        c.execute('''SELECT DISTINCT course_id FROM courses WHERE course_code = ? and term = ?''',(str(courseNames[i]),str(courseLists[i].term)))
+        checkRecordExist = c.fetchall()     #if the record already exists in the course table, it will return the index of the record
+        
+        if checkRecordExist == []:      #the course will only be inputted into the database if it has unique course_code and term
+            c.execute('''INSERT INTO courses(subject, catalog_number, course_code, term) 
+                        VALUES(?,?,?,?);''',(courseLists[i].subject, courseLists[i].catalog, courseNames[i], courseLists[i].term))
 
         studentLists.append(getStudents(studentTableHeadings,sheetAddress[i]))
 
@@ -430,6 +433,7 @@ def main(rawDataLocation):      #pass in the raw data directory
             c.execute("INSERT INTO program_info(program_name) VALUES (?);",(val,))
         except sqlite3.IntegrityError:
             pass
+            
     #Update the timestamp
     c.execute('''UPDATE timeRecord 
                 SET timeStam = ? 

@@ -43,9 +43,9 @@ if sys.platform == "win32":
 
 setup(	name = "DBMS_Enrollment",
 		version = "0.4",
-		description = "cx_freeze application",
+		description = "DBMS Enrollment Analysis",
 		options = {"build_exe": build_exe_options},
-		executables = [Executable("main.py", base=base)])
+		executables = [Executable("main.py", icon = "documentation\icon_table.ico", base=base)])
 
 '''
 

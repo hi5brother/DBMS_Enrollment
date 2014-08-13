@@ -1,6 +1,7 @@
 #-------------------------------------------------------------------------------
-# Name:        module2
-# Purpose:
+# Name:        dbFormat
+# Purpose:      has functions called from preprocess.py that are used to create and use the sql tables
+#               some functions are used to create sql tables based on the excel info
 #
 # Author:      DBMS
 #
@@ -8,7 +9,7 @@
 # Copyright:   (c) DBMS 2014
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
-
+import sqlite3
 
 def findCol(sheetAddress,heading):
     '''Finds the column number of the column that has the specific 'heading'
@@ -64,7 +65,8 @@ def checkTableExist(tableName):
     '''
 
     c.execute('''SELECT CASE
-                WHEN tbl_name = ? THEN 1
+                WHEN tbl_name = ? 
+                THEN 1
                 ELSE 0
                 END
                 FROM sqlite_master
@@ -72,7 +74,27 @@ def checkTableExist(tableName):
 
     temp = c.fetchone()
 
-    if temp==(1,):
+    if temp == (1,):
         return True
     else:
         return False
+
+def checkColumnExist(c,columnName, tableName):
+    '''Checks if the column exists in a table
+        Returns True if it exists and False if it doesn't exist
+    '''
+
+    sqlString = "SELECT " + columnName + " FROM " + tableName
+    try:
+        c.execute(sqlString)
+
+    except sqlite3.OperationalError:
+        return False
+    return True
+
+# def checkRecordExist(c,record,columnName,tableName):
+#     '''Checks if a record exists
+#         Returns True if it exists and False if it doesn't exist
+#     '''
+
+#     sqlString = "SELECT " + columnName + " FROM " + tableName " WHERE "

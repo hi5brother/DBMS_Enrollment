@@ -24,7 +24,7 @@ import xlrd             #reading xls files
 import xlwt             #writing xls files
 import string
 import types
-import win32com.client  #for executing excel macros @@@@@@@@@@@@not installed for some reason
+import win32com.client  #for executing excel macros
 
 import extractData      #various functions used, stores location of DATABASE
 import studentProcessing        #module that deletes whitespace, double/triple majors when processing each spreadsheet
@@ -203,7 +203,7 @@ def checkWorkBookValues(currentSheet):
 
         values.append(currentSheet.cell(row,6).value)
 
-def main(rawDataLocation):
+def main(rawDataLocation):      #pass in the raw data directory
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #Open Database
     ''' Initialize all the connections to SQLite
@@ -211,14 +211,13 @@ def main(rawDataLocation):
     '''
 
     cdLocation = os.getcwd()
-    dbLocation = cdLocation + "\\enrolldata.db" #"""@@@@@@@@@@@@@@@@@@@ TAKE OUT THE HARD CODE"""
-    #rawDataLocation = cdLocation + "\\full_data"
+    dbName = "\\enrolldata.db"
+    dbLocation = cdLocation + dbName 
 
     try:
         os.remove(dbLocation) #"""@@@@@@@@@@ REMOVES THE DB EACH TIME THIS RUNS, FOR TESTING PURPOSES"""
     except WindowsError:        #WindowsError appreas when there is no database file
         pass
-
 
     conn = sqlite3.connect(dbLocation)
 
@@ -311,7 +310,7 @@ def main(rawDataLocation):
     #course table
     courseTableHeadings = ["Subject","Catalog Number","TERM"]    #catalog number must be null because of suffix letters e.g. PHYG 214A
     courseDataTypes = ["TEXT NOT NULL","TEXT NOT NULL","INTEGER NOT NULL"]
-    #c.execute("DROP TABLE courses;")
+
     if checkTableExist(c,"courses") is False:
         
         headingsLocation = []
@@ -356,22 +355,6 @@ def main(rawDataLocation):
                         value INTEGER
                     );''')
 
-
-    ###enrollments table
-    ##
-    ##enrollmentsHeadings=["stud_id","course_id"]
-    ##if checkTableExist("enrollments") is False:
-    ##
-    ##    dataTypes=["INT","INT"]
-    ##    foreignKeyHeadingData=", FOREIGN KEY (stud_id) REFERENCES students(stud_id) ON DELETE CASCADE, FOREIGN KEY (course_id) REFERENCES courses(course_id) ON DELETE CASCADE"
-    ##
-    ##    enrollmentsSQLHeadings=generateHeadingNoExcel(enrollmentsHeadings,dataTypes)
-    ##
-    ##    enrollmentsSQLHeadings=enrollmentsSQLHeadings+foreignKeyHeadingData
-    ##
-    ##
-    ##    c.execute("CREATE TABLE enrollments(enrollments_id INTEGER PRIMARY KEY,"+enrollmentsSQLHeadings+")")
-
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     #Pulling student data
@@ -397,7 +380,8 @@ def main(rawDataLocation):
         courseLists.append(getCourseInfo(courseTableHeadings,sheetAddress[i]))
         courseNames.append(courseLists[i].concatenateCourseCode())
 
-    c.execute("ALTER TABLE courses ADD course_code TEXT;")  #adding the column with the concatenateCourseCoded course code
+    if not dbFormat.checkColumnExist(c,"course_code","courses"):
+        c.execute("ALTER TABLE courses ADD course_code TEXT;")  #adding the column with the concatenateCourseCoded course code
     
     for i in range(len(sheetAddress)):
         c.execute('''INSERT INTO courses(subject, catalog_number, course_code, term) 
@@ -436,22 +420,24 @@ def main(rawDataLocation):
                         c.execute("UPDATE students SET course"+str(maxCourses + 1 - i) +"=? WHERE student_id=?;",(str(courseNum),row[1]))
                         break
 
-    #Initialize the program_fino table by inserting just the program names
+    #Initialize the program_info table by inserting just the program names
     c.execute("SELECT DISTINCT program FROM students;")
     programList = c.fetchall()
 
     for i in range(len(programList)):           
         val = "".join(programList[i])
-
-        c.execute("INSERT INTO program_info(program_name) VALUES (?);",(val,))
-
+        try:
+            c.execute("INSERT INTO program_info(program_name) VALUES (?);",(val,))
+        except sqlite3.IntegrityError:
+            pass
     #Update the timestamp
     c.execute('''UPDATE timeRecord 
                 SET timeStam = ? 
                 WHERE time_id = 1;''', (dateTimeOutput.pythonTime(),))     #updates the time stamp for the table after the spreadsheets were pulled
     
     #Add the credits column (blank)
-    c.execute("ALTER TABLE courses ADD credits FLOAT;")     
+    if not dbFormat.checkColumnExist(c,"credits","courses"):
+        c.execute("ALTER TABLE courses ADD credits FLOAT;")     
 
 
     conn.commit()
@@ -459,4 +445,4 @@ def main(rawDataLocation):
 
 if __name__ == "__main__":
 
-    main("C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data")
+    main("C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data") 

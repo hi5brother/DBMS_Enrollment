@@ -25,6 +25,8 @@ import formulaFeesInput
 
 import gridBox
 
+import instructionsBox
+
 import mainMenu
 
 import normalUnitsInput

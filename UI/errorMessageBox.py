@@ -35,7 +35,7 @@ class OutputDataApp:
 	
 def runApp(text):
 	root = Tk()
-	root.title("DBMS Enrollment ERROR")
+	root.title("DBMS Enrollment Error")
 	app = OutputDataApp(root, text)
 	root.mainloop()
 	

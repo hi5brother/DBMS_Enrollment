@@ -29,8 +29,14 @@ def closeDB(conn):		#closes the connection object and saves the database
 
 #Grab metadata
 
-def grabTimeStamp(connDB):
-	connDB.execute("SELECT timeStam FROM timeRecord;")
+
+def grabTimeStamp(connDB,value):
+	if value == "Student Data":
+		timeID = 1
+	elif value == "BIU Data":
+		timeID = 2
+
+	connDB.execute("SELECT timeStam FROM timeRecord WHERE time_id = ?;", str(timeID))
 	data = connDB.fetchone()
 	data = data[0]
 
@@ -301,7 +307,11 @@ def main():
 	conn = connectDB()
 	c = conn.cursor()
 
-
+	time = grabTimeStamp(c)
+	print "TIME STAMP"
+	print time
+	print type(time)
+	print "\n"
 
 	program = grabStudentProgram(c, 1)
 	print "PROGRAM"

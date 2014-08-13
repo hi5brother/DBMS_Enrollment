@@ -65,7 +65,7 @@ class ProgWeightInputApp:
 		self.subButton['command'] = self.submit
 
 		self.quitButton = Button(self.container)            #the quit button will just quit
-		self.quitButton['text'] = "Quit"
+		self.quitButton['text'] = "Back"
 		self.quitButton.grid(row = i + 3,column = 1)
 		self.quitButton['command'] = self.quit
 

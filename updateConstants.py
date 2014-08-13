@@ -11,6 +11,8 @@
 #-------------------------------------------------------------------------------
 import extractData as data
 import UI
+import dateTimeOutput
+import sqlite3
 
 def checkError(funcOutput):     #returns false is there is an error, returns true if no error exists
     '''Checks the output of the function to see if an error message was returned
@@ -217,6 +219,16 @@ def runApp():
 		else:
 			break 		
 
+	# c.execute('''UPDATE timeRecord
+	# 				SET timeStam = ?
+	# 				WHERE time_id = 2;''',(dateTimeOutput.pythonTime(),))
+	try:
+		c.execute('''INSERT INTO timeRecord(time_id,timeStam) 
+					VALUES (2,?);''',(dateTimeOutput.pythonTime(),))
+	except sqlite3.IntegrityError:
+		c.execute('''UPDATE timeRecord
+				SET timeStam = ?
+				WHERE time_id = 2;''',(dateTimeOutput.pythonTime(),))
 	conn.commit()
 
 	conn.close()

@@ -34,12 +34,11 @@ class menuScreen:
 		filemenu.add_separator()
 		filemenu.add_command(label = "Exit", command = self.quit)
 
-		#Windows content stuff
 		self.infoBox = Label (self.container, text = "Please select an option.")
 		self.infoBox.config (width = 20, height = 2)
 		self.infoBox.grid(row = 0, column = 0)
 
-		options = ["Update Data", "Update Constants","View Data"]
+		options = ["Import Data", "Update Constants","View Data"]
 
 		self.optionBox = Button(self.container)
 		self.optionBox['text'] = options[0]

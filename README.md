@@ -1,4 +1,4 @@
-DBMS_Enrollment Calculator
+DBMS Enrollment Calculator
 ===============
 Objectives
 

@@ -33,6 +33,8 @@ import planOptionsCheckBox
 
 import programWeightsInput
 
+import progressBar
+
 import sheetsOptionsCheckBox
 
 #How to freeze Tkinter Applications

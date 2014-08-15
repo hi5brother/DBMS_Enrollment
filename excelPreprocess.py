@@ -12,7 +12,6 @@ import os
 import xlrd
 import xlwt
 from xlutils.copy import copy
-#import win32com.client
 
 from dbFormat import findCol
 
@@ -39,7 +38,6 @@ def findSheetAddresses(location):
         wbData.append(xlrd.open_workbook(filesList[i]))
         sheetAddress.append(wbData[i].sheet_by_index(0))
     return sheetAddress
-
 
 def locateHeadings(headingsList,sheetAddress):
 

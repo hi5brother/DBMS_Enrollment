@@ -33,8 +33,6 @@ def SQLTime():		#SQL time capabilities
 
 	return (timeString[0])
 
-
-
 def pythonTime():		#Python's time module
 	today = date.today()				 
 	now = time.strftime("%H:%M:%S")

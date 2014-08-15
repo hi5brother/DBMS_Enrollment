@@ -28,10 +28,8 @@ def closeDB(conn):		#closes the connection object and saves the database
 	conn.close
 
 #Grab metadata
-
-
 def grabTimeStamp(connDB,value):
-	if value == "Student Data":
+	if value == "Student Data":		#time stamp for excel imported 
 		timeID = 1
 	elif value == "BIU Data":
 		timeID = 2
@@ -43,7 +41,6 @@ def grabTimeStamp(connDB,value):
 	return data
 
 #STUDENT SPECIFIC
-
 def grabStudentProgram(connDB,stude_id):		#
 	connDB.execute("SELECT program FROM students WHERE stud_id = ?;",(stude_id,))
 	data = connDB.fetchone()
@@ -142,6 +139,32 @@ def grabFullPlanList(connDB):
 				planList.append(plan)
 
 	return planList
+
+def grabDBMSEnrollNumber(connDB, course_id):
+	'''Grabs the number of all those in a LISC or BCHM plan for a particular course.
+
+	'''
+	connDB.execute('''SELECT COUNT (*)
+						FROM students
+						WHERE (plan LIKE 'LISC%'
+							OR plan2 LIKE 'LISC%'
+							OR plan3 LIKE 'LISC%'
+							OR plan LIKE 'BCHM%'
+							OR plan2 LIKE 'BCHM%'
+							OR plan3 LIKE 'BCHM%')
+							AND (course1 = ? or 
+							course2 = ? or
+							course3 = ? or
+							course4 = ? or
+							course5 = ? or
+							course6 = ? or
+							course7 = ? or
+							course8 = ? or
+							course9 = ? or
+							course10 = ?);''',(course_id,course_id,course_id,course_id,course_id,course_id,course_id,course_id,course_id,course_id))
+	data = connDB.fetchone()
+	data = data[0]
+	return data
 
 #FOR CALCULATING GRANTS
 

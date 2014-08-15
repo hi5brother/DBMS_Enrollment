@@ -257,7 +257,6 @@ def main(rawDataLocation):      #pass in the raw data directory
     for i in range(len(filesList)):
 
         wbList.append(0)
-        #wbList[i] = xl.Workbooks.Open(filesList[i]) #open all the workbooks that need to be changed
 
         preprocessHeadingsLocation = dbFormat.findHeadingsList(preprocessHeadings,sheetAddress[i])
         #this only uses one set of table headings so if the table heading columns are different, there will be   problem
@@ -293,7 +292,6 @@ def main(rawDataLocation):      #pass in the raw data directory
     studentDataTypes = ["INTEGER NOT NULL UNIQUE","TEXT NOT NULL","INTEGER NOT NULL","TEXT NOT NULL"]    #where student_id is a unique field
     maxCourses = 10    #number of courses that can be enrolled in (should be 5 for A&S for one term, 10 for a year)<<<LOOK INTO IT
 
-    #c.execute("DROP TABLE students")
     if checkTableExist(c,"students") is False:
         
         studentSQLHeadings = dbFormat.generateHeading(sheetAddress[0],studentTableHeadings,studentDataTypes)

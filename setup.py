@@ -42,7 +42,7 @@ if sys.platform == "win32":		#used to remove the console window
     base = "Win32GUI"
 
 setup(	name = "DBMS_Enrollment Calculator",
-		version = "0.4",
+		version = "0.5",
 		description = "DBMS Enrollment Calculator",
 		options = {"build_exe": build_exe_options},
 		executables = [Executable("DBMSEnrollment.py", icon = "documentation\icon_table.ico", base=base)])

@@ -33,23 +33,25 @@ class GridBoxApp:
 				if j == 0:		#this is the width of the box for subject e.g. ANAT
 					width = 90
 				elif j == 1:	#width of box for catalog number e.g. 215
-					width = 5
+					width = 7
 				elif j == 2:	#width of box for term number e.g. 2139
 					width = 5  	
 				elif j == 3:	#width of box for the location of the spreadsheet e.g. C:\Users\DBMS...
-					width = 5
+					width = 7
 
 				self.box = Label(self.container, text = data[i][j], relief = RIDGE, width = width)
 				self.box.grid(row = i,column = j)
 
 		self.subButton = Button(self.container)
 		self.subButton['text'] = "OK"
-		self.subButton.grid(row = rows + 1, column = 2)
+		self.subButton.config(width = 7)
+		self.subButton.grid(row = rows + 1, column = 3)
 		self.subButton['command'] = self.submit
 
 		self.backButton = Button(self.container)
 		self.backButton['text'] = "Back"
-		self.backButton.grid(row = rows + 1, column = 3)
+		self.backButton.config(width = 7)
+		self.backButton.grid(row = rows + 1, column = 1)
 		self.backButton['command'] = self.back
 
 	def submit(self):

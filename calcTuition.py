@@ -17,7 +17,6 @@ import sqlite3
 import sys
 import os
 
-
 def studentTuition(connDB, stude_id):			#pass in the student and calculate tuition of the student
 
 	program = extractData.grabStudentProgram(connDB, stude_id)	
@@ -25,7 +24,6 @@ def studentTuition(connDB, stude_id):			#pass in the student and calculate tuiti
 	coursesRaw = extractData.grabStudentCourses(connDB, stude_id)
 
 	unitFee = extractData.grabUnitFees(connDB,program)
-
 
 	for i in reversed(range(len(coursesRaw))):
 		if coursesRaw[i] == None:			#eliminates the none courses
@@ -72,13 +70,11 @@ def courseTuition(connDB, course_id):
 
 		courseCredit = extractData.grabCourseCredits(connDB,course_id)
 
-
 		tuitionGenerated = courseCredit * unitFee
 
 		courseTuitionTotal = courseTuitionTotal + tuitionGenerated
 
 	return courseTuitionTotal
-
 
 def runApp():
 	conn = extractData.connectDB()
@@ -90,17 +86,16 @@ def runApp():
 
 	revenueGeneratedTotal = 0
 	for i in range(numOfStudents):		#loops through all the students and calculates money from each student
-		#print studentTuition(c, i + 1)
 		revenueGeneratedTotal = revenueGeneratedTotal + studentTuition(c, i + 1)
+	
 	return revenueGeneratedTotal
-	# print numOfStudents
-	# print revenueGeneratedTotal
+
 
 def runAppCourse(course):
 	conn = extractData.connectDB()
 	c = conn.cursor()
-	return courseTuition(c , course)
 
+	return courseTuition(c , course)
 
 
 if __name__ == '__main__':

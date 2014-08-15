@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Name:        
+# Name:        calculates grant money from BIU stuff
 #				grabs the relevant data and determines grant money for each student
 #
 #				grabs data for grant money of a course				
@@ -33,14 +33,12 @@ def studentGrant(connDB,stude_id):
 
 	normalUnits = data.grabNormalUnits(connDB, program)
 
-
 	if year == 1 and "BA" in program: 		#accounts for first year students, since
 		program = [("1st Year Arts"),]
 	elif year == 1 and "BSC" in program:
 		program = [("1st Year Science"),]
 
 	programWeight = data.grabProgramWeight(connDB, program)
-
 
 	BIU = data.grabBIU(connDB)
 
@@ -116,16 +114,12 @@ def courseGrant(connDB,course_id):
 
 		courseCredits = data.grabCourseCredits(connDB, course_id)	
 
-
 		proportion = courseCredits / normalUnits
 		grantGenerated = proportion * totalBIU
 
 		courseGrantTotal = courseGrantTotal + grantGenerated
 
-
 	return courseGrantTotal
-	
-
 
 def runApp():
 	conn = data.connectDB()
@@ -135,18 +129,16 @@ def runApp():
 	val = c.fetchone()
 	numOfStudents = int(val[0])
 
-
 	grantGeneratedTotal = 0
 	for i in range(numOfStudents):
 		grantGeneratedTotal = grantGeneratedTotal + studentGrant(c, i + 1)
 
-	#print grantGeneratedTotal
 	return grantGeneratedTotal
 
 def runAppCourse(course):
 	conn = data.connectDB()
 	c = conn.cursor()
-	#print courseGrant(c, course)
+
 	return courseGrant(c, course)
 
 if __name__ == '__main__':

@@ -91,6 +91,9 @@ def runApp():
 
 		selectedSheetsKey.append(sheetsOrderedDict[name])
 
+	''' Sheets that will be written to the outputted workbook
+	'''
+
 	book = xlwt.Workbook()
 
 	if sheetsOrderedDict[tuitionGrantSheetName] in selectedSheetsKey:

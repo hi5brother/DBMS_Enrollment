@@ -46,12 +46,12 @@ class FormulaFeesInputApp:
 
         self.subButton = Button(self.container)             #the submit button will process data then quit
         self.subButton['text'] = "Submit"
-        self.subButton.grid(row = i + 3,column = 0)
+        self.subButton.grid(row = i + 3,column = 1)
         self.subButton['command'] = self.submit
 
         self.quitButton = Button(self.container)            #the quit button will just quit
         self.quitButton['text'] = "Back"
-        self.quitButton.grid(row = i + 3,column = 1)
+        self.quitButton.grid(row = i + 3,column = 0)
         self.quitButton['command'] = self.quit
 
     def submit(self):

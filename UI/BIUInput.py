@@ -11,6 +11,7 @@
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 from Tkinter import *
+import tkFont
 
 class BIUInputApp:
     def __init__(self, parent):
@@ -21,11 +22,14 @@ class BIUInputApp:
         self.backStatus = False
 
     def initialize(self):
-        self.infoBox = Label(self.container, text = "Please enter the BIU value.")
+
+        font = tkFont.Font(family = "Helvetica", size = 12)
+
+        self.infoBox = Label(self.container, text = "Please enter the BIU value.", font = font)
         self.infoBox.config(width = 30, height = 2)
         self.infoBox.grid(row = 1, column = 0)
 
-        self.infoBox2 = Label(self.container, text = "BIU value in dollars \n (e.g. 2 386.00, 2 591.98)")
+        self.infoBox2 = Label(self.container, text = "BIU value in dollars \n (e.g. 2 386.00, 2 591.98)",font = font)
         self.infoBox2.config(width = 30, height = 2)
         self.infoBox2.grid(row = 0, column = 1)
 
@@ -36,12 +40,12 @@ class BIUInputApp:
 
         self.subButton = Button(self.container)             #the submit button will process data then quit
         self.subButton['text'] = "Submit"
-        self.subButton.grid(row = 3,column = 0)
+        self.subButton.grid(row = 3,column = 1)
         self.subButton['command'] = self.submit
 
         self.quitButton = Button(self.container)            #the quit button will just quit
         self.quitButton['text'] = "Back"
-        self.quitButton.grid(row = 3,column = 1)
+        self.quitButton.grid(row = 3,column = 0)
         self.quitButton['command'] = self.quit
 
     def submit(self):

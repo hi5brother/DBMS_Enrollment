@@ -22,8 +22,8 @@ class DirectoryInputApp:
 		self.initialize()
 
 	def initialize(self):
-		self.textBox = Label(self.container, text = "Please enter the file directory of the raw data.\n e.g.  'C:\users\DBMS\enrollmentDataDirectory\' ", justify = LEFT)
-		self.textBox.config (width = 50, height = 3)
+		self.textBox = Label(self.container, text = "Please enter the file directory of the course list spreadsheets.\n\n e.g.  'C:\users\DBMS\enrollmentDataDirectory\'\n ", justify = LEFT)
+		self.textBox.config (width = 50, height = 5)
 		self.textBox.pack(side = TOP)
 
 		self.entry = Entry(self.container)

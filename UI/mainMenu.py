@@ -42,7 +42,8 @@ class helpScreen:
 						use task manager and end the process.
 
 						If more help is needed, please contact
-						daniel.kao.95@gmail.com
+						daniel.kao.95@gmail.com OR
+						daniel.kao@queensu.ca
 
 						The source code can be found at
 						https://github.com/hi5brother/DBMS_Enrollment
@@ -77,6 +78,7 @@ class menuScreen:
 		self.initialize(instructions)
 		self.quitStatus = True
 		self.helpStatus = False
+		self.deleteDBStatus = False
 
 	def initialize(self,instructions):
 		#Menu bar stuff
@@ -89,7 +91,7 @@ class menuScreen:
 
 		filemenu.add_command(label = "Help", command = self.help)
 		filemenu.add_separator()
-		filemenu.add_command(label = "Delete Data")
+		filemenu.add_command(label = "Delete Data", command = self.deleteData)
 		filemenu.add_separator()
 		filemenu.add_command(label = "Exit", command = self.quit)
 
@@ -137,7 +139,9 @@ class menuScreen:
 		self.parent.destroy()
 
 	def deleteData(self):
-		pass
+		self.deleteDBStatus = True
+		self.quitStatus = False
+		self.parent.destroy()
 
 	def help(self):
 		self.helpStatus = True
@@ -156,7 +160,9 @@ def runApp(instructions):
 	app = menuScreen(root,instructions)
 	root.mainloop()
 
-	if app.quitStatus is True:		#if the quit option is selected
+	if app.deleteDBStatus is True:
+		return "DELETE DATABASE"
+	elif app.quitStatus is True:		#if the quit option is selected
 		return "QUIT APPLICATION"
 
 	try:
@@ -166,4 +172,4 @@ def runApp(instructions):
 		return "QUIT APPLICATION"
 
 if __name__ == '__main__':
-	runApp(instructions)
+	print runApp(instructions)

@@ -91,10 +91,4 @@ def checkColumnExist(c,columnName, tableName):
     except sqlite3.OperationalError:
         return False
     return True
-
-# def checkRecordExist(c,record,columnName,tableName):
-#     '''Checks if a record exists
-#         Returns True if it exists and False if it doesn't exist
-#     '''
-
-#     sqlString = "SELECT " + columnName + " FROM " + tableName " WHERE "
+    

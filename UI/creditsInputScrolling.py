@@ -45,7 +45,6 @@ class VerticalScrolledFrame(Frame):
         self.interior = interior = Frame(canvas)
         interior_id = canvas.create_window(0, 0, window=interior, anchor=NW)
 
-
         # track changes to the canvas and frame width and sync them,
         # also updating the scrollbar
         def _configure_interior(event):
@@ -85,7 +84,6 @@ class SampleApp(Tk):
             self.infoBox2.config(width = 40, height = 2)
             self.infoBox2.grid(row = 0, column = 1)
 
-
             self.entry = []
 
             for i in range(len(courses)):           #iterates based on number of courses
@@ -94,16 +92,17 @@ class SampleApp(Tk):
 
                 self.entry.append(Entry(self.frame.interior))
                 self.entry[i].grid(row = i + 1, column = 1)          #entry field for credits of each course
+                self.entry[i].insert(0, 3.0)
 
 
             self.subButton = Button(self.frame.interior)             #the submit button will process data then quit
             self.subButton['text'] = "Submit"
-            self.subButton.grid(row = i + 3,column = 0)
+            self.subButton.grid(row = i + 3,column = 1)
             self.subButton['command'] = self.submit
 
             self.quitButton = Button(self.frame.interior)            #the quit button will just quit
             self.quitButton['text'] = "Back"
-            self.quitButton.grid(row = i + 3,column = 1)
+            self.quitButton.grid(row = i + 3,column = 0)
             self.quitButton['command'] = self.quit
         def submit(self):
             self.data = []                      #initialize the piece of data

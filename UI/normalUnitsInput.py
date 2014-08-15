@@ -28,8 +28,8 @@ class NormalUnitsInputApp:
         self.backStatus = False
 
     def initialize(self, programs):
-        self.infoBox = Label(self.container, text = "Please enter the program's normal units. \n If the program does not generate grants, input \"n/a\".")
-        self.infoBox.config(width = 50, height = 2)
+        self.infoBox = Label(self.container, text = "Please enter the program's normal combined \ncourse load for the Fall and Winter terms. \n If the program does not generate grants, input \"n/a\".")
+        self.infoBox.config(width = 45, height = 3)
         self.infoBox.grid(row = 0, column = 0)
 
         self.infoBox2 = Label(self.container, text = "Number of normal units (e.g. 33, 30, 27)")
@@ -47,12 +47,12 @@ class NormalUnitsInputApp:
 
         self.subButton = Button(self.container)             #the submit button will process data then quit
         self.subButton['text'] = "Submit"
-        self.subButton.grid(row = i + 3,column = 0)
+        self.subButton.grid(row = i + 3,column = 1)
         self.subButton['command'] = self.submit
 
         self.quitButton = Button(self.container)            #the quit button will just quit
         self.quitButton['text'] = "Back"
-        self.quitButton.grid(row = i + 3,column = 1)
+        self.quitButton.grid(row = i + 3,column = 0)
         self.quitButton['command'] = self.quit
 
     def submit(self):

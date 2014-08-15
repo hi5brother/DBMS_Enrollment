@@ -1,7 +1,7 @@
 #-------------------------------------------------------------------------------
 # Name:        main, imports all the modules and runs them
 # Purpose:      shows the main menu
-#				asks for what the user wants
+#				
 #
 # Author:      DBMS
 #
@@ -36,28 +36,25 @@ class Instance:
 		self.dataDirectory = False
 		self.dataLocation = False
 		
-		self.Start()
+		self.MainLoop()
 
-	def Start(self):	
+	def MainLoop(self):	
 		''' Main loop of program. The menu tk app returns strings based on the button pressed.
 		'''
 		self.DatabaseSetup()
 		
-		while self.menu != "QUIT APPLICATION":		
+		while self.menu != "QUIT APPLICATION":
 
+			self.DatabaseSetup()
 			self.Instructions()		
 
 			self.menu = UI.mainMenu.runApp(self.instructionList)
 
-			if self.menu == "View Data":
-
-				self.OutputExcel()
-
-			elif self.menu == "Import Student and Course Data":
+			if self.menu == "Import Student and Course Data":
 
 				self.dataLocation = False
 
-				while self.dataLocation is False:
+				while self.dataLocation is False:	
 
 					self.SetDataLocation()		#keeps on asking for the data location 
 
@@ -71,6 +68,16 @@ class Instance:
 				self.UpdateConstants()
 				UI.messageOutputBox.runApp(["Program and BIU data have been successfully imported."])
 
+			elif self.menu == "View Data":
+
+				self.OutputExcel()
+				UI.messageOutputBox.runApp(["Sheet was saved successfully."])
+
+			elif self.menu == "DELETE DATABASE":
+				'''	This option is shown under the menu bar
+				'''
+				self.DeleteDatabase()
+
 		sys.exit()	
 
 	def SetDataLocation(self):
@@ -78,28 +85,27 @@ class Instance:
 			Then check the contents of the sheets. If they cannot be processed (does not have appropriate headings),
 			TypeError is returned and the dataLocation is False
 		'''
-		self.dataLocation = UI.askDataDirectory.runApp()
-		self.excelExtension = "xls"
-		self.dirExist = preprocess.checkDirectory(self.dataLocation, self.excelExtension)
+		userApproved = False
+		while not userApproved: 
+			self.dataLocation = UI.askDataDirectory.runApp()		#asks user for the data location
+			self.excelExtension = "xls"
+			self.dirExist = preprocess.checkDirectory(self.dataLocation, self.excelExtension)		#checks if the data is valid (True or False)
+		
+			if self.dirExist:
 
-		if self.dataLocation == "QUIT":
-			pass
+				self.filesList = excelPreprocess.findFiles(self.dataLocation, self.excelExtension)
+				self.sheetAddressList = excelPreprocess.findSheetAddresses(self.dataLocation)
 
-		elif self.dirExist:
+				try:
+					self.courseCodes = excelPreprocess.checkCourseCode(self.filesList, self.sheetAddressList)
+					userApproved = UI.gridBox.runApp(self.courseCodes) 	#user can submit (userApproved = True) or go back (userApproved = False)
 
-			self.filesList = excelPreprocess.findFiles(self.dataLocation, self.excelExtension)
-			self.sheetAddressList = excelPreprocess.findSheetAddresses(self.dataLocation)
-
-			try:
-				self.courseCodes = excelPreprocess.checkCourseCode(self.filesList, self.sheetAddressList)
-				UI.gridBox.runApp(self.courseCodes)
-
-			except TypeError:
-				UI.errorMessageBox.runApp("The spreadsheets in the directory are not valid.")
+				except TypeError:
+					UI.errorMessageBox.runApp("The spreadsheets in the directory are not valid.")
+					self.dataLocation = False
+			else:
 				self.dataLocation = False
-		else:
-			self.dataLocation = False
-			UI.errorMessageBox.runApp("The directory does not exist.")
+				UI.errorMessageBox.runApp("The directory does not have spreadsheets.")
 
 	def Instructions(self):
 		''' This method generates the instructions used to direct the user. 
@@ -107,6 +113,9 @@ class Instance:
 			If all the data is present, it will ask the user to just 'View Data'
 		'''
 		self.instructionList = []
+
+		''' Checks for a time stamp on the students and courses tables (imported from Excel)
+		'''
 		self.noStudData = False
 		try:
 			self.timeStam = data.grabTimeStamp(self.c,"Student Data")
@@ -115,14 +124,14 @@ class Instance:
 		except sqlite3.OperationalError: 	#if there is no db available
 			self.noStudData = True
 
-
-
 		if self.noStudData:				#IF THERE IS NO STUDENT DATA
 			self.instructionList.append("No student or course data has been imported.\n    Please 'Import Data' first.")
 
 		elif not self.noStudData:		#IF THERE IS STUDENT DATA
 			self.instructionList.append("Student and course data was imported at " + str(self.timeStam) + "\n    You do not need to import student and course data.")
 
+		''' Checks for a time stamp on the program data tables 	(inputted by user)
+		'''
 		self.noBIUData = False
 		try:
 			self.timeStam = data.grabTimeStamp(self.c,"BIU Data")
@@ -140,6 +149,8 @@ class Instance:
 		self.instructionList.append("Please select 'View Data' to access the data. A spreadsheet will be\n    output with the requested data.")
 
 	def DatabaseSetup(self):
+		'''	Used every loop in the main menu loop
+		'''
 		self.conn = data.connectDB()
 		self.c = self.conn.cursor()
 
@@ -151,6 +162,19 @@ class Instance:
 
 	def UpdateConstants(self):
 		updateConstants.runApp()
+
+	def DeleteDatabase(self):
+		''' Needs to close the DB. Then it will delete the DB
+		'''
+		self.conn.close()
+		cdLocation = os.getcwd()
+		dbName = "\\enrolldata.db"
+		dbLocation = cdLocation + dbName
+
+		try:
+			os.remove(dbLocation)
+		except WindowsError:        #WindowsError appreas when there is no database file
+			pass
 
 def main():
 	

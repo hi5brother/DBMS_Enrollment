@@ -19,7 +19,7 @@ class OutputDataApp:
 		self.container = Frame(parent)
 		self.container.pack()
 		self.initialize(dataString)
-		
+
 	def initialize(self,data):
 		for string in data:
 			self.txtBox = Label(self.container,text=string)

@@ -1,6 +1,13 @@
 #-------------------------------------------------------------------------------
 # Name:        extract Data
-# Purpose:		uses the user interface to interact with the database to pull relevant and requested data
+# Purpose:		functions that will extract the data in either a single tuple, or a list
+#				can output values/lists such as:
+#					- time stamp )from timeRecord
+#					- list of distinct programs, courses, student plans, student years
+#					- specific unit fees, based on program and other info to calculate grants (from program_info)
+#					- grabs enrollment number in a particular course/year/program based on 
+#						o program, 
+#
 #
 #
 #
@@ -70,8 +77,8 @@ def grabProgName(connDB,prog_id):
 	data = connDB.fetchone()
 	data = data[0]
 	return data
-#COURSE SPECIFIC
 
+#COURSE SPECIFIC
 def grabCourseName(connDB,course_id):
 	connDB.execute("SELECT course_code FROM courses WHERE course_id = ?;",(course_id,))
 	data = connDB.fetchone()
@@ -110,6 +117,8 @@ def grabEnrollmentNumber(connDB,course_id):
 def grabFullPlanList(connDB):
 	'''Grabs the full list of plans, including majors, minors, generals, 
 		from the columns plan, plan2, and plan3.
+		Outputs a single list with all distinct plans from all three columns
+		This considers plans that are in plan2 or plan3 but NOT the plan column and will add them to the list
 	'''
 	connDB.execute("SELECT DISTINCT plan FROM students;")		
 	planList = connDB.fetchall()
@@ -142,7 +151,6 @@ def grabFullPlanList(connDB):
 
 def grabDBMSEnrollNumber(connDB, course_id):
 	'''Grabs the number of all those in a LISC or BCHM plan for a particular course.
-
 	'''
 	connDB.execute('''SELECT COUNT (*)
 						FROM students

@@ -10,7 +10,7 @@
 #-------------------------------------------------------------------------------
 
 from Tkinter import *
-text  = "YO DAWG DIS IS KEWL"
+text  = ["YO DAWG DIS IS KEWL"," Yo DAWG NOT COOL","LOL MY ABS"]
 
 class OutputDataApp:
 	def __init__(self,parent, dataString):
@@ -20,8 +20,11 @@ class OutputDataApp:
 		self.initialize(dataString)
 		
 	def initialize(self,data):
-		self.txtBox = Label(self.container,text=data)
-		self.txtBox.pack(side = TOP)
+		for string in data:
+			self.txtBox = Label(self.container,text=string)
+			self.txtBox.config(width = 50, height = 2)
+			self.txtBox.pack(side = TOP)
+
 		
 		self.okButton = Button(self.container)
 		self.okButton['text'] = "OK"
@@ -31,12 +34,12 @@ class OutputDataApp:
 	def quit(self):
 		self.parent.destroy()
 	
-def runApp():
+def runApp(text):
 	root = Tk()
 	root.title("DBMS Enrollment")
 	app = OutputDataApp(root, text)
 	root.mainloop()
 	
 if __name__ == '__main__':
-	runApp()
+	runApp(text)
 	

@@ -87,12 +87,23 @@ def inputBIU(c, inputStage):
 	while not checkError(BIUList) and not len(BIUList) == 1:
 		UI.errorMessageBox.runApp(BIUList)
 		BIUList = UI.BIUInput.runApp()
+		
 	if checkBack(BIUList):
 		return inputStage - 1
 
 	if len(BIUList) == 1:
 
-		c.execute("INSERT INTO constants (name,value) VALUES (?,?);",("BIU Value", BIUList[0]))
+		c.execute("SELECT COUNT (*) FROM constants WHERE id = 1")
+		checkExists = c.fetchone()
+
+		if checkExists == (1,):		#if a BIU value exists in the database
+
+			c.execute("UPDATE constants SET value = ? WHERE id = 1;", (BIUList))	#update that existing value
+
+		elif checkExists == (0,):	#if no BIU value exists
+
+			c.execute("INSERT INTO constants (name,value) VALUES (?,?);",("BIU Value", BIUList[0]))		#insert a new record
+
 	return inputStage + 1
 
 def inputFormulaFees(c, inputStage):
@@ -128,7 +139,6 @@ def inputNormalUnits(c, inputStage):
 
 	if checkBack(normalUnitsList):
 		return inputStage - 1 
-
 
 	if len(programList) == len(normalUnitsList):
 		for i in range(len(normalUnitsList)):
@@ -182,9 +192,9 @@ def runApp():
 
 	c = conn.cursor()
 
-	numOfFrames = 6
+	numOfFrames = 3
 
-	inputStage = 0 		#initialize
+	inputStage = 2 		#initialize
 	
 	while inputStage != numOfFrames:
 

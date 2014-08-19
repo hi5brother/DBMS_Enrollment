@@ -33,7 +33,7 @@ class helpScreen:
 
 
 		helpInfo = '''DBMS Enrollment Calculator
-						Version 0.5
+						Version 0.61
 
 						More detailed instructions regarding the 
 						use of the program can be found in the 
@@ -170,6 +170,7 @@ class menuScreen:
 
 def runApp(instructions):
 	root = Tk()
+	root.iconbitmap('icon_table.ico')
 	root.title("DBMS Enrollment Analysis")
 	app = menuScreen(root,instructions)
 	root.mainloop()

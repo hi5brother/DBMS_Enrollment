@@ -53,20 +53,6 @@ class ProgWeightInputApp:
 			self.entry.append(Entry(self.container, font = self.optionFont))
 			self.entry[i].grid(row = i + 1, column = 1)
 
-		# i = i + 1
-		# self.txtBox = Label(self.container, text = "1st Year Arts", justify = LEFT)		#in database, the plan will be "ASC1-M-BAH"
-		# self.txtBox.grid(row = i + 1)
-
-		# self.entry.append(Entry(self.container))
-		# self.entry[i].grid(row = i + 1, column = 1)	
-
-		# i = i + 1
-		# self.txtBox = Label(self.container, text = "1st Year Science", justify = LEFT)	#in database, the plan will be "ASC1-M-BSH"
-		# self.txtBox.grid(row = i + 1)
-
-		# self.entry.append(Entry(self.container))
-		# self.entry[i].grid(row = i + 1, column = 1)	
-
 		self.subButton = Button(self.container, font = self.buttonFont)             #the submit button will process data then quit
 		self.subButton['text'] = "Submit"
 		self.subButton.grid(row = i + 3,column = 1)
@@ -91,6 +77,7 @@ class ProgWeightInputApp:
 
 def runApp(programs):
 	root = Tk()
+	root.iconbitmap('icon_table.ico')
 	root.title("DBMS Enrollment Program Weighting")
 	app = ProgWeightInputApp(root,programs)
 	root.mainloop()

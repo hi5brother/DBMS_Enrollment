@@ -33,7 +33,8 @@ build_exe_options = {"packages" : [	"UI",
 									"writeToExcel",
 									"xlutils",
 									"pywin"],
-					"include_files" : ["excelMacro\intToFloat.xlsm"]}
+					"include_files" : ["excelMacro\intToFloat.xlsm",
+										"icon_table.ico"]}
 
 #pywin is the same as win32api
 
@@ -42,10 +43,11 @@ if sys.platform == "win32":		#used to remove the console window
     base = "Win32GUI"
 
 setup(	name = "DBMS_Enrollment Calculator",
-		version = "0.5",
+		version = "0.61",
 		description = "DBMS Enrollment Calculator",
 		options = {"build_exe": build_exe_options},
-		executables = [Executable("DBMSEnrollment.py", icon = "documentation\icon_table.ico", base=base)])
+		executables = [Executable("dbmsEnrollCalc.py", icon = "documentation\icon_table.ico", base=base)])
+
 
 '''
 

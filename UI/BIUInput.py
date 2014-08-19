@@ -32,8 +32,6 @@ class BIUInputApp:
 
     def initialize(self):
 
-
-
         self.infoBox = Label(self.container, text = "Please enter the BIU value.", font = self.font)
         self.infoBox.config(width = 30, height = 2)
         self.infoBox.grid(row = 1, column = 0)
@@ -70,6 +68,7 @@ class BIUInputApp:
 
 def runApp():
     root = Tk()
+    root.iconbitmap('icon_table.ico')
     root.title("BIU Value")
     app = BIUInputApp(root)
     root.mainloop()

@@ -24,7 +24,7 @@ import calcTuition as tuition
 def write(c,book):
 	'''	Outputs the sheet with all the revenue values.
 	'''
-	sheet = book.add_sheet("CourseTotals")
+	sheet = book.add_sheet("RevenueCourseTotals")
 
 	freezePanes(sheet, 1)
 

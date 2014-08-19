@@ -51,7 +51,7 @@ class GridBoxApp:
 				self.box.grid(row = i,column = j)
 
 		self.subButton = Button(self.container, font = self.buttonFont)
-		self.subButton['text'] = "OK"
+		self.subButton['text'] = "Import"
 		self.subButton.config(width = 13)
 		self.subButton.grid(row = rows + 1, column = 2, columnspan = 2)
 		self.subButton['command'] = self.submit
@@ -73,6 +73,7 @@ class GridBoxApp:
 
 def runApp(data):
 	root = Tk()
+	root.iconbitmap('icon_table.ico')
 	root.title("List of Excel Spreadsheets")
 	app = GridBoxApp(root, data)
 	root.mainloop()

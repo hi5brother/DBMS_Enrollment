@@ -118,6 +118,7 @@ class CheckBoxScrollingApp():
 
 def runApp(text):
 	root = Tk()
+	root.iconbitmap('icon_table.ico')
 	root.title("DBMS Enrollment Plan Select")
 	app = CheckBoxScrollingApp(root,text)
 	root.mainloop()

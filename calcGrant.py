@@ -33,7 +33,7 @@ def studentGrant(connDB,stude_id):
 
 	normalUnits = data.grabNormalUnits(connDB, program)
 
-	if year == 1 and "BA" in program: 		#accounts for first year students, since
+	if year == 1 and "BA" in program: 		#accounts for first year students, since they have different weightings than upper years
 		program = [("1st Year Arts"),]
 	elif year == 1 and "BSC" in program:
 		program = [("1st Year Science"),]
@@ -114,7 +114,11 @@ def courseGrant(connDB,course_id):
 
 		courseCredits = data.grabCourseCredits(connDB, course_id)	
 
-		proportion = courseCredits / normalUnits
+		if normalUnits == 0:		#prevents ZeroDivisionError, in the case that normalUnits is divisor and == 0
+			proportion = 0
+		else:
+			proportion = courseCredits / normalUnits
+
 		grantGenerated = proportion * totalBIU
 
 		courseGrantTotal = courseGrantTotal + grantGenerated

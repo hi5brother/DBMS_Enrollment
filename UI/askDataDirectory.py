@@ -55,6 +55,7 @@ class DirectoryInputApp:
 
 def runApp():
 	root = Tk()
+	root.iconbitmap('icon_table.ico')
 	root.title("File Location")
 	app = DirectoryInputApp(root)
 	root.mainloop()

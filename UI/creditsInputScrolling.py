@@ -70,6 +70,7 @@ class SampleApp(Tk):
         def __init__(self, courses):
             root = Tk.__init__(self)
 
+
             self.frame = VerticalScrolledFrame(root)
             self.frame.pack()
             self.makeFonts()
@@ -128,9 +129,14 @@ class SampleApp(Tk):
 def runApp(courses):
     
     app = SampleApp(courses)
+    app.iconbitmap('icon_table.ico')
     app.title("DBMS Enrollment Credits Input")
     app.mainloop()
-    app.destroy()
+
+    try:
+        app.destroy()
+    except tkinter.TclError:    #for some reason, the app frame does not go away afterwards
+        pass
 
     """Error checking and validating the input values
     """

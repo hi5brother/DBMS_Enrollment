@@ -268,11 +268,9 @@ def main(rawDataLocation):      #pass in the raw data directory
             xl.Application.Run("makeTexttoFloat",preprocessHeadingsLocation[j],filesList[i])
 
     wbPre.Save()            #close and save the excel workbook with macros
-    wbPre.Close(True)
 
-    xl.Application.Quit()   #killing the dispatch
-    xl.Visible = 0            #need to make it not visible
-    del (xl)
+
+
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     #Reopens the files using XLRD again (after being updated using macro)
@@ -444,6 +442,12 @@ def main(rawDataLocation):      #pass in the raw data directory
 
     conn.commit()
     conn.close()
+
+    #Closing Excel Spreadsheet (close it at the very end so the user knows the program is still running)
+    wbPre.Close(True)
+    xl.Application.Quit()   #killing the dispatch
+    xl.Visible = 0            #need to make it not visible
+    del (xl)
 
 if __name__ == "__main__":
 

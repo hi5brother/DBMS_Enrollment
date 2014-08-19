@@ -15,6 +15,7 @@
 #-------------------------------------------------------------------------------
 
 from Tkinter import *
+import tkFont
 text = range(1,10)
 
 class CheckBoxApp:
@@ -22,12 +23,18 @@ class CheckBoxApp:
 		self.parent = parent
 		self.container = Frame(parent)
 		self.container.grid(sticky=(N,S,E,W))
-
+		self.makeFonts()
 		self.initialize(optionsList)
+
+	def makeFonts(self):
+		#Font stuff
+		self.font = tkFont.Font(family = "Segoe UI", size = 12)
+		self.optionFont = tkFont.Font(family = "Segoe UI", size = 10)
+		self.buttonFont = tkFont.Font(family = "Segoe UI", size = 10)
 
 	def initialize(self,optionsList):
 
-		self.txtBox = Label(self.container, text = "Please select the required plan breakdowns.")
+		self.txtBox = Label(self.container, text = "Please select the required plan breakdowns.", font = self.font)
 		self.txtBox.config(width = 40, height = 2)
 		self.txtBox.grid(row = 0, column = 0)
 
@@ -40,10 +47,10 @@ class CheckBoxApp:
 		for option in optionsList:
 			self.var[option] = StringVar()
 			self.checkbutton = Checkbutton(self.container, text = option, variable = self.var[option], 
-												onvalue = option, offvalue = '', justify = LEFT)
+												onvalue = option, offvalue = '', justify = LEFT, font = self.optionFont)
 			self.checkbutton.grid(row = len(self.var), column = 0)
 
-		self.subButton = Button(self.container)
+		self.subButton = Button(self.container, font = self.buttonFont)
 		self.subButton['text'] = 'Submit'
 		self.subButton.grid(row = len(self.var) + 1, column = 0)
 		self.subButton['command'] = self.submit

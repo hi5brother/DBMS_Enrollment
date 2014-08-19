@@ -11,6 +11,7 @@
 #-------------------------------------------------------------------------------
 
 from Tkinter import *
+import tkFont
 
 import webbrowser
 
@@ -32,7 +33,7 @@ class helpScreen:
 
 
 		helpInfo = '''DBMS Enrollment Calculator
-						Version 0.4
+						Version 0.5
 
 						More detailed instructions regarding the 
 						use of the program can be found in the 
@@ -75,12 +76,23 @@ class menuScreen:
 
 		self.container = Frame(parent)
 		self.container.pack()
+		self.makeFonts()
+
 		self.initialize(instructions)
+		
 		self.quitStatus = True
 		self.helpStatus = False
 		self.deleteDBStatus = False
 
+
+	def makeFonts(self):
+		#Font stuff
+		self.font = tkFont.Font(family = "Segoe UI", size = 12)
+		self.optionFont = tkFont.Font(family = "Segoe UI", size = 10)
+		self.buttonFont = tkFont.Font(family = "Segoe UI", size = 10)
+
 	def initialize(self,instructions):
+
 		#Menu bar stuff
 		menubar = Menu(self.parent)
 		self.parent.config(menu = menubar)
@@ -98,36 +110,38 @@ class menuScreen:
 
 		#Window content stuff
 		#Instructions
-		introText = "Welcome. To retrieve enrollment numbers,\n please follow the instructions. \n\n Please close all Excel spreadsheets."
-		self.textBox = Label(self.container, text = introText)
-		self.textBox.config(width = 60, height = 4)
+		introText = "Welcome. To retrieve enrollment numbers,\n please follow the instructions. \n\n Please close all Excel spreadsheets. \n_______________________"
+		self.textBox = Label(self.container, text = introText, font = self.font)
+		self.textBox.config(width = 60, height = 5)
 		self.textBox.grid(row = 0, column = 0)
 
 		for i in range(len(instructions)):
-			self.txtBox = Label(self.container,text = str(i + 1) + ". " + instructions[i])
+			instructText = "                 " + str(i + 1) + ". " + instructions[i]
+			self.txtBox = Label(self.container,text = instructText,font = self.font)
 			self.txtBox.config(anchor = 'w', justify = LEFT)
-			self.txtBox.grid(row = i + 1, column = 0)
+			self.txtBox.grid(row = i + 1, column = 0, sticky = W)
 
 		#Buttons
-		self.infoBox = Label (self.container, text = "Please select an option.")
-		self.infoBox.config (width = 20, height = 2)
+
+		self.infoBox = Label (self.container, text = "_______________________\nPlease select an option.\n",font = self.font)
+		self.infoBox.config (width = 20, height = 3)
 		self.infoBox.grid(row = i + 2, column = 0)
 
 		options = ["Import Student and Course Data", "Update Program Data","View Data"]
 
-		self.optionBox = Button(self.container)
+		self.optionBox = Button(self.container,font = self.optionFont)
 		self.optionBox['text'] = "1. " + options[0]
 		self.optionBox.config(width = 60, height = 2)
 		self.optionBox.grid (row = i + 3, column = 0)
 		self.optionBox['command'] = lambda: self.submit(options[0])
 
-		self.optionBox = Button(self.container)
+		self.optionBox = Button(self.container,font = self.optionFont)
 		self.optionBox['text'] = "2. " +options[1]
 		self.optionBox.config(width = 60, height = 2)
 		self.optionBox.grid (row = i + 4, column = 0)
 		self.optionBox['command'] = lambda: self.submit(options[1])
 
-		self.optionBox = Button(self.container)
+		self.optionBox = Button(self.container,font = self.optionFont)
 		self.optionBox['text'] = "3. " +options[2]
 		self.optionBox.config(width = 60, height = 2)
 		self.optionBox.grid (row = i + 5, column = 0)

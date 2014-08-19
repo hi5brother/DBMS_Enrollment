@@ -13,6 +13,7 @@
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 from Tkinter import *
+import tkFont
 
 programs = [("BA"),
 			("BAH"),
@@ -24,25 +25,32 @@ class ProgWeightInputApp:
 		self.parent = parent
 		self.container = Frame(parent)
 		self.container.pack()
+		self.makeFonts()
 		self.initialize(programs)
 		self.backStatus = False
 
+	def makeFonts(self):
+		#Font stuff
+		self.font = tkFont.Font(family = "Segoe UI", size = 12)
+		self.optionFont = tkFont.Font(family = "Segoe UI", size = 10)
+		self.buttonFont = tkFont.Font(family = "Segoe UI", size = 10)
+
 	def initialize(self, programs):
-		self.infoBox = Label(self.container, text = "Please enter the program weights. \n If the program does not generate grants, input \"n/a\".")
+		self.infoBox = Label(self.container, text = "Please enter the program weights. \n If the program does not generate grants, input \"n/a\".", font = self.font)
 		self.infoBox.config(width = 50, height = 2)
 		self.infoBox.grid(row = 0, column = 0)
 
-		self.infoBox2 = Label(self.container, text = "Program Weight (e.g. 1.00, 1.33, 2.50)")
+		self.infoBox2 = Label(self.container, text = "Program Weight (e.g. 1.00, 1.33, 2.50)", font = self.font)
 		self.infoBox2.config(width = 40, height = 2)
 		self.infoBox2.grid(row = 0, column = 1)
 
 		self.entry = []
 
 		for i in range(len(programs)):
-			self.txtBox = Label(self.container, text = programs[i], justify = LEFT)
+			self.txtBox = Label(self.container, text = programs[i], justify = LEFT, font = self.font)
 			self.txtBox.grid(row = i + 1)
 
-			self.entry.append(Entry(self.container))
+			self.entry.append(Entry(self.container, font = self.optionFont))
 			self.entry[i].grid(row = i + 1, column = 1)
 
 		# i = i + 1
@@ -59,12 +67,12 @@ class ProgWeightInputApp:
 		# self.entry.append(Entry(self.container))
 		# self.entry[i].grid(row = i + 1, column = 1)	
 
-		self.subButton = Button(self.container)             #the submit button will process data then quit
+		self.subButton = Button(self.container, font = self.buttonFont)             #the submit button will process data then quit
 		self.subButton['text'] = "Submit"
 		self.subButton.grid(row = i + 3,column = 1)
 		self.subButton['command'] = self.submit
 
-		self.quitButton = Button(self.container)            #the quit button will just quit
+		self.quitButton = Button(self.container, font = self.buttonFont)            #the quit button will just quit
 		self.quitButton['text'] = "Back"
 		self.quitButton.grid(row = i + 3,column = 0)
 		self.quitButton['command'] = self.quit
@@ -110,7 +118,7 @@ def runApp(programs):
 		if data == "":		#error message if a programWeight was not entered
 			return "User Error: Not all programs had unit fees inputted"
 		elif data > 10:	
-			return "User Error: The program weight is unreasonably big (over 100)"
+			return "User Error: The program weight is unreasonably big (over 10)"
 		elif data < 0.0:
 			return "User Error: Program weight has negative value"
 

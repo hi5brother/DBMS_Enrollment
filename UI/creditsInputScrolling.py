@@ -17,6 +17,7 @@
     Put widgets into self.frame.interior after inheriting the VerticalScrolledFrame object
 '''
 from Tkinter import *
+import tkFont
 
 courses=[("BIOL 102"),
         ("BIOL 103"),
@@ -71,39 +72,46 @@ class SampleApp(Tk):
 
             self.frame = VerticalScrolledFrame(root)
             self.frame.pack()
+            self.makeFonts()
 
             self.initialize(courses)
             self.backStatus = False
 
+        def makeFonts(self):
+            #Font stuff
+            self.font = tkFont.Font(family = "Segoe UI", size = 12)
+            self.optionFont = tkFont.Font(family = "Segoe UI", size = 10)
+            self.buttonFont = tkFont.Font(family = "Segoe UI", size = 10)
+
         def initialize(self,courses):
-            self.infoBox = Label(self.frame.interior, text = "Please enter the credits of each course. \n For a two term course, please divide  \nthe credits by two (e.g. PHGY 214A has 3 credits).")
+            self.infoBox = Label(self.frame.interior, text = "Please enter the credits of each course. \n For a two term course, please divide  \nthe credits by two (e.g. PHGY 214A has 3 credits).",font = self.font)
             self.infoBox.config(width = 40, height = 3)
             self.infoBox.grid(row = 0, column = 0)
 
-            self.infoBox2 = Label(self.frame.interior, text = "Credits (e.g. 3.0, 4.5)")
+            self.infoBox2 = Label(self.frame.interior, text = "Credits (e.g. 3.0, 4.5)", font = self.font)
             self.infoBox2.config(width = 40, height = 2)
             self.infoBox2.grid(row = 0, column = 1)
 
             self.entry = []
 
             for i in range(len(courses)):           #iterates based on number of courses
-                self.txtBox = Label(self.frame.interior, text = courses[i], justify = LEFT)
+                self.txtBox = Label(self.frame.interior, text = courses[i], justify = LEFT, font = self.font)
                 self.txtBox.grid(row = i + 1)    #the name of each course
 
-                self.entry.append(Entry(self.frame.interior))
+                self.entry.append(Entry(self.frame.interior,font = self.optionFont))
                 self.entry[i].grid(row = i + 1, column = 1)          #entry field for credits of each course
                 self.entry[i].insert(0, 3.0)
 
-
-            self.subButton = Button(self.frame.interior)             #the submit button will process data then quit
+            self.subButton = Button(self.frame.interior, font = self.font)             #the submit button will process data then quit
             self.subButton['text'] = "Submit"
             self.subButton.grid(row = i + 3,column = 1)
             self.subButton['command'] = self.submit
 
-            self.quitButton = Button(self.frame.interior)            #the quit button will just quit
+            self.quitButton = Button(self.frame.interior, font = self.font)            #the quit button will just quit
             self.quitButton['text'] = "Back"
             self.quitButton.grid(row = i + 3,column = 0)
             self.quitButton['command'] = self.quit
+        
         def submit(self):
             self.data = []                      #initialize the piece of data
 

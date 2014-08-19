@@ -10,6 +10,7 @@
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 import xlwt
+import tkFont
 
 from Tkinter import *
 data = [['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\ANAT 215 - Fall 2013.xls', u'ANAT', u' 215', 2139], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\ANAT 216 - Winter 2014.xls', u'ANAT', u' 216', 2141], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\ANAT 315 - Fall 2013.xls', u'ANAT', u' 315', 2139], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\ANAT 316 - Winter 2014.xls', u'ANAT', u' 316', 2141], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\BCHM 218 - Winter 2014.xls', u'BCHM', u' 218', 2141], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\BCHM 310 - Winter 2014.xls', u'BCHM', u' 310B', 2141], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\BCHM 313 - Winter 2014.xls', u'BCHM', u' 313', 2141], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\BCHM 315 - Fall 2013.xls', u'BCHM', u' 315', 2139], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\BCHM 316 - Winter 2014.xls', u'BCHM', u' 316', 2141], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\MICR 221 - Winter 2014.xls', u'MICR', u' 221', 2141], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\PHAR 100 (ONLINE) - Summer 2013.xls', u'PHAR', u' 100', 2135], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\PHAR 100 (ONLINE) - Winter 2014.xls', u'PHAR', u' 100', 2141], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\PHAR 100 - Fall 2013.xls', u'PHAR', u' 100', 2139], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\PHAR 340 - Winter 2014.xls', u'PHAR', u' 340', 2139], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\PHAR 450 - Fall 2013.xls', u'PHAR', u' 450', 2141], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\PHGY 210 (ONLINE) - Summer 2013.xls', u'PHGY', u' 210', 2135], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\PHGY 210 (ONLINE) - Winter 2014.xls', u'PHGY', u' 210', 2141], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\PHGY 214 - Winter 2014.xls', u'PHGY', u' 214B', 2141], ['C:\\Users\\DBMS\\Documents\\Daniel\\DBMS_Enrollment\\full_data\\PHGY 350 - Fall 2013.xls', u'PHGY', u' 350', 2139]]
@@ -19,9 +20,16 @@ class GridBoxApp:
 		self.parent = parent
 		self.container = Frame(parent)
 		self.container.pack()
+		self.makeFonts()
 		self.initialize(data)
 		self.status = False
 
+	def makeFonts(self):
+		#Font stuff
+		self.font = tkFont.Font(family = "Segoe UI", size = 12)
+		self.gridFont = tkFont.Font (family = "Futura", size = 10)
+		self.optionFont = tkFont.Font(family = "Segoe UI", size = 10)
+		self.buttonFont = tkFont.Font(family = "Segoe UI", size = 10)
 
 	def initialize(self,data):
 		rows = len(data)
@@ -39,16 +47,16 @@ class GridBoxApp:
 				elif j == 3:	#width of box for the location of the spreadsheet e.g. C:\Users\DBMS...
 					width = 7
 
-				self.box = Label(self.container, text = data[i][j], relief = RIDGE, width = width)
+				self.box = Label(self.container, text = data[i][j], relief = RIDGE, width = width, font = self.gridFont)
 				self.box.grid(row = i,column = j)
 
-		self.subButton = Button(self.container)
+		self.subButton = Button(self.container, font = self.buttonFont)
 		self.subButton['text'] = "OK"
-		self.subButton.config(width = 7)
-		self.subButton.grid(row = rows + 1, column = 3)
+		self.subButton.config(width = 13)
+		self.subButton.grid(row = rows + 1, column = 2, columnspan = 2)
 		self.subButton['command'] = self.submit
 
-		self.backButton = Button(self.container)
+		self.backButton = Button(self.container, font = self.buttonFont)
 		self.backButton['text'] = "Back"
 		self.backButton.config(width = 7)
 		self.backButton.grid(row = rows + 1, column = 1)

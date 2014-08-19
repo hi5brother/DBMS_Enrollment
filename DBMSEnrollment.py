@@ -71,7 +71,7 @@ class Instance:
 			elif self.menu == "View Data":
 
 				self.OutputExcel()
-				UI.messageOutputBox.runApp(["Sheet was saved successfully."])
+				#UI.messageOutputBox.runApp(["Sheet was saved successfully."])	#for some reason this will kill the tkinter root window of the main menu too
 
 			elif self.menu == "DELETE DATABASE":
 				'''	This option is shown under the menu bar
@@ -125,10 +125,10 @@ class Instance:
 			self.noStudData = True
 
 		if self.noStudData:				#IF THERE IS NO STUDENT DATA
-			self.instructionList.append("No student or course data has been imported.\n    Please 'Import Data' first.")
+			self.instructionList.append("No student or course data has been imported.\n                       Please 'Import Data' first.")
 
 		elif not self.noStudData:		#IF THERE IS STUDENT DATA
-			self.instructionList.append("Student and course data was imported at " + str(self.timeStam) + "\n    You do not need to import student and course data.")
+			self.instructionList.append("Student and course data was imported at " + str(self.timeStam) + "\n                       You do not need to import student and course data.")
 
 		''' Checks for a time stamp on the program data tables 	(inputted by user)
 		'''
@@ -141,12 +141,12 @@ class Instance:
 			self.noBIUData = True
 
 		if self.noBIUData: 			#IF THERE IS NO BIU DATA
-			self.instructionList.append("No program or BIU data has been imported. \n    Please 'Update Constants'")
+			self.instructionList.append("No program or BIU data has been imported. \n                       Please 'Update Constants'")
 
 		elif not self.noBIUData: 	#IF THERE IS BIU DATA
-			self.instructionList.append("Program and BIU data was imported at " + str(self.timeStam) + "\n    You do not need to update program data, unless the student \n     and course data was updated after the program data.")
+			self.instructionList.append("Program and BIU data was imported at " + str(self.timeStam) + "\n                       You do not need to update program data, unless the student \n                       and course data was updated after the program data.")
 
-		self.instructionList.append("Please select 'View Data' to access the data. A spreadsheet will be\n    output with the requested data.")
+		self.instructionList.append("Please select 'View Data' to access the data. A spreadsheet\n                       will be output with the requested data.")
 
 	def DatabaseSetup(self):
 		'''	Used every loop in the main menu loop
@@ -173,7 +173,7 @@ class Instance:
 
 		try:
 			os.remove(dbLocation)
-		except WindowsError:        #WindowsError appreas when there is no database file
+		except WindowsError:		#WindowsError appreas when there is no database file
 			pass
 
 def main():

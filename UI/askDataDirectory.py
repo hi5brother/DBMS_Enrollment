@@ -11,6 +11,7 @@
 #-------------------------------------------------------------------------------
 
 from Tkinter import *
+import tkFont
 
 class DirectoryInputApp:
 	''' Has a field that asks for the location of the file directory with the raw data.
@@ -19,10 +20,19 @@ class DirectoryInputApp:
 		self.parent = parent
 		self.container = Frame(parent)
 		self.container.pack()
+
+		self.makeFonts()
 		self.initialize()
 
+	def makeFonts(self):
+		#Font stuff
+		self.font = tkFont.Font(family = "Segoe UI", size = 12)
+		self.optionFont = tkFont.Font(family = "Segoe UI", size = 10)
+		self.buttonFont = tkFont.Font(family = "Segoe UI", size = 10)
+
+
 	def initialize(self):
-		self.textBox = Label(self.container, text = "Please enter the file directory of the course list spreadsheets.\n\n e.g.  'C:\users\DBMS\enrollmentDataDirectory\'\n ", justify = LEFT)
+		self.textBox = Label(self.container, text = "Please enter the file directory of the course list spreadsheets.\n\n e.g.  'C:\users\DBMS\enrollmentDataDirectory\'\n ", justify = LEFT, font = self.font)
 		self.textBox.config (width = 50, height = 5)
 		self.textBox.pack(side = TOP)
 
@@ -30,7 +40,7 @@ class DirectoryInputApp:
 		self.entry.config(width = 70)
 		self.entry.pack(side = TOP)
 
-		self.subButton = Button(self.container)       #the submit button will process data then quit
+		self.subButton = Button(self.container, font = self.buttonFont)       #the submit button will process data then quit
 		self.subButton['text'] = "Submit"
 		self.subButton.pack(side = BOTTOM)
 		self.subButton['command'] = self.submit

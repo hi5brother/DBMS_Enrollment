@@ -87,7 +87,7 @@ def inputBIU(c, inputStage):
 	while not checkError(BIUList) and not len(BIUList) == 1:
 		UI.errorMessageBox.runApp(BIUList)
 		BIUList = UI.BIUInput.runApp()
-		
+
 	if checkBack(BIUList):
 		return inputStage - 1
 
@@ -192,9 +192,9 @@ def runApp():
 
 	c = conn.cursor()
 
-	numOfFrames = 3
+	numOfFrames = 6
 
-	inputStage = 2 		#initialize
+	inputStage = 0 		#initialize
 	
 	while inputStage != numOfFrames:
 
@@ -228,10 +228,6 @@ def runApp():
 
 		else:
 			break 		
-
-	# c.execute('''UPDATE timeRecord
-	# 				SET timeStam = ?
-	# 				WHERE time_id = 2;''',(dateTimeOutput.pythonTime(),))
 	try:
 		c.execute('''INSERT INTO timeRecord(time_id,timeStam) 
 					VALUES (2,?);''',(dateTimeOutput.pythonTime(),))

@@ -51,12 +51,14 @@ def runApp():
 
 	tuitionGrantSheetName = "Course Tuition and Grant Revenue Totals"
 	programTotalsSheetName = "Course Breakdown Based on Program"
+	programPercentTotalsSheetName = "Course Percentage Breakdown based on Faculty"
 	planTotalsSheetName = "Course Breakdown Based on All Plans"
 	sigPlanTotalsSheetName = "Course Breakdown Based on Plans (with >10 enrollments)"
 	yearTotalsSheetName = "Course Breakdown Based on Year"
 	planBreakdownSheetName = "Course Breakdown Based on Selected Plans"
 	programYearSheetName = "Program Breakdown Based on Year"
 	programInfoSheetName = "Program Info"
+
 
 	sheetsOrderedDict = OrderedDict([
 									(tuitionGrantSheetName, 0),

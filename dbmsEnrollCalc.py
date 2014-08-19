@@ -65,8 +65,12 @@ class Instance:
 
 			elif self.menu == "Update Program Data":
 
-				self.UpdateConstants()
-				UI.messageOutputBox.runApp(["Program and BIU data have been successfully imported."])
+				if self.noStudData:
+					UI.errorMessageBox.runApp("Please import student and course data first.")
+
+				elif not self.noStudData:
+					self.UpdateConstants()
+					UI.messageOutputBox.runApp(["Program and BIU data have been successfully imported."])
 
 			elif self.menu == "View Data":
 
@@ -125,7 +129,7 @@ class Instance:
 			self.noStudData = True
 
 		if self.noStudData:				#IF THERE IS NO STUDENT DATA
-			self.instructionList.append("No student or course data has been imported.\n                       Please 'Import Data' first.")
+			self.instructionList.append("No student or course data has been imported.\n                       Please 'Import Student and Course Data' first.")
 
 		elif not self.noStudData:		#IF THERE IS STUDENT DATA
 			self.instructionList.append("Student and course data was imported at " + str(self.timeStam) + "\n                       You do not need to import student and course data.")
@@ -141,7 +145,7 @@ class Instance:
 			self.noBIUData = True
 
 		if self.noBIUData: 			#IF THERE IS NO BIU DATA
-			self.instructionList.append("No program or BIU data has been imported. \n                       Please 'Update Constants'")
+			self.instructionList.append("No program or BIU data has been imported. \n                       Please 'Update Program Data'")
 
 		elif not self.noBIUData: 	#IF THERE IS BIU DATA
 			self.instructionList.append("Program and BIU data was imported at " + str(self.timeStam) + "\n                       You do not need to update program data, unless the student \n                       and course data was updated after the program data.")

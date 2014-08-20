@@ -76,7 +76,7 @@ class FormulaFeesInputApp:
 def runApp(programs):
     root = Tk()
     root.iconbitmap('icon_table.ico')
-    root.title("DBMS Enrollment Formula Fees")
+    root.title("Formula Fees")
     app = FormulaFeesInputApp(root,programs)
     root.mainloop()
 

@@ -78,7 +78,7 @@ class ProgWeightInputApp:
 def runApp(programs):
 	root = Tk()
 	root.iconbitmap('icon_table.ico')
-	root.title("DBMS Enrollment Program Weighting")
+	root.title("Program Weighting")
 	app = ProgWeightInputApp(root,programs)
 	root.mainloop()
 

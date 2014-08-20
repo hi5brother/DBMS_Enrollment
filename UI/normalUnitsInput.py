@@ -78,7 +78,7 @@ class NormalUnitsInputApp:
 def runApp(programs):
     root = Tk()
     root.iconbitmap('icon_table.ico')
-    root.title("DBMS Enrollment Normal Units")
+    root.title("Normal Units")
     app = NormalUnitsInputApp(root,programs)
     root.mainloop()
 

@@ -34,7 +34,8 @@ build_exe_options = {"packages" : [	"UI",
 									"xlutils",
 									"pywin"],
 					"include_files" : ["excelMacro\intToFloat.xlsm",
-										"icon_table.ico"]}
+										"icon_table.ico",
+										"README.md"]}
 
 #pywin is the same as win32api
 

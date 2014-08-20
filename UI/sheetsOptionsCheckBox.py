@@ -80,7 +80,7 @@ class CheckBoxScrollingApp():
 def runScrollingApp(text):
 	root = Tk()
 	root.iconbitmap('icon_table.ico')
-	root.title("DBMS Enrollment Excel Sheet Select")
+	root.title("Excel Sheet Query")
 	app = CheckBoxScrollingApp(root,text)
 	root.mainloop()
 

@@ -18,6 +18,7 @@ class DirectoryInputApp:
 	'''
 	def __init__(self,parent):
 		self.parent = parent
+
 		self.container = Frame(parent)
 		self.container.pack()
 

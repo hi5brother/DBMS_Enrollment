@@ -130,7 +130,7 @@ def runApp(courses):
     
     app = SampleApp(courses)
     app.iconbitmap('icon_table.ico')
-    app.title("DBMS Enrollment Credits Input")
+    app.title("Course Credits")
     app.mainloop()
 
     try:

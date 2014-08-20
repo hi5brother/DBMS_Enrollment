@@ -47,7 +47,7 @@ class OutputDataApp:
 def runApp(text):
 	root = Tk()
 	root.iconbitmap('icon_table.ico')
-	root.title("DBMS Enrollment Error")
+	root.title("Error DBMS Enrollment Calculator")
 	app = OutputDataApp(root, text)
 	root.mainloop()
 	

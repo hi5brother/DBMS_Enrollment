@@ -1,6 +1,7 @@
 #-------------------------------------------------------------------------------
 # Name:        main, imports all the modules and runs them
 # Purpose:      shows the main menu
+#				main loop contains the sequence of events and workflow
 #				
 #
 # Author:      DBMS
@@ -11,6 +12,7 @@
 #-------------------------------------------------------------------------------
 import os
 import sys
+import sqlite3
 
 import preprocess
 import writeToExcel
@@ -23,7 +25,7 @@ import UI
 
 import extractData as data
 
-import sqlite3
+
 
 import dateTimeOutput
 
@@ -31,8 +33,6 @@ class Instance:
 	def __init__(self):
 
 		self.menu = True
-		self.output = False
-		self.constants = False
 		self.dataDirectory = False
 		self.dataLocation = False
 		
@@ -41,7 +41,7 @@ class Instance:
 	def MainLoop(self):	
 		''' Main loop of program. The menu tk app returns strings based on the button pressed.
 		'''
-		self.DatabaseSetup()
+		#self.DatabaseSetup()
 		
 		while self.menu != "QUIT APPLICATION":
 
@@ -65,8 +65,8 @@ class Instance:
 
 			elif self.menu == "Update Program Data":
 
-				if self.noStudData:
-					UI.errorMessageBox.runApp("Please import student and course data first.")
+				if self.noStudData:		#cannot update the program data if no courses have been imported
+					UI.errorMessageBox.runApp("Please Import student and course data first.")
 
 				elif not self.noStudData:
 					self.UpdateConstants()
@@ -74,7 +74,11 @@ class Instance:
 
 			elif self.menu == "View Data":
 
-				self.OutputExcel()
+				if self.noStudData and self.noBIUData:	#cannot process excel spreadsheets if no data is present
+					UI.errorMessageBox.runApp("Please Import student and course data and Update program data.")
+
+				else:
+					self.OutputExcel()
 				#UI.messageOutputBox.runApp(["Sheet was saved successfully."])	#for some reason this will kill the tkinter root window of the main menu too
 
 			elif self.menu == "DELETE DATABASE":
@@ -122,9 +126,11 @@ class Instance:
 		'''
 		self.noStudData = False
 		try:
-			self.timeStam = data.grabTimeStamp(self.c,"Student Data")
+			self.timeStamStud = data.grabTimeStamp(self.c,"Student Data")
+
 		except TypeError:			#if there is no time stamp value, it means no data has been imported
 			self.noStudData = True	
+
 		except sqlite3.OperationalError: 	#if there is no db available
 			self.noStudData = True
 
@@ -132,23 +138,25 @@ class Instance:
 			self.instructionList.append("No student or course data has been imported.\n                       Please 'Import Student and Course Data' first.")
 
 		elif not self.noStudData:		#IF THERE IS STUDENT DATA
-			self.instructionList.append("Student and course data was imported at " + str(self.timeStam) + "\n                       You do not need to import student and course data.")
+			self.instructionList.append("Student and course data was imported at " + str(self.timeStamStud) + "\n                       You do not need to import student and course data.")
 
 		''' Checks for a time stamp on the program data tables 	(inputted by user)
 		'''
 		self.noBIUData = False
 		try:
-			self.timeStam = data.grabTimeStamp(self.c,"BIU Data")
+			self.timeStamBIU = data.grabTimeStamp(self.c,"BIU Data")
+
 		except TypeError:
 			self.noBIUData = True
+
 		except sqlite3.OperationalError:
 			self.noBIUData = True
 
 		if self.noBIUData: 			#IF THERE IS NO BIU DATA
-			self.instructionList.append("No program or BIU data has been imported. \n                       Please 'Update Program Data'")
+			self.instructionList.append("No program or BIU data has been imported. \n                       Please 'Update Program Data.'")
 
 		elif not self.noBIUData: 	#IF THERE IS BIU DATA
-			self.instructionList.append("Program and BIU data was imported at " + str(self.timeStam) + "\n                       You do not need to update program data, unless the student \n                       and course data was updated after the program data.")
+			self.instructionList.append("Program and BIU data was imported at " + str(self.timeStamBIU) + "\n                       You do not need to update program data, unless the student \n                       and course data was updated after the program data.")
 
 		self.instructionList.append("Please select 'View Data' to access the data. A spreadsheet\n                       will be output with the requested data.")
 

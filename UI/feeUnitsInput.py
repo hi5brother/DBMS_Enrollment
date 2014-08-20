@@ -82,7 +82,7 @@ class FeeUnitsInputApp:
 def runApp(programs):
 	root = Tk()
 	root.iconbitmap('icon_table.ico')
-	root.title("DBMS Enrollment Program Unit Fees")
+	root.title("Program Unit Fees")
 	app = FeeUnitsInputApp(root,programs)
 	root.mainloop()
 

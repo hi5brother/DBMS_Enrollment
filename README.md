@@ -1,24 +1,24 @@
 DBMS Enrollment Calculator
 ===============
 
-#Project Information
-##Objectives
+##Project Information
+###Objectives
 
 1. Calculating estimates of yearly revenue from class lists and BIU values, while being reusable in future years with minimal maintenance.
 2. Results should show data that details revenues from student demographics (year, program, etc.) and course breakdowns 
 3. Provide the solution in a timely manner (before the end of the summer)
 
-##Project Deliverables
+###Project Deliverables
 
 1. A computer application comprising of a backend database and a frontend, suitable user interface and calculated revenue data
 2. Documentation on how to use the application and how to make adjustments to it
 
-#Program Use and Information
-##Current Version
+##Program Use and Information
+###Current Version
 
 Version 0.61
 
-##Changelog
+###Changelog
 0.61
 
 - Fixed missing font changes
@@ -47,12 +47,14 @@ Version 0.61
 
 - Added scroll bar to credits input app
 
-##Known Issues
+###Known Issues
 
 - No progress window exists
 - Program will crash when Viewing Data with Excel open
+- When program starts, two non-functional processes will start and then disappear before a functional one starts
+- If two instances of program are opened, the database becomes locked
 
-##Requirements
+###Requirements
 
-- Windows XP / 7 /8
+- Windows 7 /8
 - Microsoft Excel (2003 or later)

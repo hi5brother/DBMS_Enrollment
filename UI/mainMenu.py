@@ -73,8 +73,8 @@ class menuScreen:
 	'''
 	def __init__(self, parent,instructions):
 		self.parent = parent
-
-		self.container = Frame(parent)
+		self.windowColour = "gray99"
+		self.container = Frame(parent, bg = self.windowColour)
 		self.container.pack()
 		self.makeFonts()
 
@@ -111,37 +111,39 @@ class menuScreen:
 		#Window content stuff
 		#Instructions
 		introText = "Welcome. To retrieve enrollment numbers,\n please follow the instructions. \n\n Please close all Excel spreadsheets. \n_______________________"
-		self.textBox = Label(self.container, text = introText, font = self.font)
+		self.textBox = Label(self.container, text = introText, font = self.font, bg = self.windowColour)
 		self.textBox.config(width = 60, height = 5)
 		self.textBox.grid(row = 0, column = 0)
 
 		for i in range(len(instructions)):
 			instructText = "                 " + str(i + 1) + ". " + instructions[i]
-			self.txtBox = Label(self.container,text = instructText,font = self.font)
+			self.txtBox = Label(self.container,text = instructText,font = self.font, bg = self.windowColour)
 			self.txtBox.config(anchor = 'w', justify = LEFT)
 			self.txtBox.grid(row = i + 1, column = 0, sticky = W)
 
 		#Buttons
 
-		self.infoBox = Label (self.container, text = "_______________________\nPlease select an option.\n",font = self.font)
+		self.infoBox = Label (self.container, text = "_______________________\nPlease select an option.\n",font = self.font, bg = self.windowColour)
 		self.infoBox.config (width = 20, height = 3)
 		self.infoBox.grid(row = i + 2, column = 0)
 
 		options = ["Import Student and Course Data", "Update Program Data","View Data"]
 
-		self.optionBox = Button(self.container,font = self.optionFont)
+		buttonColour = "ghostwhite"
+
+		self.optionBox = Button(self.container,font = self.optionFont , background = buttonColour)
 		self.optionBox['text'] = "1. " + options[0]
 		self.optionBox.config(width = 60, height = 2)
 		self.optionBox.grid (row = i + 3, column = 0)
 		self.optionBox['command'] = lambda: self.submit(options[0])
 
-		self.optionBox = Button(self.container,font = self.optionFont)
+		self.optionBox = Button(self.container,font = self.optionFont, background = buttonColour )
 		self.optionBox['text'] = "2. " +options[1]
 		self.optionBox.config(width = 60, height = 2)
 		self.optionBox.grid (row = i + 4, column = 0)
 		self.optionBox['command'] = lambda: self.submit(options[1])
 
-		self.optionBox = Button(self.container,font = self.optionFont)
+		self.optionBox = Button(self.container,font = self.optionFont, background = buttonColour)
 		self.optionBox['text'] = "3. " +options[2]
 		self.optionBox.config(width = 60, height = 2)
 		self.optionBox.grid (row = i + 5, column = 0)
@@ -169,9 +171,12 @@ class menuScreen:
 
 
 def runApp(instructions):
+	
+
+
 	root = Tk()
 	root.iconbitmap('icon_table.ico')
-	root.title("DBMS Enrollment Analysis")
+	root.title("DBMS Enrollment Calculator")
 	app = menuScreen(root,instructions)
 	root.mainloop()
 

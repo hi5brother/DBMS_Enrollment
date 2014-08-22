@@ -12,7 +12,10 @@
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 import sys
+import os
 from cx_Freeze import setup, Executable
+
+path = os.getcwd()
 
 build_exe_options = {"packages" : [	"UI",
 									"ExcelOutput",
@@ -47,7 +50,7 @@ setup(	name = "DBMS_Enrollment Calculator",
 		version = "0.61",
 		description = "DBMS Enrollment Calculator",
 		options = {"build_exe": build_exe_options},
-		executables = [Executable("dbmsEnrollCalc.py", icon = "documentation\icon_table.ico", base=base)])
+		executables = [Executable("dbmsEnrollCalc.py", icon = "icon_table.ico", base=base)])
 
 
 '''

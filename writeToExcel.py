@@ -51,24 +51,28 @@ def runApp():
 
 	tuitionGrantSheetName = "Course Tuition and Grant Revenue Totals"
 	programTotalsSheetName = "Course Breakdown Based on Program"
-	programPercentTotalsSheetName = "Course Percentage Breakdown based on Faculty"
+	programPercentageSheetName = "Course Breakdown by Percentage on Program"
 	planTotalsSheetName = "Course Breakdown Based on All Plans"
 	sigPlanTotalsSheetName = "Course Breakdown Based on Plans (with >10 enrollments)"
+	sigPlanPercentageSheetName = "Course Breakdown by Percentage on Plans (with >10 enrollments)"
 	yearTotalsSheetName = "Course Breakdown Based on Year"
 	planBreakdownSheetName = "Course Breakdown Based on Selected Plans"
 	programYearSheetName = "Program Breakdown Based on Year"
 	programInfoSheetName = "Program Info"
 
 
+
 	sheetsOrderedDict = OrderedDict([
-									(tuitionGrantSheetName, 0),
-									(programTotalsSheetName, 1),
-									(planTotalsSheetName, 2),
-									(sigPlanTotalsSheetName, 3),
-									(yearTotalsSheetName, 4),
-									(planBreakdownSheetName, 5),
-									(programYearSheetName, 6),
-									(programInfoSheetName, 7),
+									(tuitionGrantSheetName, 	0),
+									(programTotalsSheetName, 	1),
+									(programPercentageSheetName,2),
+									(planTotalsSheetName, 		3),
+									(sigPlanTotalsSheetName, 	4),
+									(sigPlanPercentageSheetName,5),
+									(yearTotalsSheetName, 		6),
+									(planBreakdownSheetName, 	7),
+									(programYearSheetName, 		8),
+									(programInfoSheetName, 		9),
 									])
 
 	cdLocation = os.getcwd()
@@ -98,6 +102,8 @@ def runApp():
 
 	book = xlwt.Workbook()
 
+
+
 	if sheetsOrderedDict[tuitionGrantSheetName] in selectedSheetsKey:
 
 		ExcelOutput.tuitionGrantTotals.write(c,book)
@@ -106,6 +112,10 @@ def runApp():
 
 		ExcelOutput.programTotals.write(c,book)
 
+	if sheetsOrderedDict[programPercentageSheetName] in selectedSheetsKey:
+
+		ExcelOutput.programPercentageTotals.write(c,book)
+
 	if sheetsOrderedDict[planTotalsSheetName] in selectedSheetsKey:
 
 		ExcelOutput.planExpandedTotals.write(c,book)
@@ -113,6 +123,10 @@ def runApp():
 	if sheetsOrderedDict[sigPlanTotalsSheetName] in selectedSheetsKey:
 
 		ExcelOutput.planSignificantTotals.write(c,book)
+
+	if sheetsOrderedDict[sigPlanPercentageSheetName] in selectedSheetsKey:
+
+		ExcelOutput.planSignificantPercentageTotals.write(c, book)
 
 	if sheetsOrderedDict[yearTotalsSheetName] in selectedSheetsKey:
 

@@ -34,7 +34,7 @@ class VerticalScrolledFrame(Frame):
         vscrollbar = Scrollbar(self, orient=VERTICAL)
         vscrollbar.pack(fill=Y, side=RIGHT, expand=FALSE)
         canvas = Canvas(self, bd=0, highlightthickness=0,
-                        yscrollcommand=vscrollbar.set)
+                        yscrollcommand=vscrollbar.set, height = 350)
         canvas.pack(side=LEFT, fill=BOTH, expand=TRUE)
         vscrollbar.config(command=canvas.yview)
 
@@ -67,64 +67,64 @@ class VerticalScrolledFrame(Frame):
         self.quit()
 
 class SampleApp(Tk):
-        def __init__(self, courses):
-            root = Tk.__init__(self)
+    def __init__(self, courses):
+        root = Tk.__init__(self)
 
 
-            self.frame = VerticalScrolledFrame(root)
-            self.frame.pack()
-            self.makeFonts()
+        self.frame = VerticalScrolledFrame(root)
+        self.frame.pack()
+        self.makeFonts()
 
-            self.initialize(courses)
-            self.backStatus = False
+        self.initialize(courses)
+        self.backStatus = False
 
-        def makeFonts(self):
-            #Font stuff
-            self.font = tkFont.Font(family = "Segoe UI", size = 12)
-            self.optionFont = tkFont.Font(family = "Segoe UI", size = 10)
-            self.buttonFont = tkFont.Font(family = "Segoe UI", size = 10)
+    def makeFonts(self):
+        #Font stuff
+        self.font = tkFont.Font(family = "Segoe UI", size = 12)
+        self.optionFont = tkFont.Font(family = "Segoe UI", size = 10)
+        self.buttonFont = tkFont.Font(family = "Segoe UI", size = 10)
 
-        def initialize(self,courses):
-            self.infoBox = Label(self.frame.interior, text = "Please enter the credits of each course. \n For a two term course, please divide  \nthe credits by two (e.g. PHGY 214A has 3 credits).",font = self.font)
-            self.infoBox.config(width = 40, height = 3)
-            self.infoBox.grid(row = 0, column = 0)
+    def initialize(self,courses):
+        self.infoBox = Label(self.frame.interior, text = "Please enter the credits of each course. \n For a two term course, please divide  \nthe credits by two (e.g. PHGY 214A has 3 credits).",font = self.font)
+        self.infoBox.config(width = 40, height = 3)
+        self.infoBox.grid(row = 0, column = 0)
 
-            self.infoBox2 = Label(self.frame.interior, text = "Credits (e.g. 3.0, 4.5)", font = self.font)
-            self.infoBox2.config(width = 40, height = 2)
-            self.infoBox2.grid(row = 0, column = 1)
+        self.infoBox2 = Label(self.frame.interior, text = "Credits (e.g. 3.0, 4.5)", font = self.font)
+        self.infoBox2.config(width = 40, height = 2)
+        self.infoBox2.grid(row = 0, column = 1)
 
-            self.entry = []
+        self.entry = []
 
-            for i in range(len(courses)):           #iterates based on number of courses
-                self.txtBox = Label(self.frame.interior, text = courses[i], justify = LEFT, font = self.font)
-                self.txtBox.grid(row = i + 1)    #the name of each course
+        for i in range(len(courses)):           #iterates based on number of courses
+            self.txtBox = Label(self.frame.interior, text = courses[i], justify = LEFT, font = self.font)
+            self.txtBox.grid(row = i + 1)    #the name of each course
 
-                self.entry.append(Entry(self.frame.interior,font = self.optionFont))
-                self.entry[i].grid(row = i + 1, column = 1)          #entry field for credits of each course
-                self.entry[i].insert(0, 3.0)
+            self.entry.append(Entry(self.frame.interior,font = self.optionFont))
+            self.entry[i].grid(row = i + 1, column = 1)          #entry field for credits of each course
+            self.entry[i].insert(0, 3.0)
 
-            self.subButton = Button(self.frame.interior, font = self.font)             #the submit button will process data then quit
-            self.subButton['text'] = "Submit"
-            self.subButton.grid(row = i + 3,column = 1)
-            self.subButton['command'] = self.submit
+        self.subButton = Button(self.frame.interior, font = self.font)             #the submit button will process data then quit
+        self.subButton['text'] = "Submit"
+        self.subButton.grid(row = i + 3,column = 1)
+        self.subButton['command'] = self.submit
 
-            self.quitButton = Button(self.frame.interior, font = self.font)            #the quit button will just quit
-            self.quitButton['text'] = "Back"
-            self.quitButton.grid(row = i + 3,column = 0)
-            self.quitButton['command'] = self.quit
-        
-        def submit(self):
-            self.data = []                      #initialize the piece of data
+        self.quitButton = Button(self.frame.interior, font = self.font)            #the quit button will just quit
+        self.quitButton['text'] = "Back"
+        self.quitButton.grid(row = i + 3,column = 0)
+        self.quitButton['command'] = self.quit
+    
+    def submit(self):
+        self.data = []                      #initialize the piece of data
 
-            for entry in self.entry:
-                self.data.append(entry.get())  #parses the data in the array into a list
-            self.frame.destroyFrame()            
-            self.frame.interior.destroy()
+        for entry in self.entry:
+            self.data.append(entry.get())  #parses the data in the array into a list
+        self.frame.destroyFrame()            
+        self.frame.interior.destroy()
 
-        def quit(self):
-            self.backStatus = True
-            self.frame.destroyFrame()
-            self.frame.interior.destroy()
+    def quit(self):
+        self.backStatus = True
+        self.frame.destroyFrame()
+        self.frame.interior.destroy()
 
 def runApp(courses):
     

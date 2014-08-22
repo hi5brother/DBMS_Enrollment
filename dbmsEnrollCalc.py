@@ -26,7 +26,6 @@ import UI
 import extractData as data
 
 
-
 import dateTimeOutput
 
 class Instance:
@@ -106,7 +105,7 @@ class Instance:
 
 				try:
 					self.courseCodes = excelPreprocess.checkCourseCode(self.filesList, self.sheetAddressList)
-					userApproved = UI.gridBox.runApp(self.courseCodes) 	#user can submit (userApproved = True) or go back (userApproved = False)
+					userApproved = UI.gridBoxScrolling.runApp(self.courseCodes) 	#user can submit (userApproved = True) or go back (userApproved = False)
 
 				except TypeError:
 					UI.errorMessageBox.runApp("The spreadsheets in the directory are not valid.")

@@ -21,7 +21,7 @@ import extractData as data
 def write(c, book):
 	cutoff = 10		#cutoff range for number of plan enrollments
 
-	planBreakdown = book.add_sheet("PlanBreakdown")
+	planBreakdown = book.add_sheet("Plans Breakdown")
 	columnWidth(planBreakdown, 10)
 
 	c.execute("SELECT DISTINCT course_id FROM courses;")

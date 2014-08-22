@@ -38,7 +38,7 @@ class CheckBoxScrollingApp():
 
 		self.vsb = Scrollbar(orient = "vertical")
 
-		tempHeight = (lambda x: 40 if x > 40 else x) (len(optionsList))	#make the length of the box dynamic
+		tempHeight = (lambda x: 60 if x > 60 else x) (len(optionsList))	#make the length of the box dynamic
 		defaultbg = self.parent.cget('bg')	#set default colour
 		self.text = Text(self.parent, width = 30, height = tempHeight, bg = defaultbg,
 							yscrollcommand = self.vsb.set, font = self.font)

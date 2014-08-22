@@ -47,6 +47,21 @@ def grabTimeStamp(connDB,value):
 
 	return data
 
+class timeStam:
+	def __init__(self, timeStamString):
+		self.year = int(timeStamString[:4])
+		self.month = int(timeStamString[6:7])
+		self.day = int(timeStamString[9:10])
+
+	def printTimeStam():
+		print self.year
+
+def compareTimeStamp(timeStamStud, timeStamBIU):
+	stud = timeStam(timeStamStud)
+	BIU = timeStam(timeStamBIU)
+
+	pass
+
 #STUDENT SPECIFIC
 def grabStudentProgram(connDB,stude_id):		#
 	connDB.execute("SELECT program FROM students WHERE stud_id = ?;",(stude_id,))
@@ -149,30 +164,30 @@ def grabFullPlanList(connDB):
 
 	return planList
 
-def grabDBMSEnrollNumber(connDB, course_id):
-	'''Grabs the number of all those in a LISC or BCHM plan for a particular course.
-	'''
-	connDB.execute('''SELECT COUNT (*)
-						FROM students
-						WHERE (plan LIKE 'LISC%'
-							OR plan2 LIKE 'LISC%'
-							OR plan3 LIKE 'LISC%'
-							OR plan LIKE 'BCHM%'
-							OR plan2 LIKE 'BCHM%'
-							OR plan3 LIKE 'BCHM%')
-							AND (course1 = ? or 
-							course2 = ? or
-							course3 = ? or
-							course4 = ? or
-							course5 = ? or
-							course6 = ? or
-							course7 = ? or
-							course8 = ? or
-							course9 = ? or
-							course10 = ?);''',(course_id,course_id,course_id,course_id,course_id,course_id,course_id,course_id,course_id,course_id))
-	data = connDB.fetchone()
-	data = data[0]
-	return data
+# def grabDBMSEnrollNumber(connDB, course_id):
+# 	'''Grabs the number of all those in a LISC or BCHM plan for a particular course.
+# 	'''
+# 	connDB.execute('''SELECT COUNT (*)
+# 						FROM students
+# 						WHERE (plan LIKE 'LISC%'
+# 							OR plan2 LIKE 'LISC%'
+# 							OR plan3 LIKE 'LISC%'
+# 							OR plan LIKE 'BCHM%'
+# 							OR plan2 LIKE 'BCHM%'
+# 							OR plan3 LIKE 'BCHM%')
+# 							AND (course1 = ? or 
+# 							course2 = ? or
+# 							course3 = ? or
+# 							course4 = ? or
+# 							course5 = ? or
+# 							course6 = ? or
+# 							course7 = ? or
+# 							course8 = ? or
+# 							course9 = ? or
+# 							course10 = ?);''',(course_id,course_id,course_id,course_id,course_id,course_id,course_id,course_id,course_id,course_id))
+# 	data = connDB.fetchone()
+# 	data = data[0]
+# 	return data
 
 #FOR CALCULATING GRANTS
 
@@ -338,77 +353,81 @@ def main():
 	conn = connectDB()
 	c = conn.cursor()
 
-	time = grabTimeStamp(c)
-	print "TIME STAMP"
-	print time
-	print type(time)
-	print "\n"
+	timeStamStud = grabTimeStamp(c, "Student Data")
+	timeStamBIU = grabTimeStamp(c, "BIU Data")
+	print compare
 
-	program = grabStudentProgram(c, 1)
-	print "PROGRAM"
-	print program 
-	print type(program)
-	print "\n"
+	# time = grabTimeStamp(c)
+	# print "TIME STAMP"
+	# print time
+	# print type(time)
+	# print "\n"
 
-	plan = grabStudentPlan(c, 1)
-	print "PLAN"
-	print plan
-	print type(plan)
-	print "\n"
+	# program = grabStudentProgram(c, 1)
+	# print "PROGRAM"
+	# print program 
+	# print type(program)
+	# print "\n"
 
-	year= grabStudentYear(c, 1)
-	print "YEAR"
-	print year
-	print type(year)
-	print "\n"
+	# plan = grabStudentPlan(c, 1)
+	# print "PLAN"
+	# print plan
+	# print type(plan)
+	# print "\n"
 
-	courses = grabStudentCourses(c,1)
-	print "COURSES"
-	print courses
-	print type(courses)
-	print "\n"
+	# year= grabStudentYear(c, 1)
+	# print "YEAR"
+	# print year
+	# print type(year)
+	# print "\n"
 
-	credits = grabCourseCredits(c, 1)
-	print "CREDITS"
-	print credits
-	print type(credits)
-	print "\n"
+	# courses = grabStudentCourses(c,1)
+	# print "COURSES"
+	# print courses
+	# print type(courses)
+	# print "\n"
 
-	term = grabCourseTerm(c, 1)
-	print "TERM"
-	print term
-	print type(term)
-	print "\n"
+	# credits = grabCourseCredits(c, 1)
+	# print "CREDITS"
+	# print credits
+	# print type(credits)
+	# print "\n"
 
-	unitFee = grabUnitFees(c, program)
-	print "UNIT FEES"
-	print unitFee
-	print type(unitFee)
-	print "\n"
+	# term = grabCourseTerm(c, 1)
+	# print "TERM"
+	# print term
+	# print type(term)
+	# print "\n"
 
-	progWeight = grabProgramWeight (c, program)
-	print "PROGRAM WEIGHT"
-	print progWeight
-	print type(progWeight)
-	print "\n"
+	# unitFee = grabUnitFees(c, program)
+	# print "UNIT FEES"
+	# print unitFee
+	# print type(unitFee)
+	# print "\n"
 
-	formulaFee = grabFormulaFee(c,program)
-	print "FORMULA FEE"
-	print formulaFee
-	print type(formulaFee)
-	print "\n"
+	# progWeight = grabProgramWeight (c, program)
+	# print "PROGRAM WEIGHT"
+	# print progWeight
+	# print type(progWeight)
+	# print "\n"
 
-	BIU = grabBIU(c)
-	print "BIU"
-	print BIU
-	print type(BIU)
-	print "\n"
+	# formulaFee = grabFormulaFee(c,program)
+	# print "FORMULA FEE"
+	# print formulaFee
+	# print type(formulaFee)
+	# print "\n"
 
-	normalUnits = grabNormalUnits(c, program)
-	print "Normal Units"
-	print normalUnits
-	print type(BIU)
-	print "\n"
+	# BIU = grabBIU(c)
+	# print "BIU"
+	# print BIU
+	# print type(BIU)
+	# print "\n"
+
+	# normalUnits = grabNormalUnits(c, program)
+	# print "Normal Units"
+	# print normalUnits
+	# print type(BIU)
+	# print "\n"
 
 if __name__ == '__main__':
 	main()

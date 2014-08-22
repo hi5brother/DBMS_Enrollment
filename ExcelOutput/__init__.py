@@ -21,6 +21,9 @@ import programYearTotals
 import tuitionGrantTotals
 import yearTotals
 
+import programPercentageTotals
+import planSignificantPercentageTotals
+
 '''	This import heading will import modules from the parent directory
 	import os
 	parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

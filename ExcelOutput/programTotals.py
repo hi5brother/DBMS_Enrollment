@@ -18,7 +18,7 @@ os.sys.path.insert(0,parentdir)
 import extractData as data
 
 def write(c,book):
-	sheet = book.add_sheet("ProgramTotals")
+	sheet = book.add_sheet("Program Enrollments")
 
 	freezePanes(sheet,1)
 	informationStartRow = 1
@@ -35,9 +35,9 @@ def write(c,book):
 	enrollmentNameStr = 'Enrollments'
 
 	fYrArtsStr = 'Arts (1st)'		#these help differentiate between 1st year artsci HONOURS and upper year artsci HONOURS
-	fYrSciStr = 'Science (1st)'
+	fYrSciStr = 'Sci (1st)'
 	upYrArtsStr = 'Arts Hon (2-4)'
-	upYrSciStr = 'Science Hon (2-4)'
+	upYrSciStr = 'Sci Hon (2-4)'
 
 	columns = {
 				courseNameStr : 0,
@@ -84,13 +84,18 @@ def write(c,book):
 		upYrArts = data.grabStudentEnrollment(c, "BAH", course) - firstYrArts
 		upYrSci = data.grabStudentEnrollment(c, "BSCH", course) - firstYrSci
 
-		sheet.write(count, columns[fYrArtsStr], firstYrArts)
+		sheet.write(count, columns[fYrArtsStr], firstYrArts, xlwt.easyxf('borders: left thick'))
 		sheet.write(count, columns[fYrSciStr], firstYrSci)
 
 		sheet.write(count, columns[upYrArtsStr], upYrArts)
-		sheet.write(count, columns[upYrSciStr], upYrSci)
+		sheet.write(count, columns[upYrSciStr], upYrSci, xlwt.easyxf('borders: right thick'))
+
+		#changing the column widths for the 1st yr vs upper yr honours columns
+		sheet.col(columns[fYrArtsStr]).width = 256 * 8
+		sheet.col(columns[fYrSciStr]).width = 256 * 8
+		sheet.col(columns[upYrArtsStr]).width = 256 * 12
+		sheet.col(columns[upYrSciStr]).width = 256 * 12
 
 		count = count + 1
-
 
 	return True

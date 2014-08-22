@@ -15,7 +15,6 @@ import tkFont
 
 import webbrowser
 
-
 instructions = ["HI","PLEASE UPDATE THIS","THEN VIEW DAT DATA"]
 
 class helpScreen:
@@ -83,7 +82,6 @@ class menuScreen:
 		self.quitStatus = True
 		self.helpStatus = False
 		self.deleteDBStatus = False
-
 
 	def makeFonts(self):
 		#Font stuff
@@ -169,11 +167,8 @@ class menuScreen:
 		self.quitStatus = True
 		self.parent.destroy()
 
-
 def runApp(instructions):
 	
-
-
 	root = Tk()
 	root.iconbitmap('icon_table.ico')
 	root.title("DBMS Enrollment Calculator")

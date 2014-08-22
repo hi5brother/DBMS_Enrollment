@@ -20,7 +20,7 @@ import extractData as data
 
 
 def write(c, book):
-	sheet = book.add_sheet("ProgramInfo")
+	sheet = book.add_sheet("Program Info")
 
 	twoDecimalStyle = xlwt.XFStyle()		#styling for using two decimals
 	twoDecimalStyle.num_format_str = '0.00'

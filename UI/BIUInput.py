@@ -36,7 +36,7 @@ class BIUInputApp:
         self.infoBox.config(width = 30, height = 2)
         self.infoBox.grid(row = 1, column = 0)
 
-        self.infoBox2 = Label(self.container, text = "BIU value in dollars \n (e.g. 2 386.00, 2 591.98)",font = self.font)
+        self.infoBox2 = Label(self.container, text = "BIU value in dollars \n (e.g. 5 440.81)",font = self.font)
         self.infoBox2.config(width = 30, height = 2)
         self.infoBox2.grid(row = 0, column = 1)
 
